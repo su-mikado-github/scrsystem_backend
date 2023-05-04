@@ -1,0 +1,143 @@
+/*
+.scrs-font-acton {
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+}
+*/
+/* メインカラー（赤） */
+.scrs-bg-main {
+    color: white !important;
+    background-color: #ac2524 !important;
+}
+
+.scrs-text-main {
+    color: #ac2524 !important;
+}
+
+.scrs-bg-main-button {
+    color: white !important;
+    background-color: #ac2524 !important;
+}
+
+.scrs-bg-sub-button {
+    background-color: white !important;
+}
+
+/**  */
+.scrs-border-main {
+    color: #ac2524 !important;
+    border-color: #ac2524 !important;
+}
+
+.scrs-radio-color:checked {
+    background-color: #ac2524 !important;
+    border-color: #ac2524 !important;
+}
+
+/* 背景カラー */
+.scrs-bg {
+    background-color: #f4efed !important;
+}
+
+.scrs-bg-form-control {
+    background-color: white !important;
+}
+
+/* headerのメニューバー */
+.scrs-bg-menubar {
+    color: white !important;
+    background-color: #ac2524 !important;
+}
+
+/* footer */
+.scrs-bg-footer {
+    color: white !important;
+    background-color: #552600 !important;
+}
+
+/* 入力フォームの枠線 */
+.scrs-border-form_border::placeholder,
+.scrs-border-form_border::-ms-input-placeholder,
+.scrs-border-form_border:-ms-input-placeholder {
+    border-color: #afafaf !important;
+}
+
+/* 入力フォームの入力前の例の文字 */
+.scrs-text-form_placeholder {
+    color: #72777a;
+}
+
+/* 回数券残数の背景 */
+.scrs-bg-ticket {
+    background-color: #ead3b8 !important;
+}
+
+/* その他（空きわずか） */
+.scrs-text-available {
+    color: #ac2524 !important;
+}
+
+.scrs-text-few-left {
+    color: #d98d46 !important;
+}
+
+.scrs-text-fully-occupied {
+    color: black !important;
+}
+
+/* 角丸目 */
+.scrs-radius-8px {
+    border-radius: 8px;
+}
+
+.scrs-radius-12px {
+    border-radius: 12px;
+}
+
+.scrs-radius-16px {
+    border-radius: 16px;
+}
+
+/* 箇条書き：パターン１ */
+.scrs-item-group {
+}
+
+.scrs-item-group > .label {
+    font-size: 140%;
+    font-weight: bold;
+}
+
+.scrs-item-group > .item {
+    font-size: 130%;
+}
+
+/* シート：通常 */
+.scrs-sheet-normal {
+    background-color: white !important;
+    border-radius: 8px;
+}
+
+/* シート：チケット */
+.scrs-sheet-ticket {
+    background-color: #ead3b8 !important;
+    border-radius: 8px;
+}
+
+/* ボタン */
+.scrs-main-button {
+    color: white !important;
+    background-color: #ac2524 !important;
+    border-style: none;
+    box-shadow: none;
+    border-radius: 8px;
+}
+
+.scrs-sub-button {
+    color: #ac2524 !important;
+    background-color: white !important;
+    border-color: #ac2524 !important;
+    border-width: 1px;
+    border-style: solid;
+    box-shadow: none;
+    border-radius: 8px;
+}

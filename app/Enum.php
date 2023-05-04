@@ -48,6 +48,14 @@ abstract class Enum
         return array_values(array_map(function($value) { return $value->id; }, $values));
     }
 
+    final public static function ids($separater=',', array $excludes=[]) {
+        $enum = self::build(get_called_class());
+        $values = array_filter($enum, function($value, $name) use($excludes) {
+            return (!in_array($name, $excludes) && !in_array($value, $excludes));
+        }, ARRAY_FILTER_USE_BOTH);
+        return implode($separater, array_values(array_map(function($value) { return $value->id; }, $values)));
+    }
+
     final public static function name_list(array $excludes=[]) {
         $enum = self::build(get_called_class());
         $values = array_filter($enum, function($value, $name) use($excludes) {
@@ -89,14 +97,6 @@ abstract class Enum
     public function __toString() {
         return $this->name;
     }
-}
-
-/**
- * 列挙型：フラグ
- */
-final class Flags extends Enum {
-    const OFF = 0;
-    const ON = 1;
 }
 
 /**
@@ -154,4 +154,45 @@ final class Weekdays extends Enum {
             return $default;
         }
     }
+}
+
+/**
+ * 列挙型：性別
+ */
+final class Genders extends Enum {
+    const MALE = 1;
+    const FEMALE = 2;
+
+    static $options = [
+        'MALE' => [ 'ja'=>'男性' ],
+        'FEMALE' => [ 'ja'=>'女性' ],
+    ];
+}
+
+/**
+ * 列挙型：予約種別
+ */
+final class ReserveTypes extends Enum {
+    const LUNCHBOX = 1;
+    const VISIT_SOCCER = 2;
+    const VISIT_NO_SOCCER = 3;
+
+    static $options = [
+        'LUNCHBOX' => [ 'ja'=>'お弁当' ],
+        'VISIT_SOCCER' => [ 'ja'=>'来店(サッカー部)' ],
+        'VISIT_NO_SOCCER' => [ 'ja'=>'来店(サッカー部以外)' ],
+    ];
+}
+
+/**
+ * 列挙型：予約種別
+ */
+final class AffiliationDetailTypes extends Enum {
+    const INTERNAL = 1;
+    const EXTERNAL = 2;
+
+    static $options = [
+        'INTERNAL' => [ 'ja'=>'学部内' ],
+        'EXTERNAL' => [ 'ja'=>'学部外' ],
+    ];
 }

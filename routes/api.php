@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\AttestController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,10 +15,14 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get('/hello', function (Request $request) {
-    return [ 'message' => 'Hello world !!' ];
-});
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+// asset()やurl()がhttpsで生成される
+URL::forceScheme('https');
+
+// Route::prefix('/attest')->group(function() {
+//     Route::get('/login/{token?}', [ AttestController::class, 'login' ]);
+//     Route::get('/line_callback', [ AttestController::class, 'line_callback' ]);
+// });
