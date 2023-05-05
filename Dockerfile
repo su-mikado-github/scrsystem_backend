@@ -4,6 +4,7 @@ RUN apt-get update
 RUN apt-get -y install libzip-dev
 RUN apt-get -y install nodejs
 RUN apt-get -y install npm
+RUN apt-get -y install unzip
 RUN docker-php-ext-install zip
 
 COPY --from=composer:2.3.5 /usr/bin/composer /usr/bin/composer
