@@ -24,3 +24,4 @@ RUN chmod +x ./docker-entrypoint.sh
 CMD ["./docker-entrypoint.sh"]
 
 WORKDIR /var/www/laravel
+
