@@ -1,10 +1,10 @@
 FROM php:7.3-fpm
 
-RUN apt-get update
-RUN apt-get -y install libzip-dev
-RUN apt-get -y install nodejs
-RUN apt-get -y install npm
-RUN apt-get -y install unzip
+RUN apt update
+RUN apt -y install libzip-dev
+RUN apt -y install nodejs
+RUN apt -y install npm
+RUN apt -y install unzip
 RUN docker-php-ext-install zip
 
 COPY --from=composer:2.3.5 /usr/bin/composer /usr/bin/composer
