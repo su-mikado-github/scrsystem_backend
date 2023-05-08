@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 use App\BaseMigration;
 
+use App\DishTypes;
+
 class CreateDishs extends BaseMigration {
     /**
      * Run the migrations.
@@ -17,9 +19,7 @@ class CreateDishs extends BaseMigration {
         Schema::create('dishs', function (Blueprint $table) {
             //
             $table->id()->comment('料理ID');
-            $table->text('name')->comment('料理名');
-            $table->text('description')->comment('説明文');
-            $table->text('document_path')->nullable()->comment('資料パス');
+            $table->enum('dish_type', DishTypes::id_list())->comment('料理種類');
             $this->build_common_columns($table);
         });
     }

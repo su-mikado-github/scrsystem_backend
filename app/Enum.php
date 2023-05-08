@@ -196,3 +196,18 @@ final class AffiliationDetailTypes extends Enum {
         'EXTERNAL' => [ 'ja'=>'学部外' ],
     ];
 }
+
+/**
+ * 列挙型：料理種類
+ */
+final class DishTypes extends Enum {
+    const CAFETERIA = 1;
+    const LUNCHBOX = 2;
+    const GAME_LUNCHBOX = 3;
+
+    static $options = [
+        'CAFETERIA' => [ 'ja'=>'食堂メニュー' ],
+        'LUNCHBOX' => [ 'ja'=>'お弁当(通常)' ],
+        'GAME_LUNCHBOX' => [ 'ja'=>'お弁当(試合)' ],
+    ];
+}

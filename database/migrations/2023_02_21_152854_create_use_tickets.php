@@ -19,7 +19,7 @@ class CreateUseTickets extends BaseMigration {
             $table->id()->comment('利用回数券ID');
             $table->bigInteger('reserve_id')->comment('予約ID');
             $table->bigInteger('user_id')->comment('利用者ID');
-            $table->bigInteger('buy_ticket_id')->comment('購入回数券ID');
+            $table->bigInteger('buy_ticket_id')->comment('使用購入回数券ID');
             $table->dateTime('use_dt')->comment('利用日時');
             $this->build_common_columns($table);
         });

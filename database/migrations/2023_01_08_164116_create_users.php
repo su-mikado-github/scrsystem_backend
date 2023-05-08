@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Hash;
 
 use App\BaseMigration;
 
+use App\Genders;
+
 use App\Models\User;
 
 class CreateUsers extends BaseMigration
@@ -24,15 +26,17 @@ class CreateUsers extends BaseMigration
             $table->text('last_name_kana')->nullable()->comment('姓かな');
             $table->text('first_name_kana')->nullable()->comment('名かな');
             $table->date('birthday')->nullable()->comment('誕生日');
-            $table->enum('sex', [ 1, 2 ])->nullable()->comment('性別');
+            $table->enum('sex', Genders::id_list())->nullable()->comment('性別');
             $table->string('email', 256)->nullable()->comment('メールアドレス');
             $table->string('telephone_no', 16)->nullable()->comment('電話番号');
             $table->bigInteger('school_year_id')->nullable()->comment('学年ID');
             $table->bigInteger('affiliation_id')->nullable()->comment('所属ID');
+            $table->bigInteger('affiliation_detail_id')->nullable()->comment('所属詳細ID');
             $table->bigInteger('line_user_id')->nullable()->comment('LINEユーザーID');
-            $table->boolean('is_admin')->comment('システム管理者フラグ');
+            $table->boolean('is_admin')->default(false)->comment('システム管理者フラグ');
             $table->string('admin_password', 256)->comment('システム管理者パスワード')->default('*');
             $table->datetime('last_login_dt')->nullable()->comment('最終ログイン日時');
+            $table->boolean('is_initial_setting')->default(false)->comment('初期設定済フラグ');
             $this->build_common_columns($table);
         });
 
@@ -47,8 +51,11 @@ class CreateUsers extends BaseMigration
             'telephone_no' => '00-0000-0000',
             'school_year_id' => 0,
             'affiliation_id' => 0,
+            'affiliation_detail_id' => 0,
             'is_admin' => true,
             'admin_password' => Hash::make('password'),
+//            'last_login_dt' => null,
+//            'is_initial_setting' => false,
         ]);
     }
 
