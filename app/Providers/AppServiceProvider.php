@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Validator;
@@ -22,6 +25,12 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\LineApi::class, function($app) {
             return new \App\LineApi();
         });
+
+        if (config('app.env') !== 'production') {
+            DB::listen(function ($query) {
+                logger()->info(sprintf("time=>%ds sql=>%s bindings=>%s", $query->time, $query->sql, var_export($query->bindings, true)));
+            });
+        }
     }
 
     /**
@@ -64,5 +73,8 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('route', function($expression) {
             return "<?=route({$expression}) ?>";
         });
+
+        //コンポーザー
+        View::composer(['pages.*'], 'App\View\Composers\UserComposer');
     }
 }

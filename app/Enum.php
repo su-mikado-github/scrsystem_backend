@@ -40,6 +40,19 @@ abstract class Enum
         }, ARRAY_FILTER_USE_BOTH);
     }
 
+    final public static function to_json(array $excludes=[]) {
+        $called_class = get_called_class();
+        $enum = self::build($called_class);
+        $filteredEnum = array_filter($enum, function($value, $name) use($excludes) {
+            return (!in_array($name, $excludes) && !in_array($value, $excludes));
+        }, ARRAY_FILTER_USE_BOTH);
+        $result = [];
+        foreach ($filteredEnum as $item) {
+            $result[$item->name] = [ 'id' => $item->id, 'option' => $called_class::$options[$item->name] ?? [] ];
+        }
+        return $result;
+    }
+
     final public static function id_list(array $excludes=[]) {
         $enum = self::build(get_called_class());
         $values = array_filter($enum, function($value, $name) use($excludes) {
@@ -97,6 +110,20 @@ abstract class Enum
     public function __toString() {
         return $this->name;
     }
+}
+
+/**
+ * 列挙型：フラグ
+ */
+final class Flags extends Enum {
+    const OFF = 0;
+    const ON = 1;
+
+    static $options = [
+        'OFF' => [ 'ja'=>'OFF' ],
+        'ON' => [ 'ja'=>'ON' ],
+    ];
+
 }
 
 /**

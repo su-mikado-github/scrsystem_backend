@@ -5,41 +5,43 @@ import { SCRSPage } from "/scrs-pages.js";
 import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
 
 class ReserveLunchboxPage extends SCRSPage {
-    #previousWeek = null;
-    #nextWeek = null;
+    #toggles = null;
 
     #reservedDialog = null;
 
     constructor() {
         super();
         //
-        this.#previousWeek = this.action("previousWeek")?.handle("click");
-        this.#nextWeek = this.action("nextWeek")?.handle("click");
-
-        this.#reservedDialog = new SCRSConfirmDialog(this, "xxxx", null, [ "show", "hide" ]);
+        this.#toggles = this.actions("toggle").map((f)=>f.handle("click"));
+        this.#reservedDialog = new SCRSConfirmDialog(this, "reserveConfirm", null, [ "show", "hide", "ok" ]);
     }
 
-    xxxx_show(e) {
+    reserveConfirm_show(e) {
 //        e.preventDefault();
     }
 
-    xxxx_hide(e) {
+    reserveConfirm_hide(e) {
 
     }
 
-    previousWeek_click(e) {
-        e.preventDefault();
-        e.stopPropagation();
+    reserveConfirm_ok(e) {
+        this.#reservedDialog.close();
     }
 
-    nextWeek_click(e) {
-        e.preventDefault();
-        e.stopPropagation();
+    toggle_click(e) {
+        const toggle = this.proxy(e.target, "toggle");
+        toggle.css(!toggle.hasClass("scrs-selected"), "scrs-selected");
     }
 }
 
 SCRSPage.startup(()=>new ReserveLunchboxPage());
 </x-script>
+
+<x-style>
+td:has(.scrs-selected) {
+    background-color: #ff95ff !important;
+}
+</x-style>
 
 @section('page.title')
 ご予約内容
@@ -70,9 +72,9 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
 {{-- 予約状況カレンダー（ここから） --}}
 {{-- カレンダーコントロール --}}
 <div class="row g-0 my-3">
-    <div class="col-3 text-end fs-3"><a href="#" data-action="previousWeek"><i class="fa-solid fa-angles-left"></i></a></div>
-    <div class="col-6 text-center fs-3">99/99～99/99</div>
-    <div class="col-3 fs-3"><a href="#" data-action="nextWeek"><i class="fa-solid fa-angles-right"></i></a></div>
+    <div class="col-3 text-end fs-3"><a href="/reserve/lunchbox/{!! $start_date->copy()->addDay(-7)->format('Y-m-d') !!}" data-action="previousWeek"><i class="fa-solid fa-angles-left"></i></a></div>
+    <div class="col-6 text-center fs-3">{!! $start_date->format('m/d') !!}～{!! $end_date->format('m/d') !!}</div>
+    <div class="col-3 fs-3"><a href="/reserve/lunchbox/{!! $start_date->copy()->addDay(7)->format('Y-m-d') !!}" data-action="nextWeek"><i class="fa-solid fa-angles-right"></i></a></div>
 </div>
 
 {{-- 曜日 --}}
@@ -116,96 +118,21 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
 <thead>
 <tr>
     <th class="bg-white text-center align-middle py-1">&nbsp;</th>
-    <th class="bg-white text-center align-middle py-1"><small>99/99</small></th>
-    <th class="bg-white text-center align-middle py-1"><small>99/99</small></th>
-    <th class="bg-white text-center align-middle py-1"><small>99/99</small></th>
-    <th class="bg-white text-center align-middle py-1"><small>99/99</small></th>
-    <th class="bg-white text-center align-middle py-1"><small>99/99</small></th>
-    <th class="bg-white text-center align-middle py-1"><small>99/99</small></th>
-    <th class="bg-white text-center align-middle py-1"><small>99/99</small></th>
+    @foreach($dates as $date)
+    <th class="bg-white text-center align-middle py-1"><small>{!! $date->date->format('m/d') !!}</small></th>
+    @endforeach
 </tr>
 </thead>
 <tbody>
+@foreach($time_schedules as $time_schedule)
+@eval(list($hour, $minute, $second) = explode(':', $time_schedule->time))
 <tr>
-    <td class="bg-white text-center align-middle py-1">99:99</td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
+    <td class="bg-white text-center align-middle py-1">{{ sprintf('%02d:%02d', $hour, $minute) }}</td>
+    @foreach($dates as $date)
+    <td class="bg-white text-center align-middle py-1"><span data-action="toggle" data-time_schedule_id="{!! $time_schedule->id !!}" data-date="{!! $date->date->format('Y-m-d') !!}" class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
+    @endforeach
 </tr>
-<tr>
-    <td class="bg-white text-center align-middle py-1">99:99</td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-</tr>
-<tr>
-    <td class="bg-white text-center align-middle py-1">99:99</td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-</tr>
-<tr>
-    <td class="bg-white text-center align-middle py-1">99:99</td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-</tr>
-<tr>
-    <td class="bg-white text-center align-middle py-1">99:99</td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-</tr>
-<tr>
-    <td class="bg-white text-center align-middle py-1">99:99</td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-</tr>
-<tr>
-    <td class="bg-white text-center align-middle py-1">99:99</td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-</tr>
-<tr>
-    <td class="bg-white text-center align-middle py-1">99:99</td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    <td class="bg-white text-center align-middle py-1"><span class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-</tr>
+@endforeach
 </tbody>
 </table>
 {{-- 予約状況カレンダー（ここまで） --}}
@@ -213,7 +140,7 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
 <br>
 
 <div class="d-flex justify-content-center py-2">
-    <button data-action="reserve" type="button" class="btn scrs-bg-main-button col-8"  data-bs-toggle="modal" data-bs-target="#xxxx">予約する</button>
+    <button data-action="reserve" type="button" class="btn scrs-bg-main-button col-8" data-bs-toggle="modal" data-bs-target="#reserveConfirm">予約する</button>
 </div>
 
 <div class="d-flex justify-content-center py-2">
@@ -222,7 +149,7 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
 
 @endsection
 
-<x-confirm-dialog id="xxxx" type="reserved">
+<x-confirm-dialog id="reserveConfirm" type="reserved">
     <x-slot name="title">確認</x-slot>
     <h3 data-name="message" class="text-center mb-3">1月8日(土)　09:50～</h3>
     <p data-name="description" class="text-center">※混雑時はお待ちいただく場合がございます</p>

@@ -6,6 +6,7 @@ RUN apt -y install nodejs
 RUN apt -y install npm
 RUN apt -y install unzip
 RUN docker-php-ext-install zip
+RUN pecl install xdebug-3.1.6 && docker-php-ext-enable xdebug
 
 COPY --from=composer:2.3.5 /usr/bin/composer /usr/bin/composer
 COPY php.ini /etc/php/8.1/cli/conf.d/99-etc.ini

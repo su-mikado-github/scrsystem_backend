@@ -30,9 +30,6 @@ export class SCRSPage extends SCRSComponent {
         if (params && typeof(params) === "object") {
             query = new URLSearchParams(params).toString();
         }
-        else {
-            return false;
-        }
 
         return (!query ? path : `${path}?${query}`);
     }
@@ -61,5 +58,51 @@ export class SCRSPage extends SCRSComponent {
 
     reload(isForce=true) {
         location.reload(isForce);
+    }
+
+    submit(method=null, url=null, query=null) {
+        const form = document.querySelector("body > main > form");
+        let _method = form.querySelector("input[type='hidden'][name='_method']");
+        if (_method) {
+            form.removeChild(_method);
+        }
+        if (method) {
+            form.method = method;
+        }
+        if (url) {
+            const action = this.url(url, query);
+            if (action) {
+                form.action = action;
+            }
+        }
+        form.submit();
+    }
+
+    post(url=null, query=null) {
+        return this.submit("POST", url, query);
+    }
+
+    get(url=null, query=null) {
+        return this.submit("GET", url, query);
+    }
+
+    delete(url=null, query=null) {
+        const form = document.querySelector("body > main > form");
+        let _method = form.querySelector("input[type='hidden'][name='_method']");
+        if (!_method) {
+            _method = document.createElement("input");
+            _method.type = "hidden";
+            _method.name = "_method";
+            form.appendChild(_method);
+        }
+        _method.value = "DELETE";
+
+        if (url) {
+            const action = this.url(url, query);
+            if (action) {
+                form.action = action;
+            }
+        }
+        form.submit();
     }
 }

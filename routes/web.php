@@ -25,27 +25,31 @@ Route::middleware([ 'attest' ])->group(function() {
 
     Route::prefix('/checkin')->group(function() {
         Route::get('/', [ App\Http\Controllers\CheckinController::class, 'index' ])->name('checkin');
+        Route::get('/complete', [ App\Http\Controllers\CheckinController::class, 'complete' ])->name('checkin.complete');
     });
 
     Route::prefix('/reserve')->group(function() {
         Route::get('/', [ App\Http\Controllers\ReserveController::class, 'index' ])->name('reserve');
 
         Route::prefix('/visit')->group(function() {
-            Route::get('/', [ App\Http\Controllers\Reserve\VisitController::class, 'index' ])->name('reserve.visit');
+            Route::get('/{date?}', [ App\Http\Controllers\Reserve\VisitController::class, 'index' ])->name('reserve.visit')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
         });
 
         Route::prefix('/lunchbox')->group(function() {
-            Route::get('/', [ App\Http\Controllers\Reserve\LunchboxController::class, 'index' ])->name('reserve.lunchbox');
+            Route::get('/{date?}', [ App\Http\Controllers\Reserve\LunchboxController::class, 'index' ])->name('reserve.lunchbox')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
         });
 
         Route::prefix('/change')->group(function() {
             Route::get('/', [ App\Http\Controllers\Reserve\ChangeController::class, 'index' ])->name('reserve.change');
+            Route::post('/{reserve_id}', [ App\Http\Controllers\Reserve\ChangeController::class, 'post' ])->where('reserve_id', '^[0-9]+$');
+            Route::delete('/{reserve_id}', [ App\Http\Controllers\Reserve\ChangeController::class, 'delete' ])->where('reserve_id', '^[0-9]+$');
         });
     });
 
     Route::prefix('/mypage')->group(function() {
+        logger()->debug(request()->method());
         Route::get('/', [ App\Http\Controllers\MypageController::class, 'index' ])->name('mypage');
-        Route::put('/', [ App\Http\Controllers\MypageController::class, 'put' ]);
+        Route::post('/', [ App\Http\Controllers\MypageController::class, 'post' ]);
     });
 
     Route::prefix('/dish_menu')->group(function() {
@@ -54,6 +58,7 @@ Route::middleware([ 'attest' ])->group(function() {
 
     Route::prefix('/buy_ticket')->group(function() {
         Route::get('/', [ App\Http\Controllers\BuyTicketController::class, 'index' ])->name('buy_ticket');
+        Route::post('/{ticket_id}', [ App\Http\Controllers\BuyTicketController::class, 'post' ])->where('ticket_id', '^[0-9]+$');
     });
 });
 

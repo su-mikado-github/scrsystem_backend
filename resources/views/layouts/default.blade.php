@@ -11,6 +11,15 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="/js/app.js" type="text/javascript"></script>
 <script src="/default.js" type="text/javascript"></script>
+{{-- Enum定義 --}}
+<script type="text/javascript">
+const Flags = new Enum(@json(\App\Flags::to_json()));
+const Weekdays = new Enum(@json(\App\Weekdays::to_json()));
+const Genders = new Enum(@json(\App\Genders::to_json()));
+const ReserveTypes = new Enum(@json(\App\ReserveTypes::to_json()));
+const AffiliationDetailTypes = new Enum(@json(\App\AffiliationDetailTypes::to_json()));
+const DishTypes = new Enum(@json(\App\DishTypes::to_json()));
+</script>
 @stack('scripts')
 <title>@yield('title', ($title ?? '[CLUBHOUSE提供] 食堂予約システム（仮）'))</title>
 </head>
@@ -19,7 +28,7 @@
 <h3 class="scrs-bg-main text-center p-1">@yield('page.title', '（不明）')</h3>
 @yield('header')
 </header>
-<main class="p-3 mb-3">
+<main class="p-3 mb-3"><form method="POST">@csrf
 @if(session('success'))
 <div class="alert alert-success">{{ session('success') }}</div>
 @endif
@@ -27,6 +36,7 @@
 <div class="alert alert-warning">{{ session('warning') }}</div>
 @endif
 @yield('main')
+</form>
 </main>
 <footer class="scrs-bg-footer text-center position-sticky w-100 py-1" style="bottom:0;left:0;">
 @yield('footer')

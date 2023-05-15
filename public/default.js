@@ -1,3 +1,12 @@
+class Enum {
+    constructor(source) {
+        Object.setPrototypeOf(this, source);
+        // for (let name in source) {
+        //     this[name] = source[name];
+        // }
+    }
+}
+
 class SCRSElementProxyHandler {
     #owner = null;
     #targetName = null;
@@ -39,7 +48,33 @@ class SCRSElementProxyHandler {
                 target.addEventListener(eventName, (e)=>handlerMethod.apply(this.#owner, [ e ]));
             }
         }
-        return this;
+    }
+
+    #css(target, flag, classNames) {
+        if (target) {
+            if (flag) {
+                target.classList.add.apply(target.classList, classNames);
+            }
+            else {
+                target.classList.remove.apply(target.classList, classNames);
+            }
+        }
+    }
+
+    #addClass(target, classNames) {
+        if (target) {
+            target.classList.add.apply(target.classList, classNames);
+        }
+    }
+
+    #removeClass(target, classNames) {
+        if (target) {
+            target.classList.remove.apply(target.classList, classNames);
+        }
+    }
+
+    #hasClass(target, className) {
+        return (!target ? false : target.classList.contains(className));
     }
 
     constructor(owner, targetName) {
@@ -57,7 +92,19 @@ class SCRSElementProxyHandler {
 
     get(target, name, receiver) {
         if (name === "handle") {
-            return (eventName, handler=null)=>this.#handle(target, eventName, handler);
+            return (eventName, handler=null)=>{ this.#handle(target, eventName, handler); return receiver; }
+        }
+        else if (name === "css") {
+            return (flag, ...classNames)=>{ this.#css(target, flag, classNames); return receiver; }
+        }
+        else if (name === "addClass") {
+            return (...classNames)=>{ this.#addClass(target, classNames); return receiver; }
+        }
+        else if (name === "removeClass") {
+            return (...classNames)=>{ this.#removeClass(target, classNames); return receiver; }
+        }
+        else if (name === "hasClass") {
+            return (className)=>this.#hasClass(target, className);
         }
         else if (this[name] ?? null) {
             return this[name];
@@ -112,13 +159,49 @@ class SCRSComponent {
         return this.target.dispatchEvent(e);
     }
 
+    find(id) {
+        const target = this.target.querySelector(`#${id}`);
+        return (!target ? null : new Proxy(target, new SCRSElementProxyHandler(this, componentName)));
+    }
+
+    findNoProxy(id) {
+        return this.target.querySelector(`#${id}`);
+    }
+
+    fields(componentName, propertyName="field") {
+        const targets = this.target.querySelectorAll(`[data-${propertyName}='${componentName}']`);
+        const result = [];
+        for (let target of targets) {
+            result.push(new Proxy(target, new SCRSElementProxyHandler(this, componentName)));
+        }
+        return result;
+    }
+
     field(componentName, propertyName="field") {
         const target = this.target.querySelector(`[data-${propertyName}='${componentName}']`);
         return (!target ? null : new Proxy(target, new SCRSElementProxyHandler(this, componentName)));
     }
 
+    fieldsNoProxy(componentName, propertyName="field") {
+        const targets = this.target.querySelectorAll(`[data-${propertyName}='${componentName}']`);
+        const result = [];
+        for (let target of targets) {
+            result.push(target);
+        }
+        return result;
+    }
+
     fieldNoProxy(componentName, propertyName="field") {
         return this.target.querySelector(`[data-${propertyName}='${componentName}']`);
+    }
+
+    actions(componentName, propertyName="action") {
+        const targets = this.target.querySelectorAll(`[data-${propertyName}='${componentName}']`);
+        const result = [];
+        for (let target of targets) {
+            result.push(new Proxy(target, new SCRSElementProxyHandler(this, componentName)));
+        }
+        return result;
     }
 
     action(componentName, propertyName="action") {
@@ -126,7 +209,20 @@ class SCRSComponent {
         return (!target ? null : new Proxy(target, new SCRSElementProxyHandler(this, componentName)));
     }
 
+    actionsNoProxy(componentName, propertyName="action") {
+        const targets = this.target.querySelectorAll(`[data-${propertyName}='${componentName}']`);
+        const result = [];
+        for (let target of targets) {
+            result.push(target);
+        }
+        return result;
+    }
+
     actionNoProxy(componentName, propertyName="action") {
         return this.target.querySelector(`[data-${propertyName}='${componentName}']`);
+    }
+
+    proxy(target, componentName) {
+        return (!target ? null : new Proxy(target, new SCRSElementProxyHandler(this, componentName)));
     }
 }

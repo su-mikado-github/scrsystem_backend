@@ -20,6 +20,7 @@ class CreateBuyTickets extends BaseMigration {
             $table->bigInteger('user_id')->comment('購入者ID');
             $table->dateTime('buy_dt')->comment('購入日時');
             $table->bigInteger('ticket_id')->comment('回数券ID');
+            $table->integer('ticket_count')->comment('購入枚数');
             $this->build_common_columns($table);
         });
     }

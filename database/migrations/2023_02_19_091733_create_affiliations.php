@@ -17,7 +17,7 @@ class CreateAffiliations extends BaseMigration {
         Schema::create('affiliations', function (Blueprint $table) {
             $table->id()->comment('所属ID');
             $table->text('name')->nullable()->comment('名称');
-            $table->integer('display_order')->comment('表示順');
+            $table->integer('display_order')->default(1)->comment('表示順');
             $table->integer('detail_type')->comment('詳細分類');
             $this->build_common_columns($table);
         });

@@ -149,59 +149,740 @@ SCRSPage.startup(()=>new DishMenuPage());
 
 <br>
 
-<div class="px-1 py-4">
-    <h4>鶏モモ甘酢煮</h4>
-    <div class="scrs-sheet-normal px-1 py-2 d-flex justify-content-center mb-3">
-        <dl class="row m-0">
-            <dt class="col-4 px-1">エネルギー(kcal)</dt>
-            <dd class="col-2 text-end px-1">377.0</dd>
-            <dt class="col-4 px-1">&nbsp;</dt>
-            <dd class="col-2 text-end px-1">&nbsp;</dd>
-            <dt class="col-4 px-1">炭水化物(g)</dt>
-            <dd class="col-2 text-end px-1">13.4</dd>
-            <dt class="col-4 px-1">たんぱく質(g)</dt>
-            <dd class="col-2 text-end px-1">26.0</dd>
-            <dt class="col-4 px-1">脂質(g)</dt>
-            <dd class="col-2 text-end px-1">21.3</dd>
-            <dt class="col-4 px-1">食物繊維(g)</dt>
-            <dd class="col-2 text-end px-1">0.0</dd>
-        </dl>
+{{-- 食堂メニュー --}}
+<div class="card">
+    <div class="card-header p-1">
+        <h5 class="mb-0">食堂メニュー</h5>
     </div>
+    <div class="card-body p-1">
+        <h6 class="mb-0">鶏モモ甘酢煮</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">377.0<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">13.4<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">26.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">21.3<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">0.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
 
-    <h4>肉じゃが</h4>
-    <div class="scrs-sheet-normal px-5 py-2 d-flex justify-content-center mb-3">
-        <dl class="row m-0">
-            <dt class="col-7">エネルギー(kcal)</dt>
-            <dd class="col-5 text-end">58.5</dd>
-            <dt class="col-7">炭水化物(g)</dt>
-            <dd class="col-5 text-end">5.2</dd>
-            <dt class="col-7">たんぱく質(g)</dt>
-            <dd class="col-5 text-end">2.0</dd>
-            <dt class="col-7">脂質(g)</dt>
-            <dd class="col-5 text-end">3.6</dd>
-            <dt class="col-7">食物繊維(g)</dt>
-            <dd class="col-5 text-end">1.9</dd>
-        </dl>
+        <h6 class="mb-0">肉じゃが</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">58.5<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">5.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">2.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">3.6<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">1.9<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">春雨サラダ</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">69.8<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">7.7<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">2.8<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">3.6<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">0.6<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">ぬたみそ</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">34.4<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">7.7<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">0.8<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">0.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">0.8<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">味噌汁</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">44.5<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">4.0<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">6.3<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">3.8<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">2.2<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">白米</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">339.0<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">79.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">5.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">0.9<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">3.3<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">サラダ</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">5.9<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">5.9<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">2.6<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">1.0<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">2.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">糠付け</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">3.2<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">3.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">0.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">0.1<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">2.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-transparent p-1">
+        <h6 class="mb-0">total</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">932.2<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">126.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">46.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">32.6<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">13.3<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
     </div>
 </div>
 
+<br>
 
-{{-- <div class="px-5 py-4 scrs-sheet-ticket">
-    <h3 class="text-center mb-2">回数券残数</h3>
-    <div class="h2 text-center">
-        <span class="text-nowrap">
-            <span class="font-weight-normal">残り</span>
-            <span class="px-2" style="font-size:200%;">00</span>
-            <span class="font-weight-normal">回</span>
-        </span>
+{{-- お弁当 --}}
+<div class="card">
+    <div class="card-header p-1">
+        <h5 class="mb-0">お弁当</h5>
     </div>
-</div> --}}
+    <div class="card-body p-1">
+        <h6 class="mb-0">鶏モモ甘酢煮</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">377.0<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">13.4<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">26.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">21.3<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">0.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
 
-{{-- <div class="d-flex justify-content-center">
-    <button type="button" data-action="checkin" class="btn btn-lg scrs-main-button col-10 py-2">チェックインする</button>
-</div> --}}
+        <h6 class="mb-0">肉じゃが</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">58.5<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">5.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">2.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">3.6<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">1.9<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">春雨サラダ</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">69.8<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">7.7<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">2.8<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">3.6<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">0.6<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">ぬたみそ</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">34.4<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">7.7<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">0.8<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">0.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">0.8<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">味噌汁</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">44.5<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">4.0<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">6.3<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">3.8<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">2.2<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">白米</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">339.0<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">79.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">5.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">0.9<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">3.3<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">サラダ</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">5.9<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">5.9<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">2.6<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">1.0<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">2.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">糠付け</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">3.2<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">3.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">0.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">0.1<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">2.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-transparent p-1">
+        <h6 class="mb-0">total</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">932.2<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">126.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">46.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">32.6<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">13.3<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<br>
+
+{{-- お弁当（試合） --}}
+<div class="card">
+    <div class="card-header p-1">
+        <h5 class="mb-0">お弁当（試合）</h5>
+    </div>
+    <div class="card-body p-1">
+        <h6 class="mb-0">鶏モモ甘酢煮</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">377.0<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">13.4<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">26.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">21.3<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">0.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">肉じゃが</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">58.5<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">5.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">2.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">3.6<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">1.9<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">春雨サラダ</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">69.8<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">7.7<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">2.8<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">3.6<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">0.6<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">ぬたみそ</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">34.4<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">7.7<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">0.8<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">0.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">0.8<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">味噌汁</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">44.5<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">4.0<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">6.3<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">3.8<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">2.2<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">白米</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">339.0<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">79.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">5.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">0.9<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">3.3<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">サラダ</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">5.9<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">5.9<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">2.6<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">1.0<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">2.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <h6 class="mb-0">糠付け</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">3.2<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">3.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">0.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">0.1<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">2.0<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-transparent p-1">
+        <h6 class="mb-0">total</h6>
+        <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+            <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+            <tbody>
+            <tr>
+                <th class="">エネルギー</th>
+                <td class="text-nowrap text-end">932.2<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                <th class=""></th>
+                <td class="text-nowrap text-end"></td>
+            </tr>
+            <tr>
+                <th class="">炭水化物</th>
+                <td class="text-nowrap text-end">126.2<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">たんぱく質</th>
+                <td class="text-nowrap text-end">46.4<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            <tr>
+                <th class="">脂質</th>
+                <td class="text-nowrap text-end">32.6<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                <th class="">食物繊維</th>
+                <td class="text-nowrap text-end">13.3<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
 @endsection
-
-{{-- <x-qr-code-reader-dialog id="qrCodeReader">
-    <x-slot name="title">&nbsp;</x-slot>
-</x-qr-code-reader-dialog> --}}

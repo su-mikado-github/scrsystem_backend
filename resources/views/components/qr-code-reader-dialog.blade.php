@@ -1,6 +1,6 @@
 @extends('layouts.dialogs.default')
 
-@section('dialog-body')
+@section($id . 'dialog-body')
 <br>
 <canvas data-action="camera" data-field="camera" class="w-100" hidden></canvas>
 <div class="scrs-sheet-normal">
@@ -8,7 +8,7 @@
 </div>
 @endsection
 
-@section('dialog-footer')
+@section($id . 'dialog-footer')
 <div class="d-flex justify-content-center">
     <button type="button" class="col-10 btn scrs-bg-sub-button scrs-border-main" data-action="cancel" data-bs-dismiss="modal">{!! $cancel_button ?? 'キャンセル' !!}</button>
 </div>

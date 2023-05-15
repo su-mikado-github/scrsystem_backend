@@ -24,8 +24,8 @@ class CheckinPage extends SCRSPage {
 
     qrCodeReader_read(e) {
         console.log(e.detail);
-        alert(e.detail.code);
         this.#qrCodeReaderDialog.close();
+        this.forward("/checkin/complete");
     }
 }
 
@@ -39,12 +39,12 @@ SCRSPage.startup(()=>new CheckinPage());
 @section('main')
 <h2>
     <ruby>
-      <rb>山田</rb>
-      <rt>やまだ</rt>
+        <rb>{{ $user->last_name }}</rb>
+        <rt>{{ $user->last_name_kana }}</rt>
     </ruby>
     <ruby>
-      <rb>花子</rb>
-      <rt>はなこ</rt>
+      <rb>{{ $user->first_name }}</rb>
+      <rt>{{ $user->first_name_kana }}</rt>
     </ruby>
     様
 </h2>
@@ -74,7 +74,7 @@ SCRSPage.startup(()=>new CheckinPage());
     <div class="h2 text-center">
         <span class="text-nowrap">
             <span class="font-weight-normal">残り</span>
-            <span class="px-2" style="font-size:200%;">00</span>
+            <span class="px-2" style="font-size:200%;">{!! $user->last_ticket_count ?? 0 !!}</span>
             <span class="font-weight-normal">回</span>
         </span>
     </div>

@@ -134,7 +134,9 @@ return [
     'hiragana' => '「:attribute」は平仮名で入力してください。',
     'month' => '「:attribute」には月（1～12）を入力してください。',
     'day' => '「:attribute」には日（1～:max_day）を入力してください。',
-    'past_day' => '「:attribute」には未来日は指定できません。',
+    'past_day' => '「:attribute」には本日を含む未来日は指定できません。',
+    'required_select' => '「:attribute」の選択が必要です。',
+    'telephone_no' => '「:attribute」が正しくありません。',
 
     /*
     |--------------------------------------------------------------------------
@@ -165,16 +167,21 @@ return [
     */
 
     'attributes' => [
-        'first_name' => '姓',
-        'last_name' => '名',
-        'first_name_kana' => 'せい',
-        'last_name_kana' => 'めい',
+        'first_name' => '名',
+        'last_name' => '姓',
+        'first_name_kana' => 'めい',
+        'last_name_kana' => 'せい',
         'sex' => '性別',
         'birthday_year' => '誕生日（年）',
         'birthday_month' => '誕生日（月）',
         'birthday_day' => '誕生日（日）',
         'birthday' => '誕生日',
         'affiliation' => '所属',
+        'school_year' => '学年',
+        'type1_affiliation_detail' => '所属詳細（学部）',
+        'type2_affiliation_detail' => '所属詳細（その他）',
+        'telephone_no' => '電話番号',
+        'email' => 'メールアドレス',
     ],
 
 ];
