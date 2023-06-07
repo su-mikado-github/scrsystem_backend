@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Hash;
 
 use App\BaseMigration;
 
+use App\Flags;
 use App\Genders;
 
 use App\Models\User;
@@ -52,10 +53,9 @@ class CreateUsers extends BaseMigration
             'school_year_id' => 0,
             'affiliation_id' => 0,
             'affiliation_detail_id' => 0,
-            'is_admin' => true,
+            'is_admin' => Flags::ON,
             'admin_password' => Hash::make('password'),
-//            'last_login_dt' => null,
-//            'is_initial_setting' => false,
+            'is_initial_setting' => Flags::ON,
         ]);
     }
 

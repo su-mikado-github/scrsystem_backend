@@ -104,7 +104,7 @@ class MypageController extends Controller {
             'telephone_no.regex' => __('validation.telephone_no', [ 'attribute' => __('validation.attributes.telephone_no') ]),
         ];
 
-        $this->try_validate($request, $rules, $messages, function($validator) use($request) {
+        $this->try_validate($request->input(), $rules, $messages, function($validator) use($request) {
             if ($request->filled([ 'birthday_year', 'birthday_month', 'birthday_day' ])) {
                 $birthday = Carbon::createFromDate($request->input('birthday_year'), $request->input('birthday_month'), $request->input('birthday_day'));
                 if ($birthday->gte(today())) {
@@ -137,8 +137,17 @@ class MypageController extends Controller {
         $user->telephone_no = $request->input('telephone_no');
         $user->email = $request->input('email');
         $user->last_login_dt = now();
+        $is_initial_setting = $user->is_initial_setting;
         $user->is_initial_setting = Flags::ON;
         $this->save($user, $user);
+
+        // 初回設定後に必要な画面に遷移する
+        if ($is_initial_setting == Flags::OFF) {
+            $screen_path = optional($user->line_user)->screen_path;
+            if (isset($screen_path)) {
+                return redirect(url("/{$screen_path}"));
+            }
+        }
 
         return redirect()->action([ self::class, 'index' ]);
     }

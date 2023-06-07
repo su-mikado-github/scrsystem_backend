@@ -17,9 +17,13 @@ class BaseMigration extends Migration {
         $table->bigInteger('data_version')->default(0)->comment('データ・バージョン');
     }
 
+    public function insert_row($table_name, array $row) {
+        DB::table($table_name)->insert($row);
+    }
+
     public function insert_rows($table_name, array $rows) {
         collect($rows)->each(function($row) use($table_name) {
-            DB::table($table_name)->insert($row);
+            $this->insert_row($table_name, $row);
         });
     }
 }

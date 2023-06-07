@@ -5,10 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\DishTypes;
+
 class DishMenu extends Model {
     use HasFactory;
 
-    public function dish() {
-        return $this->belongsTo('App\Models\Dish', 'dish_id');
+    public function calendar() {
+        return $this->belongsTo('App\Models\Calendar', 'calendar_id');
+    }
+
+    public function scopeDishTypeBy($query, $dish_type) {
+        return $query->where('dish_type', ($dish_type instanceof DishTypes ? $dish_type->id : $dish_type));
     }
 }

@@ -28,3 +28,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // });
 
 window.jsQR = require('jsqr');
+
+window.dayjs = require('dayjs');
+require('dayjs/locale/ja');
+window.dayjs.locale('ja');
+

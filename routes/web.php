@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\DishTypes;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,6 +23,10 @@ Route::prefix('/line')->group(function() {
     Route::post('/webhook', [ App\Http\Controllers\LineController::class, 'webhook' ]);
 });
 
+Route::prefix('/dining_hall')->group(function() {
+    Route::get('/', [ App\Http\Controllers\DiningHallController::class, 'index' ]);
+});
+
 Route::middleware([ 'attest' ])->group(function() {
 
     Route::prefix('/checkin')->group(function() {
@@ -33,6 +39,7 @@ Route::middleware([ 'attest' ])->group(function() {
 
         Route::prefix('/visit')->group(function() {
             Route::get('/{date?}', [ App\Http\Controllers\Reserve\VisitController::class, 'index' ])->name('reserve.visit')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
+            Route::post('/{date}', [ App\Http\Controllers\Reserve\VisitController::class, 'post' ])->name('reserve.visit')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
         });
 
         Route::prefix('/lunchbox')->group(function() {
@@ -62,17 +69,36 @@ Route::middleware([ 'attest' ])->group(function() {
     });
 });
 
-Route::get('/', function() {
-    return view('pages.index');
+Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(function() {
+
+    Route::prefix('/dish_menu')->group(function() {
+        Route::get('/{dish_type_key?}', [ App\Http\Controllers\Admin\DishMenuController::class, 'index' ])->name('admin.dish_menu')->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
+        Route::post('/{dish_type_key?}/upload', [ App\Http\Controllers\Admin\DishMenuController::class, 'post_upload' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
+        // foreach (DishTypes::values() as $dish_type) {
+        //     Route::get(sprintf('/%s', $dish_type->key), [ App\Http\Controllers\Admin\DishMenuController::class, $dish_type->key ])->name(sprintf('admin.dish_menu.%s', $dish_type->key));
+        // }
+    });
+
+    Route::get('/', [ App\Http\Controllers\AdminController::class, 'index' ])->name('admin');
 });
 
-// Route::any('/callbacks/{type?}', function($type) {
-//     logger()->info('---[ CALLBACK: START ]---');
-//     logger()->info($type);
-//     logger()->info('■SERVER変数');
-//     logger()->debug($_SERVER);
-//     logger()->info('■リクエスト');
-//     logger()->debug(request()->input());
-//     logger()->info('---[ CALLBACK: END ]---');
-//     return redirect('/');
+Route::prefix('/login')->group(function() {
+    Route::prefix('/password_reset')->group(function() {
+        Route::get('/', [ App\Http\Controllers\PasswordResetController::class, 'index' ])->name('login.password_reset');
+        Route::post('/', [ App\Http\Controllers\PasswordResetController::class, 'post' ]);
+    });
+
+    Route::get('/', [ App\Http\Controllers\LoginController::class, 'index' ])->name('login');
+    Route::post('/', [ App\Http\Controllers\LoginController::class, 'post' ]);
+});
+
+Route::get('/logout', [ App\Http\Controllers\LoginController::class, 'logout' ])->name('logout');
+
+// Route::prefix('/file')->group(function() {
+//     Route::post('/upload', [ App\Http\Controllers\FileController::class, 'upload' ])->name("file_upload");
 // });
+
+//セッション維持（暫定）
+Route::get('/ping', function() { return view('pages.ping'); });
+
+Route::get('/', [ App\Http\Controllers\RootController::class, 'index' ]);

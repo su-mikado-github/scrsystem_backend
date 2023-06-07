@@ -48,16 +48,16 @@ class Controller extends BaseController {
         $model->save();
     }
 
-    protected function validate(Request $request, array $rules, array $messages=null, callable $after=null) {
-        $validator = Validator::make($request->input(), $rules, $messages ?? []);
+    protected function validate(array $input, array $rules, array $messages=null, callable $after=null) {
+        $validator = Validator::make($input, $rules, $messages ?? []);
         if (isset($after)) {
             $validator->after($after);
         }
         return $validator;
     }
 
-    protected function try_validate(Request $request, array $rules, array $messages=null, callable $after=null) {
-        $validator = Validator::make($request->input(), $rules, $messages ?? []);
+    protected function try_validate(array $input, array $rules, array $messages=null, callable $after=null) {
+        $validator = Validator::make($input, $rules, $messages ?? []);
         if (isset($after)) {
             $validator->after($after);
         }

@@ -11,15 +11,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="/js/app.js" type="text/javascript"></script>
 <script src="/default.js" type="text/javascript"></script>
-{{-- Enum定義 --}}
-<script type="text/javascript">
-const Flags = new Enum(@json(\App\Flags::to_json()));
-const Weekdays = new Enum(@json(\App\Weekdays::to_json()));
-const Genders = new Enum(@json(\App\Genders::to_json()));
-const ReserveTypes = new Enum(@json(\App\ReserveTypes::to_json()));
-const AffiliationDetailTypes = new Enum(@json(\App\AffiliationDetailTypes::to_json()));
-const DishTypes = new Enum(@json(\App\DishTypes::to_json()));
-</script>
+@include('includes.enums')
 @stack('scripts')
 <title>@yield('title', ($title ?? '[CLUBHOUSE提供] 食堂予約システム（仮）'))</title>
 </head>
@@ -30,10 +22,22 @@ const DishTypes = new Enum(@json(\App\DishTypes::to_json()));
 </header>
 <main class="p-3 mb-3"><form method="POST">@csrf
 @if(session('success'))
-<div class="alert alert-success">{{ session('success') }}</div>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 @endif
 @if(session('warning'))
-<div class="alert alert-warning">{{ session('warning') }}</div>
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ session('warning') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 @endif
 @yield('main')
 </form>
@@ -43,5 +47,6 @@ const DishTypes = new Enum(@json(\App\DishTypes::to_json()));
 <span class="font-weight-bold">CLUBHOUSE &copy; 2023</span>
 </footer>
 @stack('dialogs')
+<iframe src="{!! url('/ping') !!}" class="d-none" style="width:0;height:0;"></iframe>
 </body>
 </html>

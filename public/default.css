@@ -55,6 +55,14 @@
     background-color: #552600 !important;
 }
 
+.scrs-bg-today {
+    background-color: #ffacac !important;
+}
+
+.scrs-bg-lightgray {
+    background-color: #eeeeee!important;
+}
+
 /* 入力フォームの枠線 */
 .scrs-border-form_border::placeholder,
 .scrs-border-form_border::-ms-input-placeholder,

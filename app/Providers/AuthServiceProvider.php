@@ -5,6 +5,10 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
+use App\Flags;
+
+use App\Models\User;
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -25,6 +29,16 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::define('is_admin', function (User $user) {
+            if ($user->is_admin == Flags::ON) {
+                logger()->debug('is_admin => OK');
+                if (!validator([ 'email'=>$user->email ], [ 'email'=>[ 'required', 'email:rfc' ] ])->fails()) {
+                    logger()->debug('email => OK');
+                    return true;
+                }
+            }
+            logger()->debug('Gate:is_admin => NG');
+            return false;
+        });
     }
 }

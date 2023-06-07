@@ -26,3 +26,9 @@ URL::forceScheme('https');
 //     Route::get('/login/{token?}', [ AttestController::class, 'login' ]);
 //     Route::get('/line_callback', [ AttestController::class, 'line_callback' ]);
 // });
+
+Route::prefix('/file')->group(function() {
+    Route::post('/upload', [ App\Http\Controllers\FileController::class, 'upload' ])->name("api.file_upload");
+});
+
+

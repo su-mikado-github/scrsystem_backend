@@ -50,6 +50,18 @@ class SCRSElementProxyHandler {
         }
     }
 
+    #text(target, texts) {
+        if (target) {
+            target.innerText = texts.join("\n");
+        }
+    }
+
+    #html(target, htmls) {
+        if (target) {
+            target.innerHTML = htmls.join("<br>");
+        }
+    }
+
     #css(target, flag, classNames) {
         if (target) {
             if (flag) {
@@ -57,6 +69,17 @@ class SCRSElementProxyHandler {
             }
             else {
                 target.classList.remove.apply(target.classList, classNames);
+            }
+        }
+    }
+
+    #rcss(target, flag, classNames) {
+        if (target) {
+            if (flag) {
+                target.classList.remove.apply(target.classList, classNames);
+            }
+            else {
+                target.classList.add.apply(target.classList, classNames);
             }
         }
     }
@@ -94,8 +117,17 @@ class SCRSElementProxyHandler {
         if (name === "handle") {
             return (eventName, handler=null)=>{ this.#handle(target, eventName, handler); return receiver; }
         }
+        else if (name === "text") {
+            return (...texts)=>{ this.#text(target, texts); return receiver; }
+        }
+        else if (name === "html") {
+            return (...htmls)=>{ this.#html(target, htmls); return receiver; }
+        }
         else if (name === "css") {
             return (flag, ...classNames)=>{ this.#css(target, flag, classNames); return receiver; }
+        }
+        else if (name === "rcss") {
+            return (flag, ...classNames)=>{ this.#rcss(target, flag, classNames); return receiver; }
         }
         else if (name === "addClass") {
             return (...classNames)=>{ this.#addClass(target, classNames); return receiver; }
@@ -105,6 +137,9 @@ class SCRSElementProxyHandler {
         }
         else if (name === "hasClass") {
             return (className)=>this.#hasClass(target, className);
+        }
+        else if (name === "_target") {
+            return target;
         }
         else if (this[name] ?? null) {
             return this[name];

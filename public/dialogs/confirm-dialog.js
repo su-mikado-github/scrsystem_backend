@@ -8,7 +8,7 @@ export class SCRSConfirmDialog extends SCRSDialog {
     }
 
     ok_click(e) {
-        this.raise("ok", {});
+        this.raise("ok", this.params||{});
 //        this.close();
     }
 }

@@ -17,6 +17,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('build:calendar')->monthly();
+        $schedule->command('build:empty_state')->monthly();
+        $schedule->call(function() { logger()->debug(sprintf('schedule run: %s', now()->format('Y-m-d H:i:s'))); })->everyMinute();
     }
 
     /**

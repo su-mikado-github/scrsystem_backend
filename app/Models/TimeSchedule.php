@@ -15,6 +15,10 @@ class TimeSchedule extends Model {
         return $this->hasMany('App\Models\Reserve', 'time_schedule_id');
     }
 
+    public function scopeTimePeriodBy($query, $start_time, $end_time) {
+        return $query->whereBetween('time', [ $start_time, $end_time ]);
+    }
+
     public function scopeSoccer($query) {
         return $query->where('type', ReserveTypes::VISIT_SOCCER)->where('is_delete', Flags::OFF);
     }

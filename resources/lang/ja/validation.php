@@ -43,11 +43,11 @@ return [
     'digits_between' => 'The :attribute must be between :min and :max digits.',
     'dimensions' => 'The :attribute has invalid image dimensions.',
     'distinct' => 'The :attribute field has a duplicate value.',
-    'email' => 'The :attribute must be a valid email address.',
+    'email' => '「:attribute」は、正しいメールアドレスを入力してください。',
     'ends_with' => 'The :attribute must end with one of the following: :values.',
     'enum' => 'The selected :attribute is invalid.',
     'exists' => '指定された「:attribute」は存在しません。',
-    'file' => 'The :attribute must be a file.',
+    'file' => 'ファイルのアップロードに失敗しました。',
     'filled' => 'The :attribute field must have a value.',
     'gt' => [
         'numeric' => 'The :attribute must be greater than :value.',
@@ -137,6 +137,7 @@ return [
     'past_day' => '「:attribute」には本日を含む未来日は指定できません。',
     'required_select' => '「:attribute」の選択が必要です。',
     'telephone_no' => '「:attribute」が正しくありません。',
+    'unauthorized' => '認証に失敗しました。',
 
     /*
     |--------------------------------------------------------------------------
@@ -182,6 +183,8 @@ return [
         'type2_affiliation_detail' => '所属詳細（その他）',
         'telephone_no' => '電話番号',
         'email' => 'メールアドレス',
+        'password' => 'パスワード',
+        'input_file' => 'ファイル',
     ],
 
 ];

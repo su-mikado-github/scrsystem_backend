@@ -43,6 +43,7 @@ class Attest
                 $user->last_login_dt = now();
                 $user->save();
             }
+            logger()->debug(sprintf('[%s] SCRS-Token: %s', $user->id, $scrs_token));
 
             Auth::login($user);
             if ($user->is_initial_setting || $screen_path == 'mypage') {
@@ -66,6 +67,8 @@ class Attest
             $user->is_admin = false;
             $user->last_login_dt = now();
             $user->save();
+
+            logger()->debug(sprintf('[%s] SCRS-Token: %s', $user->id, $scrs_token));
         }
 
         $line_url = config('line.oauth.url');

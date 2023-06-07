@@ -16,7 +16,6 @@ class QrCodeReaderDialog extends Component
     public function __construct($id)
     {
         $this->id = $id;
-        //
     }
 
     /**

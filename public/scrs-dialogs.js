@@ -1,4 +1,6 @@
 export class SCRSDialog extends SCRSComponent {
+    #params = null;
+
     #eventTarget = null;
     #modalTarget = null;
 
@@ -41,7 +43,12 @@ export class SCRSDialog extends SCRSComponent {
         return this;
     }
 
-    open() {
+    get params() {
+        return this.#params;
+    }
+
+    open(params) {
+        this.#params = params;
         this.#modalTarget.show();
     }
 

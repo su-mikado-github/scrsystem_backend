@@ -212,7 +212,7 @@ final class ReserveTypes extends Enum {
 }
 
 /**
- * 列挙型：予約種別
+ * 列挙型：所属詳細分類
  */
 final class AffiliationDetailTypes extends Enum {
     const INTERNAL = 1;
@@ -228,13 +228,50 @@ final class AffiliationDetailTypes extends Enum {
  * 列挙型：料理種類
  */
 final class DishTypes extends Enum {
-    const CAFETERIA = 1;
+    const DINING_HALL = 1;
     const LUNCHBOX = 2;
-    const GAME_LUNCHBOX = 3;
+    const BOUT_LUNCHBOX = 3;
 
     static $options = [
-        'CAFETERIA' => [ 'ja'=>'食堂メニュー' ],
-        'LUNCHBOX' => [ 'ja'=>'お弁当(通常)' ],
-        'GAME_LUNCHBOX' => [ 'ja'=>'お弁当(試合)' ],
+        'DINING_HALL' => [ 'ja'=>'食堂', 'key'=>'dining_hall', 'column_value'=>'食堂', 'menu_count'=>7 ],
+        'LUNCHBOX' => [ 'ja'=>'お弁当(通常)', 'key'=>'lunchbox', 'column_value'=>'弁当', 'menu_count'=>8 ],
+        'BOUT_LUNCHBOX' => [ 'ja'=>'お弁当(試合)', 'key'=>'bout_lunchbox', 'column_value'=>'試合用弁当', 'menu_count'=>8 ],
+    ];
+
+    public static function key_of($value, $default=null) {
+        foreach (self::values() as $enum) {
+            if ($enum->key == $value) {
+                return $enum;
+            }
+        }
+        return $default;
+    }
+
+    public static function column_value_of($value, $default=null) {
+        foreach (self::values() as $enum) {
+            if ($enum->column_value == $value) {
+                return $enum;
+            }
+        }
+        return $default;
+    }
+}
+
+/**
+ * 列挙型：メニューアイテム種類
+ */
+final class MenuItemTypes extends Enum {
+    const SEPARATER = 0;
+    const INSIDE_LINK = 1;
+    const OUTSIDE_LINK = 2;
+    const ACTION = 3;
+    const SUB_MENUS = 4;
+
+    static $options = [
+        'SEPARATER' => [ 'ja'=>'セパレータ' ],
+        'INSIDE_LINK' => [ 'ja'=>'サイト内リンク' ],
+        'OUTSIDE_LINK' => [ 'ja'=>'サイト外リンク' ],
+        'ACTION' => [ 'ja'=>'アクション処理' ],
+        'SUB_MENUS' => [ 'ja'=>'別メニュー展開' ],
     ];
 }

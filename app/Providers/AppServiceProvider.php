@@ -3,11 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
 
 use Illuminate\Support\Facades\DB;
 
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {
         require_once(app_path('Enum.php'));
         require_once(app_path('LineApi.php'));
+        require_once(app_path('Helper/HelperFunctions.php'));
 
         $this->app->singleton(\App\LineApi::class, function($app) {
             return new \App\LineApi();
@@ -50,31 +49,5 @@ class AppServiceProvider extends ServiceProvider
         Validator::extend('day', function ($attribute, $value, $parameters, $validator) {
             return (1 <= $value && $value <= 31);
         });
-
-        //blade拡張
-        Blade::directive('use', function($expression) {
-            return "<?php use {$expression}; ?>";
-        });
-        Blade::directive('eval', function($expression) {
-            return "<?php {$expression}; ?>";
-        });
-        Blade::directive('val', function ($expression) {
-            return "<?=({$expression}) ?>";
-        });
-        Blade::directive('debug', function($expression) {
-            return "<?php logger()->debug({$expression}); ?>";
-        });
-        Blade::directive('url', function($expression) {
-            return "<?=url({$expression}) ?>";
-        });
-        Blade::directive('surl', function($expression) {
-            return "<?=secure_url({$expression}) ?>";
-        });
-        Blade::directive('route', function($expression) {
-            return "<?=route({$expression}) ?>";
-        });
-
-        //コンポーザー
-        View::composer(['pages.*'], 'App\View\Composers\UserComposer');
     }
 }

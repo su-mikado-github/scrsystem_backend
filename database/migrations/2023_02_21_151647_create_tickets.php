@@ -22,6 +22,13 @@ class CreateTickets extends BaseMigration {
             $table->integer('display_order')->default(1)->comment('表示順');
             $this->build_common_columns($table);
         });
+
+        $rows = [
+            [ 'name'=>'３枚セット', 'ticket_count'=>3, 'display_order'=>1 ],
+            [ 'name'=>'５枚セット', 'ticket_count'=>5, 'display_order'=>2 ],
+            [ 'name'=>'１０枚セット', 'ticket_count'=>10, 'display_order'=>3 ],
+        ];
+        $this->insert_rows('tickets', $rows);
     }
 
     /**

@@ -1,6 +1,6 @@
 @extends('layouts.default')
 
-<x-script>
+{{-- <x-script>
 import { SCRSPage } from "/scrs-pages.js";
 
 class CheckinPage extends SCRSPage {
@@ -10,8 +10,8 @@ class CheckinPage extends SCRSPage {
     }
 }
 
-SCRSPage.startup(()=>new CheckinPage()); --}}
-</x-script>
+SCRSPage.startup(()=>new CheckinPage());
+</x-script> --}}
 
 @section('page.title')
 回数券の購入完了

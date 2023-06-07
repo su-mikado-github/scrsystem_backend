@@ -2,6 +2,7 @@
 
 @use(Carbon\Carbon)
 @use(App\Flags)
+@use(App\ReserveTypes)
 
 <x-script>
 import { SCRSPage } from "/scrs-pages.js";
@@ -13,15 +14,19 @@ class ReserveVisitPage extends SCRSPage {
 
     #toggles = null;
 
+    #reserveTime = null;
+    #isTableShareOk = null;
+    #isTableShareNg = null;
+
     #reservedDialog = null;
 
     constructor() {
         super();
-        //
-        {{-- this.#previousWeek = this.action("previousWeek")?.handle("click");
-        this.#nextWeek = this.action("nextWeek")?.handle("click"); --}}
 
         this.#toggles = this.actions("toggle").map((f)=>f.handle("click"));
+        this.#reserveTime = this.field("reserve_time");
+        this.#isTableShareOk = this.field("is_table_share_ok");
+        this.#isTableShareNg = this.field("is_table_share_ng");
         this.#reservedDialog = new SCRSConfirmDialog(this, "reserveConfirm", null, [ "show", "hide", "ok" ]);
     }
 
@@ -35,11 +40,26 @@ class ReserveVisitPage extends SCRSPage {
 
     reserveConfirm_ok(e) {
         this.#reservedDialog.close();
+
+        this.post([ "/reserve/visit", e.detail.date ]);
     }
 
     toggle_click(e) {
-        const toggle = this.proxy(e.target, "toggle");
-        toggle.css(!toggle.hasClass("scrs-selected"), "scrs-selected");
+        e.preventDefault();
+        e.stopPropagation();
+        const emptySeatRate = e.target.dataset["empty_seat_rate"] | 0;
+        if (emptySeatRate > 0) {
+            const date = dayjs(e.target.dataset["date"]);
+            const time = e.target.dataset["time"];
+            const isTableShareNg = this.#isTableShareNg.checked;
+            date.weekday(-7)
+            this.#reserveTime.value = time;
+            this.#reservedDialog.field("message").text(`${date.format("MM月DD日")}(${date.weekday().option.ja})　${time}～`);
+            this.#reservedDialog.field("table_share_annotation").rcss(isTableShareNg, "d-none");
+            this.#reservedDialog.open({ date: date.format("YYYY-MM-DD") });
+        }
+        {{-- const toggle = this.proxy(e.target, "toggle");
+        toggle.css(!toggle.hasClass("scrs-selected"), "scrs-selected"); --}}
     }
 
     {{-- previousWeek_click(e) {
@@ -67,15 +87,16 @@ td:has(.scrs-selected) {
 @endsection
 
 @section('main')
-@if((optional($user->affiliation_detail)->is_soccer ?? Flags::OFF) == Flags::ON)
+<input type="hidden" name="reserve_time" data-field="reserve_time">
+@if((optional($user->affiliation_detail)->is_soccer ?? Flags::OFF) == Flags::OFF)
 <h5 class="text-start mb-3">ご来店人数を選択して下さい。</h5>
 <div class="form-group row g-2 mb-3">
     <label for="personCount" class="col-4 col-form-label">ご来店人数<span class="text-danger">*</span></label>
     <div class="col-6">
         <div class="input-group">
-            <select class="form-control" id="personCount" placeholder="col-form-label">
+            <select class="form-control" id="personCount" name="person_count" placeholder="col-form-label">
                 <option value="0">選択してください</option>
-                @for($i=1; $i<100; $i++)
+                @for($i=1; $i<$seat_count; $i++)
                 <option value="{!! $i !!}">{!! $i !!}</option>
                 @endfor
             </select>
@@ -91,11 +112,11 @@ td:has(.scrs-selected) {
 <h5 class="text-start">混雑時、相席をご案内しております。</h5>
 <div class="g-2 mb-3">
     <div class="form-check form-check-inline">
-        <input class="form-check-input scrs-radio-color" type="radio" name="is_table_share" id="tableShare0" value="1" checked>
+        <input class="form-check-input scrs-radio-color" type="radio" name="is_table_share" id="tableShare0" data-field="is_table_share_ok" value="1" checked>
         <label class="form-check-label" for="tableShare0">相席可能</label>
     </div>
     <div class="form-check form-check-inline">
-        <input class="form-check-input scrs-radio-color" type="radio" name="is_table_share" id="tableShare1" value="0">
+        <input class="form-check-input scrs-radio-color" type="radio" name="is_table_share" id="tableShare1" data-field="is_table_share_ng" value="0">
         <label class="form-check-label" for="tableShare1">相席不可</label>
     </div>
 </div>
@@ -111,7 +132,10 @@ td:has(.scrs-selected) {
     <div class="col-4 text-center"><i class="fa-solid fa-minus scrs-text-fully-occupied"></i><i class="fa-solid fa-ellipsis px-1"></i>売り切れ</div>
 </div>
 
-<p><small>※ご予約いただいたお客様につきましても、混雑時はお待ちいただく場合がございます。</small></p>
+<p>
+    <small>※ご予約いただいたお客様につきましても、混雑時はお待ちいただく場合がございます。</small><br>
+    <small>※ご予約したい日時をタップしてください。</small>
+</p>
 
 {{-- 予約状況カレンダー（ここから） --}}
 {{-- カレンダーコントロール --}}
@@ -162,8 +186,8 @@ td:has(.scrs-selected) {
 <thead>
 <tr>
     <th class="bg-white text-center align-middle py-1">&nbsp;</th>
-    @foreach($dates as $date)
-    <th class="bg-white text-center align-middle py-1"><small>{!! $date->date->format('m/d') !!}</small></th>
+    @foreach($calendars as $calendar)
+    <th class="bg-white text-center align-middle py-1"><small>{!! $calendar->date->format('m/d') !!}</small></th>
     @endforeach
 </tr>
 </thead>
@@ -172,8 +196,23 @@ td:has(.scrs-selected) {
 @eval(list($hour, $minute, $second) = explode(':', $time_schedule->time))
 <tr>
     <td class="bg-white text-center align-middle py-1">{{ sprintf('%02d:%02d', $hour, $minute) }}</td>
-    @foreach($dates as $date)
-    <td class="bg-white text-center align-middle py-1"><span data-action="toggle" data-time_schedule_id="{!! $time_schedule->id !!}" data-date="{!! $date->date->format('Y-m-d') !!}" class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
+    @foreach($calendars as $calendar)
+    @php
+        $empty_state = $empty_states->where('date', $calendar->date->format('Y-m-d'))->where('time', $time_schedule->time)->first();
+        $empty_seat_rate = (op($empty_state)->empty_seat_rate ?? 0);
+        if ($empty_seat_rate == 0) {
+            $seat_state = 'fa-solid fa-minus scrs-text-fully-occupied';
+        }
+        else if ($empty_seat_rate < 50) {
+            $seat_state = 'mdi mdi-triangle-outline scrs-text-few-left';
+        }
+        else {
+            $seat_state = 'mdi mdi-circle-outline scrs-text-available';
+        }
+    @endphp
+    <td class="{!! (isset($empty_state) ? 'bg-white' : 'bg-secondary') !!} text-center align-middle py-1">
+        <x-icon data-action="toggle" data-empty_seat_rate="{!! $empty_seat_rate !!}" data-time="{!! $time_schedule->time !!}" data-date="{!! $calendar->date->format('Y-m-d') !!}" class="fs-4 {!! (isset($empty_state) ? '' : 'invisible') !!}" name="{!! $seat_state !!}" />
+    </td>
     @endforeach
 </tr>
 @endforeach
@@ -183,9 +222,9 @@ td:has(.scrs-selected) {
 
 <br>
 
-<div class="d-flex justify-content-center py-2">
+{{-- <div class="d-flex justify-content-center py-2">
     <button data-action="reserve" type="button" class="btn scrs-bg-main-button col-8" data-bs-toggle="modal" data-bs-target="#reserveConfirm">予約する</button>
-</div>
+</div> --}}
 
 <div class="d-flex justify-content-center py-2">
     <a class="btn border border-1 scrs-bg-sub-button scrs-border-main col-8" href="/reserve">戻る</a>
@@ -195,8 +234,9 @@ td:has(.scrs-selected) {
 
 <x-confirm-dialog id="reserveConfirm" type="reserved">
     <x-slot name="title">確認</x-slot>
-    <h3 data-name="message" class="text-center mb-3">1月8日(土)　09:50～</h3>
-    <p data-name="description" class="text-center">※混雑時はお待ちいただく場合がございます</p>
+    <h3 data-field="message" class="text-center mb-3">1月8日(土)　09:50～</h3>
+    <p data-field="description" class="text-center">※混雑時はお待ちいただく場合がございます</p>
+    <p data-field="table_share_annotation" class="text-center d-none">※相席不可を選択されましたが、混雑時はご協力をお願いする場合がございます。<br>ご了承ください。</p>
     <x-slot name="ok_button">予約を確定する</x-slot>
     <x-slot name="cancel_button">戻る</x-slot>
 </x-confirm-dialog>
