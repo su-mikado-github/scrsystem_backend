@@ -19,7 +19,7 @@ class BuyTicketPage extends SCRSPage {
         super();
         //
         @foreach($tickets as $ticket)
-        this.#ticket{!! $ticket->id !!} = this.action("ticket{!! $ticket->id !!}")?.handle("click");
+        this.#ticket{!! $ticket->id !!} = this.action("ticket{!! $ticket->id !!}", [ "click" ]);
         @endforeach
 
         this.#buyConfirmDialog = new SCRSConfirmDialog(this, "buyConfirm", null, [ "show", "hide", "ok" ]);
@@ -57,6 +57,11 @@ SCRSPage.startup(()=>new BuyTicketPage());
 @endsection
 
 @section('main')
+@if(session()->has('backward'))<input type="hidden" name="backward" value="{!! session('backward') !!}">@endif
+@if(session()->has('lunchbox_count'))<input type="hidden" name="lunchbox_count" value="{!! session('lunchbox_count') !!}">@endif
+@if(session()->has('person_count'))<input type="hidden" name="person_count" value="{!! session('person_count') !!}">@endif
+@if(session()->has('is_table_share'))<input type="hidden" name="is_table_share" value="{!! session('is_table_share') !!}">@endif
+
 <h2>
     <ruby>
         <rb>{{ $user->last_name }}</rb>

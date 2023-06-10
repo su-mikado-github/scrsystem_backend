@@ -9,6 +9,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use App\Flags;
 
+use App\Models\LineUser;
+use App\Models\Affiliation;
+use App\Models\SchoolYear;
+use App\Models\AffiliationDetail;
+use App\Models\BuyTicket;
+use App\Models\Reserve;
+use App\Models\UseTicket;
+use App\Models\ValidTicket;
+
 class User extends Authenticatable {
     use HasFactory;
 
@@ -17,27 +26,35 @@ class User extends Authenticatable {
     ];
 
     public function line_user() {
-        return $this->belongsTo('App\Models\LineUser', 'line_user_id');
+        return $this->belongsTo(LineUser::class, 'line_user_id');
     }
 
     public function affiliation() {
-        return $this->belongsTo('App\Models\Affiliation', 'affiliation_id');
+        return $this->belongsTo(Affiliation::class, 'affiliation_id');
     }
 
     public function school_year() {
-        return $this->belongsTo('App\Models\SchoolYear', 'school_year_id');
+        return $this->belongsTo(SchoolYear::class, 'school_year_id');
     }
 
     public function affiliation_detail() {
-        return $this->belongsTo('App\Models\AffiliationDetail', 'affiliation_detail_id');
+        return $this->belongsTo(AffiliationDetail::class, 'affiliation_detail_id');
     }
 
     public function buy_tickets() {
-        return $this->hasMany('App\Models\BuyTicket', 'user_id');
+        return $this->hasMany(BuyTicket::class, 'user_id');
     }
 
     public function use_tickets() {
-        return $this->hasMany('App\Models\UseTicket', 'user_id');
+        return $this->hasMany(UseTicket::class, 'user_id');
+    }
+
+    public function valid_tickets() {
+        return $this->hasMany(ValidTicket::class, 'user_id');
+    }
+
+    public function reserves() {
+        return $this->hasMany(Reserve::class, 'user_id');
     }
 
     public function scopeEnabled($query) {
@@ -45,8 +62,10 @@ class User extends Authenticatable {
     }
 
     public function getLastTicketCountAttribute() {
-        $buy_ticket_count = $this->buy_tickets()->enabled()->sum('ticket_count');
-        $use_ticket_count = $this->use_tickets()->enabled()->count();
-        return $buy_ticket_count - $use_ticket_count;
+        $valid_ticket = $this->valid_tickets()->where('valid_ticket_count', '>', 0)
+            ->selectRaw('user_id, SUM(valid_ticket_count) as valid_ticket_count')
+            ->groupBy('user_id')
+            ->first();
+        return (op($valid_ticket)->valid_ticket_count ?? 0);
     }
 }

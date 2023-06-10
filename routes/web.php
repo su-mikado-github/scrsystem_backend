@@ -24,13 +24,13 @@ Route::prefix('/line')->group(function() {
 });
 
 Route::prefix('/dining_hall')->group(function() {
-    Route::get('/', [ App\Http\Controllers\DiningHallController::class, 'index' ]);
+    Route::get('/{date?}', [ App\Http\Controllers\DiningHallController::class, 'index' ])->name('dining_hall')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
 });
 
 Route::middleware([ 'attest' ])->group(function() {
 
     Route::prefix('/checkin')->group(function() {
-        Route::get('/', [ App\Http\Controllers\CheckinController::class, 'index' ])->name('checkin');
+        Route::get('/{date?}', [ App\Http\Controllers\CheckinController::class, 'index' ])->name('checkin')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
         Route::get('/complete', [ App\Http\Controllers\CheckinController::class, 'complete' ])->name('checkin.complete');
     });
 
@@ -44,6 +44,7 @@ Route::middleware([ 'attest' ])->group(function() {
 
         Route::prefix('/lunchbox')->group(function() {
             Route::get('/{date?}', [ App\Http\Controllers\Reserve\LunchboxController::class, 'index' ])->name('reserve.lunchbox')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
+            Route::post('/{date}', [ App\Http\Controllers\Reserve\LunchboxController::class, 'post' ])->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
         });
 
         Route::prefix('/change')->group(function() {

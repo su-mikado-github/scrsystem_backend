@@ -12,10 +12,22 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
+use App\LineApi;
+
 use App\Models\User;
 
 class Controller extends BaseController {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    private $line_api = null;
+
+    public function __construct(LineApi $line_api) {
+        $this->line_api = $line_api;
+    }
+
+    protected function line_api() {
+        return $this->line_api;
+    }
 
     protected function ok(array $result, $message=null) {
         return response($message, 200)->json([

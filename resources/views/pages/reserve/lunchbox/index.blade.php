@@ -1,97 +1,111 @@
 @extends('layouts.default')
 
+@use(Carbon\Carbon)
+@use(App\Weekdays)
+@use(App\DishTypes)
+
 <x-script>
 import { SCRSPage } from "/scrs-pages.js";
 import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
 
 class ReserveLunchboxPage extends SCRSPage {
-    #toggles = null;
+
+    #lunchboxCount = null;
+    #reserve = null;
 
     #reservedDialog = null;
 
     constructor() {
         super();
         //
-        this.#toggles = this.actions("toggle").map((f)=>f.handle("click"));
-        this.#reservedDialog = new SCRSConfirmDialog(this, "reserveConfirm", null, [ "show", "hide", "ok" ]);
+        this.#lunchboxCount = this.field("lunchboxCount").handle("change");
+        this.#reserve = this.action("reserve", [ "click" ]);
+
+        this.#reservedDialog = new SCRSConfirmDialog(this, "reserveConfirm", null, [ "ok" ]);
     }
 
-    reserveConfirm_show(e) {
-//        e.preventDefault();
+    lunchboxCount_change(e) {
+        const lunchboxCount = this.#lunchboxCount.value;
+        this.#reserve.disabled = (lunchboxCount == 0);
     }
 
-    reserveConfirm_hide(e) {
-
+    reserve_click(e) {
+        const lunchboxCount = this.#lunchboxCount.value;
+        if (lunchboxCount) {
+            this.#reservedDialog.field("message").html(`${lunchboxCount}個のお弁当を予約します。<br>よろしいですか？`);
+            this.#reservedDialog.open();
+        }
     }
 
     reserveConfirm_ok(e) {
-        this.#reservedDialog.close();
-    }
-
-    toggle_click(e) {
-        const toggle = this.proxy(e.target, "toggle");
-        toggle.css(!toggle.hasClass("scrs-selected"), "scrs-selected");
+        this.post("{!! route('reserve.lunchbox', [ 'date'=>$day_calendar->date->format('Y-m-d') ]) !!}");
     }
 }
 
 SCRSPage.startup(()=>new ReserveLunchboxPage());
 </x-script>
 
-<x-style>
-td:has(.scrs-selected) {
-    background-color: #ff95ff !important;
-}
-</x-style>
-
 @section('page.title')
 ご予約内容
 @endsection
 
 @section('main')
-<h5 class="text-start">ご注文数を選択してください。</h5>
 
-<div class="row">
-    <div class="col-7">
-        <div class="input-group mb-3">
-            <span class="input-group-text border-0" id="lunchbox-count" style="background-color: transparent;">ご注文数<span class="text-danger">*</span></span>
-            <select class="form-select rounded-3" aria-describedby="lunchbox-count">
-                <option>個</option>
+<h2>
+    <ruby>
+        <rb>{{ $user->last_name }}</rb>
+        <rt>{{ $user->last_name_kana }}</rt>
+    </ruby>
+    <ruby>
+      <rb>{{ $user->first_name }}</rb>
+      <rt>{{ $user->first_name_kana }}</rt>
+    </ruby>
+    様
+</h2>
+
+<br>
+
+<h5 class="text-start mb-3">ご注文数を選択して下さい。</h5>
+<div class="form-group row g-2 mb-3">
+    <label for="reserveCount" class="col-4 col-form-label">ご注文数<span class="text-danger">*</span></label>
+    <div class="col-6">
+        <div class="input-group">
+            <select class="form-control" id="lunchboxCount" name="lunchbox_count" data-field="lunchboxCount" placeholder="col-form-label">
+                <option value="0">選択してください</option>
+                @for($i=1; $i<100; $i++)
+                <option value="{!! $i !!}" {!! (old('lunchbox_count', 0)==$i ? 'selected' : '') !!}>{!! $i !!}</option>
+                @endfor
             </select>
+            <div class="input-group-append">
+                <span class="input-group-text">個</span>
+            </div>
         </div>
     </div>
 </div>
 
-<h5 class="text-start">お受け取り日時を選択してください。</h5>
+<br>
 
-<div class="row g-0">
-    <div class="col-4 text-center"><span class="mdi mdi-circle-outline scrs-text-available"></span><i class="fa-solid fa-ellipsis px-1"></i>予約可能</div>
-    <div class="col-4 text-center"><span class="mdi mdi-triangle-outline scrs-text-few-left"></span><i class="fa-solid fa-ellipsis px-1"></i>残りわずか</div>
-    <div class="col-4 text-center"><i class="fa-solid fa-minus scrs-text-fully-occupied"></i><i class="fa-solid fa-ellipsis px-1"></i>売り切れ</div>
-</div>
-
-{{-- 予約状況カレンダー（ここから） --}}
 {{-- カレンダーコントロール --}}
 <div class="row g-0 my-3">
-    <div class="col-3 text-end fs-3"><a href="/reserve/lunchbox/{!! $start_date->copy()->addDay(-7)->format('Y-m-d') !!}" data-action="previousWeek"><i class="fa-solid fa-angles-left"></i></a></div>
-    <div class="col-6 text-center fs-3">{!! $start_date->format('m/d') !!}～{!! $end_date->format('m/d') !!}</div>
-    <div class="col-3 fs-3"><a href="/reserve/lunchbox/{!! $start_date->copy()->addDay(7)->format('Y-m-d') !!}" data-action="nextWeek"><i class="fa-solid fa-angles-right"></i></a></div>
+    <div class="col-2 text-center fs-3"><a href="{!! route('reserve.lunchbox', [ 'date'=>$previous_date->format('Y-m-d') ]) !!}" data-action="previousMonth"><i class="fa-solid fa-angles-left text-body"></i></a></div>
+    <div class="col-5 text-center fs-3">{!! Carbon::parse($month_calendar->start_date)->format('n/j') !!}～{!! Carbon::parse($month_calendar->end_date)->format('n/j') !!}</div>
+    <div class="col-3 text-center fs-3"><a class="text-body" href="{!! route('reserve.lunchbox') !!}"><u>本日</u></a></div>
+    <div class="col-2 text-center fs-3"><a href="{!! route('reserve.lunchbox', [ 'date'=>$next_date->format('Y-m-d') ]) !!}" data-action="nextMonth"><i class="fa-solid fa-angles-right text-body"></i></a></div>
 </div>
 
 {{-- 曜日 --}}
 <table class="w-100" style="border-collapse:separate;border-spacing:1px;">
 <colgroup>
-    <col style="width:16%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
+    <col style="width:14.28%;">
+    <col style="width:14.28%;">
+    <col style="width:14.28%;">
+    <col style="width:14.28%;">
+    <col style="width:14.28%;">
+    <col style="width:14.28%;">
+    <col style="width:14.28%;">
 </colgroup>
 <thead>
 <tr class="scrs-bg">
-    <th class="text-center align-middle">&nbsp;</th>
     <th class="text-center align-middle"><span class="text-danger">日<span></th>
     <th class="text-center align-middle">月</th>
     <th class="text-center align-middle">火</th>
@@ -103,56 +117,143 @@ td:has(.scrs-selected) {
 </thead>
 </table>
 
-{{-- 予約状況 --}}
 <table class="w-100" style="border-collapse:separate;border-spacing:2px;border-color: #72777a;">
-<colgroup>
-    <col style="width:16%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
-    <col style="width:12%;">
-</colgroup>
-<thead>
-<tr>
-    <th class="bg-white text-center align-middle py-1">&nbsp;</th>
-    @foreach($dates as $date)
-    <th class="bg-white text-center align-middle py-1"><small>{!! $date->date->format('m/d') !!}</small></th>
-    @endforeach
-</tr>
-</thead>
-<tbody>
-@foreach($time_schedules as $time_schedule)
-@eval(list($hour, $minute, $second) = explode(':', $time_schedule->time))
-<tr>
-    <td class="bg-white text-center align-middle py-1">{{ sprintf('%02d:%02d', $hour, $minute) }}</td>
-    @foreach($dates as $date)
-    <td class="bg-white text-center align-middle py-1"><span data-action="toggle" data-time_schedule_id="{!! $time_schedule->id !!}" data-date="{!! $date->date->format('Y-m-d') !!}" class="mdi mdi-circle-outline scrs-text-available fs-4"></span></td>
-    @endforeach
-</tr>
-@endforeach
-</tbody>
+    <colgroup>
+        <col style="width:14.28%;">
+        <col style="width:14.28%;">
+        <col style="width:14.28%;">
+        <col style="width:14.28%;">
+        <col style="width:14.28%;">
+        <col style="width:14.28%;">
+        <col style="width:14.28%;">
+    </colgroup>
+    <tbody>
+        @foreach($calendars->chunk(7) as $week)
+            <tr>
+            @foreach($week as $calendar)
+                @php
+                    $is_past = ($calendar->date < today()->copy()->addDays(2));
+                    $is_today = ($calendar->date == $day_calendar->date);
+                    $is_sunday = ($calendar->weekday == Weekdays::SUNDAY);
+                    $is_saturday = ($calendar->weekday == Weekdays::SATURDAY);
+                    $is_dish_menu = ($calendar->dish_menus()->count() > 0);
+                    $is_reserved = ($calendar->reserves()->userBy($user))->exists();
+                @endphp
+                @if($is_reserved)
+                <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">
+                    <span class="text-body fs-bold">{!! Carbon::parse($calendar->date)->format('n/j') !!}</span>
+                </td>
+                @elseif($is_past || !$is_dish_menu)
+                <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">
+                    <span class="text-body">{!! Carbon::parse($calendar->date)->format('n/j') !!}</span>
+                </td>
+                @elseif($month_calendar->contains($calendar))
+                <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">
+                    <a class="text-body" href="{!! route('reserve.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                </td>
+                @else
+                <td class="text-center align-middle py-1 scrs-bg-lightgray text-secondary">
+                    <a class="text-body" href="{!! route('reserve.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                </td>
+                @endif
+            @endforeach
+            </tr>
+        @endforeach
+    </tbody>
 </table>
-{{-- 予約状況カレンダー（ここまで） --}}
 
 <br>
 
 <div class="d-flex justify-content-center py-2">
-    <button data-action="reserve" type="button" class="btn scrs-bg-main-button col-8" data-bs-toggle="modal" data-bs-target="#reserveConfirm">予約する</button>
+    <button data-action="reserve" type="button" class="btn scrs-bg-main-button col-8" disabled>予約する</button>
 </div>
 
 <div class="d-flex justify-content-center py-2">
     <a class="btn border border-1 scrs-bg-sub-button scrs-border-main col-8" href="/reserve">戻る</a>
 </div>
 
+@if(isset($day_calendar) && $day_calendar->dish_menus()->count() > 0)
+    @foreach(DishTypes::values() as $dish_type)
+    @if($day_calendar->dish_menus()->dishTypeBy($dish_type->id)->count() > 0)
+    <br>
+
+    <div class="card">
+        <div class="card-header p-1">
+            <h5 class="mb-0">{{ $dish_type->column_value }}</h5>
+        </div>
+        <div class="card-body p-1">
+            @foreach($day_calendar->dish_menus()->dishTypeBy($dish_type->id)->orderBy('display_order')->get() as $dish_menu)
+            <h6 class="mb-0">{{ $dish_menu->name }}</h6>
+            <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+                <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+                <tbody>
+                <tr>
+                    <th class="">エネルギー</th>
+                    <td class="text-nowrap text-end">{{ number_format($dish_menu->energy, 1) }}<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                    <th class=""></th>
+                    <td class="text-nowrap text-end"></td>
+                </tr>
+                <tr>
+                    <th class="">炭水化物</th>
+                    <td class="text-nowrap text-end">{{ number_format($dish_menu->carbohydrates, 1) }}<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                    <th class="">たんぱく質</th>
+                    <td class="text-nowrap text-end">{{ number_format($dish_menu->protein, 1) }}<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+                </tr>
+                <tr>
+                    <th class="">脂質</th>
+                    <td class="text-nowrap text-end">{{ number_format($dish_menu->lipid, 1) }}<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                    <th class="">食物繊維</th>
+                    <td class="text-nowrap text-end">{{ number_format($dish_menu->dietary_fiber, 1) }}<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+                </tr>
+                </tbody>
+                </table>
+            </div>
+            @endforeach
+
+        </div>
+        <div class="card-footer bg-transparent p-1">
+            @eval($daily_dish_menu = $day_calendar->daily_dish_menus()->dishTypeBy(DishTypes::DINING_HALL)->first())
+            <h6 class="mb-0">total</h6>
+            <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+                <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+                <tbody>
+                <tr>
+                    <th class="">エネルギー</th>
+                    <td class="text-nowrap text-end">{{ number_format($daily_dish_menu->energy, 1) }}<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                    <th class=""></th>
+                    <td class="text-nowrap text-end"></td>
+                </tr>
+                <tr>
+                    <th class="">炭水化物</th>
+                    <td class="text-nowrap text-end">{{ number_format($daily_dish_menu->carbohydrates, 1) }}<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                    <th class="">たんぱく質</th>
+                    <td class="text-nowrap text-end">{{ number_format($daily_dish_menu->protein, 1) }}<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+                </tr>
+                <tr>
+                    <th class="">脂質</th>
+                    <td class="text-nowrap text-end">{{ number_format($daily_dish_menu->lipid, 1) }}<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                    <th class="">食物繊維</th>
+                    <td class="text-nowrap text-end">{{ number_format($daily_dish_menu->dietary_fiber, 1) }}<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+                </tr>
+                </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    @endif
+    @endforeach
+@else
+<br>
+
+<h6>※メニューはありません。</h6>
+@endif
+
 @endsection
 
 <x-confirm-dialog id="reserveConfirm" type="reserved">
     <x-slot name="title">確認</x-slot>
-    <h3 data-name="message" class="text-center mb-3">1月8日(土)　09:50～</h3>
-    <p data-name="description" class="text-center">※混雑時はお待ちいただく場合がございます</p>
+    <h3 data-field="message" class="text-center mb-3"></h3>
     <x-slot name="ok_button">予約を確定する</x-slot>
     <x-slot name="cancel_button">戻る</x-slot>
 </x-confirm-dialog>

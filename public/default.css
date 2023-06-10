@@ -154,3 +154,11 @@
     background-color: #ff95ff;
 }
 */
+
+.scrs-wait-screen {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.scrs-wait-screen.hidden {
+    display:none!important;
+}

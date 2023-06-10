@@ -6,6 +6,8 @@ use Carbon\Carbon;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 use App\Flags;
 use App\ReserveTypes;
@@ -17,16 +19,29 @@ use App\Models\EmptySeat;
 use App\Models\Seat;
 use App\Models\Reserve;
 use App\Models\ReserveSeat;
+use App\Models\UseTicket;
 
 class VisitController extends Controller {
     //
     public function index(Request $request, $date=null) {
         $user = $this->user();
 
+//        logger()->debug(session()->all());
+
         $today = (isset($date) ? Carbon::parse($date) : today());
         $start_date = transform(Calendar::find_last_sunday($date), function($calendar) { return Carbon::parse($calendar->date); });
         abort_if(!$start_date, 400, __('messages.not_found.calendar'));
         $end_date = $start_date->copy()->addDay(6);
+
+        // 回数券の残数確認
+        if ($user->last_ticket_count == 0) {
+            return redirect()->route('buy_ticket')
+                ->with([
+                    'warning' => __('messages.warning.ticket_by_short'),
+                    'backward' => route('reserve.visit', compact('date')),
+                ])
+            ;
+        }
 
         $calendars = Calendar::with([ 'reserves' ])->range($start_date, $end_date)->orderBy('date')->get();
 
@@ -75,7 +90,29 @@ class VisitController extends Controller {
     public function post(Request $request, $date) {
         $user = $this->user();
 
-        logger()->debug($request->input());
+        if ($user->affiliation_detail->is_soccer == Flags::ON) {
+            $rules = [
+                'reserve_time' => [ 'required', Rule::exists('time_schedules', 'time')->where('type', ReserveTypes::VISIT_SOCCER) ],
+            ];
+        }
+        else {
+            $rules = [
+                'reserve_time' => [ 'required', Rule::exists('time_schedules', 'time')->where('type', ReserveTypes::VISIT_NO_SOCCER) ],
+                'person_count' => [ 'required', 'integer', 'min:1', 'max:' . Seat::enabled()->count() ],
+                'is_table_share' => [ 'required', 'in:' . Flags::ids() ]
+            ];
+        }
+        $messages = [
+            'reserve_time.required' => '予約時間が不明です。',
+            'reserve_time.exists' => '予約時間が不正です。',
+            'person_count.required' => '予約人数は必須です。',
+            'person_count.integer' => '予約人数に数値以外を指定しないでください。',
+            'person_count.min' => '予約人数は１名以上にしてください。',
+            'person_count.max' => '予約人数が多すぎます。',
+            'is_table_share.required' => '相席の指定は必須です。',
+            'is_table_share.in' => '相席の指定が不正です。',
+        ];
+        $this->try_validate($request->all(), $rules, $messages);
 
         $reserve_time = $request->input('reserve_time');
         $person_count = intval($request->input('person_count'));
@@ -97,19 +134,52 @@ class VisitController extends Controller {
 
         $time_empty_seats = $empty_seats->groupBy([ 'time' ]);
 
-        return $this->trans(function() use($user, $date, $start_mins, $end_mins, $person_count, $is_table_share, $start_time, $end_time, $time_empty_seats) {
+        // 購入回数券を引き当てる
+        $valid_tickets = $user->valid_tickets()->validateBy()->orderBy('buy_dt')->get();
+        $buy_ticket_ids = collect();
+        $valid_ticket = null;
+        $valid_ticket_count = 0;
+        for ($i=0; $i<$person_count; $i++) {
+            if ($valid_ticket_count == 0) {
+                if ($valid_tickets->count() == 0) {
+                    break;
+                }
+
+                $valid_ticket = $valid_tickets->shift();
+                if (empty($valid_ticket)) {
+                    break;
+                }
+                $valid_ticket_count = op($valid_ticket)->valid_ticket_count ?? 0;
+            }
+            $buy_ticket_ids->push($valid_ticket->buy_ticket_id);
+            $valid_ticket_count --;
+        }
+        // logger()->debug(sprintf('%s(%s) => %s', __FILE__, __LINE__, print_r([ 'buy_ticket_ids.count'=>$buy_ticket_ids->count(), 'person_count'=>$person_count ], true)));
+        if ($buy_ticket_ids->count() < $person_count) {
+            return redirect()->route('buy_ticket')
+                ->withInput()
+                ->with([
+                    'warning' => __('messages.warning.ticket_by_short'),
+                    'backward' => route('reserve.visit', compact('date')),
+                ])
+            ;
+        }
+
+        return $this->trans(function() use($user, $date, $start_mins, $end_mins, $person_count, $is_table_share, $start_time, $end_time, $time_empty_seats, $buy_ticket_ids) {
             $reserved_seat_ids = null;
             for ($mins=$start_mins; $mins<=$end_mins; $mins++) {
                 $time = sprintf('%02d:%02d:00', floor($mins / 60), ($mins % 60));
 
                 $seat_group_nos = $this->allocate_seats($time_empty_seats[$time], $person_count);
                 if ($seat_group_nos->count() == 0) {
+                    DB::rollBack();
                     return redirect()->action([ self::class, 'index' ], [ 'date'=>$date ])
                         ->with('error', __('messages.error.reserve_seat_short'));    //TODO:メッセージ暫定
                 }
 
                 $seats = Seat::whereIn('seat_group_no', $seat_group_nos)->get();
                 if ($seats->count() < $person_count) {
+                    DB::rollBack();
                     return redirect()->action([ self::class, 'index' ], [ 'date'=>$date ])
                         ->with('error', __('messages.error.reserve_seat_short'));    //TODO:メッセージ暫定
                 }
@@ -120,6 +190,7 @@ class VisitController extends Controller {
                 else {
                     $temp_seat_ids = $reserved_seat_ids->intersect($seats->pluck('id'));
                     if ($temp_seat_ids->count() < $person_count) {
+                        DB::rollBack();
                         return redirect()->action([ self::class, 'index' ], [ 'date'=>$date ])
                             ->with('error', __('messages.error.reserve_seat_short'));    //TODO:メッセージ暫定
                     }
@@ -145,6 +216,7 @@ class VisitController extends Controller {
             $reserve->is_table_share = $is_table_share;
             $this->save($reserve, $user);
 
+            // 予約座席
             foreach ($reserved_seat_ids as $reserve_seat_id) {
                 $reserve_seat = new ReserveSeat();
                 $reserve_seat->reserve_id = $reserve->id;
@@ -152,10 +224,29 @@ class VisitController extends Controller {
                 $this->save($reserve_seat, $user);
             }
 
+            // 回数券
+            foreach ($buy_ticket_ids as $buy_ticket_id) {
+                $use_ticket = new UseTicket();
+                $use_ticket->reserve_id = $reserve->id;
+                $use_ticket->user_id = $user->id;
+                $use_ticket->buy_ticket_id = $buy_ticket_id;
+                $use_ticket->use_dt = now();
+                $this->save($use_ticket, $user);
+            }
+
+            // 空き状況を更新
             $reserve->rebuild_empty_states();
 
+            $reserve = $reserve->fresh();
+            $message = view('templates.line.visit_reserved')->with('user', $user)->with('reserve', $reserve)->render();
+            if (!$this->line_api()->push_messages($user->line_user->line_owner_id, [ $message ])) {
+                DB::rollBack();
+                return redirect()->action([ self::class, 'index' ], [ 'date'=>$date ])
+                    ->with('error', __('messages.error.push_messages'));
+            }
+
             return view('pages.reserve.visit.post')
-                ->with('reserve', $reserve->fresh())
+                ->with('reserve', $reserve)
             ;
         });
     }

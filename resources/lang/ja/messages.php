@@ -17,7 +17,12 @@ return [
             'year_month' => '指定された年月は正しくありません。',
         ],
     ],
+    'warning' => [
+        'ticket_by_short' => 'チケットが不足しています。',
+    ],
     'error' => [
         'reserve_seat_short' => '座席が空いていないため、予約出来ませんでした。',
+        'push_messages' => 'LINEへの通知ができませんでした。',
+        'ticket_by_short' => 'チケットが不足しています。',
     ],
 ];

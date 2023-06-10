@@ -1,4 +1,6 @@
 export class SCRSPage extends SCRSComponent {
+    #waitScreen = null;
+
     static startup(pageCreator=null) {
         if (!pageCreator) {
             pageCreator = ()=>new SCRSPage();
@@ -12,6 +14,8 @@ export class SCRSPage extends SCRSComponent {
 
     constructor() {
         super(null, "main", document.querySelector("body > main"));
+
+        this.#waitScreen = document.getElementById("waitScreen");
     }
 
     url(url, params) {
@@ -104,5 +108,14 @@ export class SCRSPage extends SCRSComponent {
             }
         }
         form.submit();
+    }
+
+    waitScreen(flag) {
+        if (flag) {
+            this.#waitScreen.classList.remove("hidden");
+        }
+        else {
+            this.#waitScreen.classList.add("hidden");
+        }
     }
 }

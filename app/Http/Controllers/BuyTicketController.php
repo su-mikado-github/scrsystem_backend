@@ -27,13 +27,17 @@ class BuyTicketController extends Controller {
         $ticket = Ticket::enabled()->find($ticket_id);
         abort_if(!$ticket_id, 404, __('messages.not_found.ticket'));
 
-        return $this->trans(function() use($user, $ticket) {
+        return $this->trans(function() use($request, $user, $ticket) {
             $buy_ticket = new BuyTicket();
             $buy_ticket->user_id = $user->id;
             $buy_ticket->buy_dt = now();
             $buy_ticket->ticket_id = $ticket->id;
             $buy_ticket->ticket_count = $ticket->ticket_count;
             $this->save($buy_ticket, $user);
+
+            if ($request->has('backward')) {
+                return redirect()->to($request->input('backward'))->withInput();
+            }
 
             return view('pages.buy_ticket.post')
                 ->with('ticket', $ticket)

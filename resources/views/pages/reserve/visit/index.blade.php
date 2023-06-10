@@ -3,14 +3,15 @@
 @use(Carbon\Carbon)
 @use(App\Flags)
 @use(App\ReserveTypes)
+@use(App\Weekdays)
 
 <x-script>
 import { SCRSPage } from "/scrs-pages.js";
 import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
 
 class ReserveVisitPage extends SCRSPage {
-    {{-- #previousWeek = null;
-    #nextWeek = null; --}}
+    #previousWeek = null;
+    #nextWeek = null;
 
     #toggles = null;
 
@@ -23,7 +24,9 @@ class ReserveVisitPage extends SCRSPage {
     constructor() {
         super();
 
-        this.#toggles = this.actions("toggle").map((f)=>f.handle("click"));
+        this.#previousWeek = this.action("previousWeek", [ "click" ]);
+        this.#nextWeek = this.action("nextWeek", [ "click" ]);
+        this.#toggles = this.actions("toggle", [ "click" ]);
         this.#reserveTime = this.field("reserve_time");
         this.#isTableShareOk = this.field("is_table_share_ok");
         this.#isTableShareNg = this.field("is_table_share_ng");
@@ -62,15 +65,17 @@ class ReserveVisitPage extends SCRSPage {
         toggle.css(!toggle.hasClass("scrs-selected"), "scrs-selected"); --}}
     }
 
-    {{-- previousWeek_click(e) {
-        e.preventDefault();
-        e.stopPropagation();
+    previousWeek_click(e) {
+        {{-- e.preventDefault();
+        e.stopPropagation(); --}}
+        this.waitScreen(true);
     }
 
     nextWeek_click(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    } --}}
+        {{-- e.preventDefault();
+        e.stopPropagation(); --}}
+        this.waitScreen(true);
+    }
 }
 
 SCRSPage.startup(()=>new ReserveVisitPage());
@@ -97,13 +102,14 @@ td:has(.scrs-selected) {
             <select class="form-control" id="personCount" name="person_count" placeholder="col-form-label">
                 <option value="0">選択してください</option>
                 @for($i=1; $i<$seat_count; $i++)
-                <option value="{!! $i !!}">{!! $i !!}</option>
+                <option value="{!! $i !!}" {!! (old('parson_count', 0)==$i ? 'selected' : '') !!}>{!! $i !!}</option>
                 @endfor
             </select>
             <div class="input-group-append">
                 <span class="input-group-text">人</span>
             </div>
         </div>
+        @error('person_count')<p class="text-danger">{{ $message }}</p>@enderror
     </div>
 </div>
 
@@ -112,13 +118,14 @@ td:has(.scrs-selected) {
 <h5 class="text-start">混雑時、相席をご案内しております。</h5>
 <div class="g-2 mb-3">
     <div class="form-check form-check-inline">
-        <input class="form-check-input scrs-radio-color" type="radio" name="is_table_share" id="tableShare0" data-field="is_table_share_ok" value="1" checked>
+        <input class="form-check-input scrs-radio-color" type="radio" name="is_table_share" id="tableShare0" data-field="is_table_share_ok" value="1" {!! (old('is_table_share', Flags::OFF)==Flags::ON ? 'checked' : '') !!}>
         <label class="form-check-label" for="tableShare0">相席可能</label>
     </div>
     <div class="form-check form-check-inline">
-        <input class="form-check-input scrs-radio-color" type="radio" name="is_table_share" id="tableShare1" data-field="is_table_share_ng" value="0">
+        <input class="form-check-input scrs-radio-color" type="radio" name="is_table_share" id="tableShare1" data-field="is_table_share_ng" value="0" {!! (old('is_table_share', Flags::OFF)==Flags::OFF ? 'checked' : '') !!}>
         <label class="form-check-label" for="tableShare1">相席不可</label>
     </div>
+    @error('is_table_share')<p class="text-danger">{{ $message }}</p>@enderror
 </div>
 
 <br>
@@ -140,9 +147,10 @@ td:has(.scrs-selected) {
 {{-- 予約状況カレンダー（ここから） --}}
 {{-- カレンダーコントロール --}}
 <div class="row g-0 my-3">
-    <div class="col-3 text-end fs-3"><a href="/reserve/visit/{!! $start_date->copy()->addDay(-7)->format('Y-m-d') !!}" data-action="previousWeek"><i class="fa-solid fa-angles-left"></i></a></div>
-    <div class="col-6 text-center fs-3">{!! $start_date->format('m/d') !!}～{!! $end_date->format('m/d') !!}</div>
-    <div class="col-3 fs-3"><a href="/reserve/visit/{!! $start_date->copy()->addDay(7)->format('Y-m-d') !!}" data-action="nextWeek"><i class="fa-solid fa-angles-right"></i></a></div>
+    <div class="col-2 text-end fs-3"><a href="/reserve/visit/{!! $start_date->copy()->addDay(-7)->format('Y-m-d') !!}" data-action="previousWeek"><u><i class="fa-solid fa-angles-left text-body"></i></u></a></div>
+    <div class="col-5 text-center fs-3">{!! $start_date->format('m/d') !!}～{!! $end_date->format('m/d') !!}</div>
+    <div class="col-3 text-center fs-3"><a class="text-body" href="{!! route('reserve.visit', [ today()->format('Y-m-d') ]) !!}"><u>本日</u></a></div>
+    <div class="col-2 fs-3"><a href="/reserve/visit/{!! $start_date->copy()->addDay(7)->format('Y-m-d') !!}" data-action="nextWeek"><u><i class="fa-solid fa-angles-right text-body"></i></u></a></div>
 </div>
 
 {{-- 曜日 --}}
@@ -187,7 +195,16 @@ td:has(.scrs-selected) {
 <tr>
     <th class="bg-white text-center align-middle py-1">&nbsp;</th>
     @foreach($calendars as $calendar)
-    <th class="bg-white text-center align-middle py-1"><small>{!! $calendar->date->format('m/d') !!}</small></th>
+    @php
+        $text_color = 'text-body';
+        if ($calendar->weekday == Weekdays::SATURDAY) {
+            $text_color = 'text-primary';
+        }
+        else if ($calendar->weekday == Weekdays::SUNDAY) {
+            $text_color = 'text-danger';
+        }
+    @endphp
+    <th class="bg-white text-center align-middle py-1 {!! $text_color !!}"><small>{!! $calendar->date->format('m/d') !!}</small></th>
     @endforeach
 </tr>
 </thead>
@@ -198,6 +215,7 @@ td:has(.scrs-selected) {
     <td class="bg-white text-center align-middle py-1">{{ sprintf('%02d:%02d', $hour, $minute) }}</td>
     @foreach($calendars as $calendar)
     @php
+        $is_past = ($calendar->date < today()->copy()->addDays(2));
         $empty_state = $empty_states->where('date', $calendar->date->format('Y-m-d'))->where('time', $time_schedule->time)->first();
         $empty_seat_rate = (op($empty_state)->empty_seat_rate ?? 0);
         if ($empty_seat_rate == 0) {
@@ -210,9 +228,15 @@ td:has(.scrs-selected) {
             $seat_state = 'mdi mdi-circle-outline scrs-text-available';
         }
     @endphp
+    @if($is_past)
+    <td class="bg-light text-center align-middle py-1">
+        <x-icon data-empty_seat_rate="{!! $empty_seat_rate !!}" data-time="{!! $time_schedule->time !!}" data-date="{!! $calendar->date->format('Y-m-d') !!}" class="fs-4 invisible" name="{!! $seat_state !!}" />
+    </td>
+    @else
     <td class="{!! (isset($empty_state) ? 'bg-white' : 'bg-secondary') !!} text-center align-middle py-1">
         <x-icon data-action="toggle" data-empty_seat_rate="{!! $empty_seat_rate !!}" data-time="{!! $time_schedule->time !!}" data-date="{!! $calendar->date->format('Y-m-d') !!}" class="fs-4 {!! (isset($empty_state) ? '' : 'invisible') !!}" name="{!! $seat_state !!}" />
     </td>
+    @endif
     @endforeach
 </tr>
 @endforeach

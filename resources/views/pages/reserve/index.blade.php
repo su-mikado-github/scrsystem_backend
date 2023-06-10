@@ -1,6 +1,27 @@
 @extends('layouts.default')
 
 <x-script id="reserve">
+import { SCRSPage } from "/scrs-pages.js";
+import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
+
+class ReservePage extends SCRSPage {
+    constructor() {
+        super();
+
+        this.action("visit", [ "click" ]);
+        this.action("lunchbox", [ "click" ]);
+    }
+
+    visit_click(e) {
+        this.waitScreen(true);
+    }
+
+    lunchbox_click(e) {
+        this.waitScreen(true);
+    }
+}
+
+SCRSPage.startup(()=>new ReservePage());
 </x-script>
 
 @section('page.title')

@@ -15,7 +15,7 @@ class CallbacksController extends Controller {
     const SCRS_TOKEN_MINUTES = 525600;
 
     //
-    public function line_login(Request $request, LineApi $line_api) {
+    public function line_login(Request $request) {
         $code = $request->input('code');
         $state = $request->input('state');
         abort_if(!$code || !$state, 404, '不正なアクセスです。');
@@ -27,13 +27,14 @@ class CallbacksController extends Controller {
         abort_if(!$user, 404, '認証情報が有効ではありません。');
 
         //LINE: アクセストークンの取得
-        $get_access_token = $line_api->get_access_token($code, $state);
+        $get_access_token = $this->line_api()->get_access_token($code, $state);
         abort_if(!$get_access_token, 400, 'LINEから情報が取得できません。');
 
         //LINE: プロフィールの取得
-        $get_profile = $line_api->get_profile($get_access_token->access_token);
+        $get_profile = $this->line_api()->get_profile($get_access_token->access_token);
 
-//        $line_user->id_token = $get_access_token->id_token;
+        //        $line_user->id_token = $get_access_token->id_token;
+        $line_user->line_owner_id = $get_profile->userId;
         $line_user->access_token = $get_access_token->access_token;
         $line_user->refresh_token = $get_access_token->refresh_token;
         $line_user->display_name = $get_profile->displayName;

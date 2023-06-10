@@ -230,18 +230,31 @@ class SCRSComponent {
         return this.target.querySelector(`[data-${propertyName}='${componentName}']`);
     }
 
-    actions(componentName, propertyName="action") {
+    actions(componentName, handles, propertyName="action") {
         const targets = this.target.querySelectorAll(`[data-${propertyName}='${componentName}']`);
+        const handleArray = (handles instanceof Array && handles.length > 0 ? handles : []);
         const result = [];
         for (let target of targets) {
-            result.push(new Proxy(target, new SCRSElementProxyHandler(this, componentName)));
+            const actionTarget = new Proxy(target, new SCRSElementProxyHandler(this, componentName));
+            for (let handle of handles) {
+                actionTarget.handle(handle);
+            }
+            result.push(actionTarget);
         }
         return result;
     }
 
-    action(componentName, propertyName="action") {
+    action(componentName, handles, propertyName="action") {
         const target = this.target.querySelector(`[data-${propertyName}='${componentName}']`);
-        return (!target ? null : new Proxy(target, new SCRSElementProxyHandler(this, componentName)));
+        const result = (!target ? null : new Proxy(target, new SCRSElementProxyHandler(this, componentName)));
+        if (result) {
+            if (handles instanceof Array && handles.length > 0) {
+                for (let handle of handles) {
+                    result.handle(handle);
+                }
+            }
+        }
+        return result;
     }
 
     actionsNoProxy(componentName, propertyName="action") {

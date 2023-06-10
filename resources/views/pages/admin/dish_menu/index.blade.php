@@ -21,8 +21,8 @@ class AdminDishMenuPage extends SCRSPage {
         super();
         //
         this.#uploadFileDialog = new SCRSUploadFileDialog(this, "uploadFile", null, [ "show", "hide", "ok", "error" ]);
-        this.#upload = this.action("upload")?.handle("click");
-        this.#download = this.action("download")?.handle("click");
+        this.#upload = this.action("upload", [ "click" ]);
+        this.#download = this.action("download", [ "click" ]);
         this.#file_path = this.field("file_path");
     }
 

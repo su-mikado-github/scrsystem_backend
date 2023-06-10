@@ -1,8 +1,12 @@
+@use(App\Weekdays)
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" style="height:100%;">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="5">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <link href="/css/app.css" rel="stylesheet">
 <link href="/default.css" rel="stylesheet">
@@ -11,13 +15,24 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="/js/app.js" type="text/javascript"></script>
 <script src="/default.js" type="text/javascript"></script>
+{{-- <script type="text/javascript">
+window.addEventListener("load", function() {
+    const currentTime = document.getElementById("currentTime");
+
+    function setCurrentTime() {
+        currentTime.innerHTML = dayjs().format("HH:mm");
+        setTimeout(setCurrentTime, 1000);
+    }
+
+    setCurrentTime();
+})
+</script> --}}
 @include('includes.enums')
 @stack('scripts')
-<title>@yield('title', ($title ?? '[CLUBHOUSE提供] 食堂予約システム（仮）'))</title>
+<title>@yield('title', ($title ?? '[CLUBHOUSE提供] 食堂予約システム'))</title>
 </head>
-<body class="scrs-bg">
-<header class="scrs-bg position-sticky w-100 p-3" style="top:0;left:0;">
-<h3 class="scrs-bg-main text-center p-1">@yield('page.title', '（不明）')</h3>
+<body class="scrs-bg" style="height:100%;">
+<header class="scrs-bg position-sticky w-100" style="top:0;left:0;">
 @yield('header')
 </header>
 <main class="p-3 mb-3"><form method="POST">@csrf
@@ -39,6 +54,12 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 @endif
+<div class="py-5">
+    @eval($weekday = Weekdays::fromDate($today))
+    <h1 class="text-center">{{ $today->format('Y年m月d日') }}（{{ $weekday->ja }}）</h1>
+    <br>
+    <h1 id="currentTime" class="text-center display-1 fw-bold">{{ now()->format('H:i') }}</h1>
+</div>
 @yield('main')
 </form>
 </main>

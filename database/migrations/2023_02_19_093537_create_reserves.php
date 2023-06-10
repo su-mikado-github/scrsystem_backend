@@ -18,7 +18,7 @@ class CreateReserves extends BaseMigration {
             $table->id()->comment('予約ID');
             $table->enum('type', ReserveTypes::id_list())->comment('種別');
             $table->date('date')->comment('利用日');
-            $table->time('time')->comment('利用時刻');
+            $table->time('time')->nullable()->comment('利用時刻');
             $table->time('end_time')->nullable()->comment('利用終了時刻');
             $table->bigInteger('user_id')->comment('利用者ID');
             $table->dateTime('reserve_dt')->comment('予約日時');

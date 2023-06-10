@@ -35,20 +35,19 @@ SCRSPage.startup(()=>new ReserveVisitPostPage());
 
 <br>
 
-@eval(list($hour, $minute, $second) = explode(':', $reserve->time))
 <div class="px-5 py-4 scrs-sheet-normal">
     <h3 class="text-center mb-4">ご予約内容</h3>
     <dl class="scrs-item-group mb-0">
-        <dt class="label">日時</dt>
-        <dd class="item"><span>{{ $reserve->date->format('m月d日') }}</span><span class="px-2"></span><span>{{ sprintf('%02d:%02d', $hour, $minute) }}～</span></dd>
-        <dt class="label">人数</dt>
-        <dd class="item"><span>{{ $reserve->reserve_count }}</span>人</dd>
+        <dt class="label">日付</dt>
+        <dd class="item"><span>{{ $reserve->date->format('m月d日') }}</span></dd>
+        <dt class="label">お弁当</dt>
+        <dd class="item"><span>{{ $reserve->reserve_count }}</span>個</dd>
     </dl>
 </div>
 
 <br>
 
 <div class="text-center">
-    <a class="btn btn-link text-dark" href="/reserve/visit/{!! $reserve->date->format('Y-m-d') !!}">≪予約受付に戻る</a>
+    <a class="btn btn-link text-dark" href="/reserve/lunchbox/{!! $reserve->date->format('Y-m-d') !!}">≪予約受付に戻る</a>
 </div>
 @endsection

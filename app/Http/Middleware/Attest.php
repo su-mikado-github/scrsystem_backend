@@ -34,26 +34,27 @@ class Attest
         if (isset($line_user)) {
             $line_user->screen_path = $screen_path;
             $line_user->save();
+            if (!empty($line_user->line_owner_id)) {
+                $user = $line_user->user()->where('is_delete', Flags::OFF)->first();
+                if (empty($user)) {
+                    $user = new User();
+                    $user->line_user_id = $line_user->id;
+                    $user->is_admin = false;
+                    $user->last_login_dt = now();
+                    $user->save();
+                }
+                logger()->debug(sprintf('[%s] SCRS-Token: %s', $user->id, $scrs_token));
 
-            $user = $line_user->user()->where('is_delete', false)->first();
-            if (empty($user)) {
-                $user = new User();
-                $user->line_user_id = $line_user->id;
-                $user->is_admin = false;
-                $user->last_login_dt = now();
-                $user->save();
-            }
-            logger()->debug(sprintf('[%s] SCRS-Token: %s', $user->id, $scrs_token));
-
-            Auth::login($user);
-            if ($user->is_initial_setting || $screen_path == 'mypage') {
-                Cookie::queue(self::SCRS_TOKEN_NAME, $scrs_token, self::SCRS_TOKEN_MINUTES);
-                return $next($request);
-            }
-            else if ($screen_path != 'mypage') {
-                return redirect(route('mypage'))
-                    ->cookie(self::SCRS_TOKEN_NAME, $scrs_token, self::SCRS_TOKEN_MINUTES)
-                    ->with('warning', 'ご利用者の情報を登録してください。');
+                Auth::login($user);
+                if ($user->is_initial_setting || $screen_path == 'mypage') {
+                    Cookie::queue(self::SCRS_TOKEN_NAME, $scrs_token, self::SCRS_TOKEN_MINUTES);
+                    return $next($request);
+                }
+                else if ($screen_path != 'mypage') {
+                    return redirect(route('mypage'))
+                        ->cookie(self::SCRS_TOKEN_NAME, $scrs_token, self::SCRS_TOKEN_MINUTES)
+                        ->with('warning', 'ご利用者の情報を登録してください。');
+                }
             }
         }
         else {

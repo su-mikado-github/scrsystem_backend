@@ -48,5 +48,10 @@
 </footer>
 @stack('dialogs')
 <iframe src="{!! url('/ping') !!}" class="d-none" style="width:0;height:0;"></iframe>
+<div id="waitScreen" class="d-flex justify-content-center align-items-center position-fixed top-0 start-0 w-100 h-100 scrs-wait-screen hidden">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 </body>
 </html>
