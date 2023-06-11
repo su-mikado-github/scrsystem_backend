@@ -1,3 +1,4 @@
+@use(App\ReserveTypes)
 @extends('layouts.default')
 
 <x-script>
@@ -32,10 +33,19 @@ SCRSPage.startup(()=>new CheckinPage()); --}}
 </x-script>
 
 @section('page.title')
+@if($reserve->type == ReserveTypes::LUNCHBOX)
+予約日の変更完了
+@else
 予約時間の変更完了
+@endif
 @endsection
 
 @section('main')
+@if($reserve->type == ReserveTypes::LUNCHBOX)
+<p>予約日を変更しました。<br>
+右上の×ボタンを押下して画面を閉じてください。</p>
+@else
 <p>予約時間を変更しました。<br>
 右上の×ボタンを押下して画面を閉じてください。</p>
+@endif
 @endsection

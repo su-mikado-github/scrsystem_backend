@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 use App\Flags;
 use App\ReserveTypes;
+use App\DishTypes;
 
 use App\Models\Calendar;
 use App\Models\EmptyState;
@@ -84,7 +85,88 @@ class ChangeController extends Controller {
     }
 
     public function post(Request $request, $reserve_id) {
-        return view('pages.reserve.change.post');
+        $user = $this->user();
+
+        $reserve = Reserve::enabled()->find($reserve_id);
+        abort_if(!$reserve, 404, __('messages.not_found.reserve'));
+
+        if (isset($reserve->cancel_dt)) {
+            return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
+                ->withInput()
+                ->with('error', __('messages.error.canceled'));
+        }
+        else if (isset($reserve->checkin_dt)) {
+            return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
+                ->withInput()
+                ->with('error', __('messages.error.lunchbox_checkin'));
+        }
+
+        // 予約変更が可能な期限のチェック
+        if (today()->copy()->addDays(2) > $reserve->date) {
+            return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
+                ->withInput()
+                ->with('error', __('messages.error.change_limit'));
+        }
+
+        // バリデーション
+        $rules = [
+            'new_date' => [ 'required', 'date', 'after_or_equal:' . today()->copy()->addDays(2)->format('Y-m-d') ],
+        ];
+        $messages = [
+            'new_date.required' => '変更先の日付は必須です。',
+            'new_date.date' => '正しい日付を入力してください。',
+            'new_date.after_or_equal' => '変更先の日付は２日後以降にしてください。',
+        ];
+        $this->try_validate($request->all(), $rules, $messages);
+
+        $new_date = Carbon::parse($request->input('new_date'));
+        $calendar = Calendar::dateBy($new_date)->first();
+        abort_if(!$calendar, 404, __('messages.not_found.calendar'));
+
+        // 同一日チェック
+        if ($new_date == $reserve->date) {
+            return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
+                ->withInput()
+                ->with('error', __('messages.error.same_date'));
+        }
+
+        // 予約の重複チェック
+        $reserve_types = ($reserve->type == ReserveTypes::LUNCHBOX ? [ ReserveTypes::LUNCHBOX ] : [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ]);
+        $is_reserve_exists = Reserve::dateBy($new_date)->userBy($user)->typesBy($reserve_types)->enabled()->unCanceled()->exists();
+        if ($is_reserve_exists) {
+            return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
+                ->withInput()
+                ->with('error', __('messages.error.reserve_exists'));
+        }
+
+        // 料理メニューの設定有無のチェック
+        $dish_types = ($reserve->type == ReserveTypes::LUNCHBOX ? [ DishTypes::LUNCHBOX, DishTypes::BOUT_LUNCHBOX ] : [ DishTypes::DINING_HALL ]);
+        $is_dish_menu_exists = $calendar->dish_menus()->dishTypesBy($dish_types)->exists();
+        if (!$is_dish_menu_exists) {
+            return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
+                ->withInput()
+                ->with('error', __('messages.error.no_dish_menu'));
+        }
+
+        return $this->trans(function() use($request, $user, $reserve, $calendar) {
+            $reserve->date = $calendar->date;
+            $this->save($reserve, $user);
+
+            // LINE通知
+            $canceled_view = ($reserve->type==ReserveTypes::LUNCHBOX ? 'templates.line.lunchbox_changed' : 'templates.line.visit_changed');
+            $message = view($canceled_view)->with('user', $user)->with('reserve', $reserve)->render();
+            if (!$this->line_api()->push_messages($user->line_user->line_owner_id, [ $message ])) {
+                DB::rollBack();
+                return redirect()->action([ self::class, 'index' ], [ 'date'=>$date ])
+                    ->withInput()
+                    ->with('error', __('messages.error.push_messages'));
+            }
+
+            $reserve = $reserve->fresh();
+            return view('pages.reserve.change.post')
+                ->with('reserve', $reserve)
+            ;
+        });
     }
 
     public function delete(Request $request, $reserve_id) {
@@ -92,6 +174,11 @@ class ChangeController extends Controller {
 
         $reserve = Reserve::enabled()->find($reserve_id);
         abort_if(!$reserve, 404, __('messages.not_found.reserve'));
+
+        if (today()->copy()->addDays(2) > $reserve->date) {
+            return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
+                ->with('error', __('messages.error.cancel_limit'));
+        }
 
         if (isset($reserve->cancel_dt)) {
             return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])

@@ -69,7 +69,7 @@ SCRSPage.startup(()=>new ChangePage());
 </x-script>
 
 @section('page.title')
-ご予約時間の変更／キャンセル
+ご予約日の変更／キャンセル
 @endsection
 
 @section('main')
@@ -213,55 +213,14 @@ SCRSPage.startup(()=>new ChangePage());
     </tbody>
 </table>
 
-{{-- @if(isset($reserve) && empty($reserve->checkin_dt) && $reserve->type!=ReserveTypes::LUNCHBOX)
 <br>
-<p>お時間の変更の際は、下記の<x-icon name="mdi mdi-circle-outline" class="scrs-text-available fs-4" />または<x-icon name="mdi mdi-triangle-outline" class="scrs-text-few-left fs-4" />のいずれかをタップしてください。</p>
-<p>※<x-icon name="fa-solid fa-registered" class="scrs-text-available fs-4" />は、現在の予約時間です。</p>
-
-<table class="w-100" style="border-collapse:separate;border-spacing:2px;">
-<colgroup>
-    <col style="width:25%;">
-    <col style="width:75%;">
-</colgroup>
-<thead>
-@foreach($time_schedules as $time_schedule)
-    @php
-        $is_reserved_time = ($reserve->time <= $time_schedule->time && $time_schedule->time <= $reserve->end_time);
-        $empty_seat_rate = (op($empty_states->where('time', $time_schedule->time)->first())->empty_seat_rate ?? 0);
-        if ($is_reserved_time) {
-            list($icon_name, $class) = [ 'fa-solid fa-registered', 'scrs-text-available' ];
-        }
-        else if ($empty_seat_rate == 0) {
-            list($icon_name, $class) = [ 'fa-solid fa-minus', 'scrs-text-fully-occupied' ];
-        }
-        else if ($empty_seat_rate < 50) {
-            list($icon_name, $class) = [ 'mdi mdi-triangle-outline', 'scrs-text-few-left' ];
-        }
-        else {
-            list($icon_name, $class) = [ 'mdi mdi-circle-outline', 'scrs-text-available' ];
-        }
-        list($hour, $minute, $second) = explode(':', $time_schedule->time);
-    @endphp
-    <tr class="scrs-bg">
-        <td class="bg-white text-center align-middle py-2">{{ sprintf('%02d:%02d', $hour, $minute) }}</td>
-        <td class="bg-white text-center align-middle py-2">
-            <a href="#" @if($is_reserved_time) class="text-decoration-none" @else data-action="toggle" @endif><x-icon name="{!! $icon_name !!}" class="{!! $class !!}" />
-        </td>
-    </tr>
-@endforeach
-</thead>
-</table>
-
-@endif --}}
-
-<br>
-
 <div class="row">
     <label for="newDate" class="col-5 col-form-label">変更先の日付</label>
     <div class="col-7">
-        <input id="newDate" type="date" class="form-control" data-field="newDate" value="{!! $day_calendar->date->format('Y-m-d') !!}">
+        <input id="newDate" type="date" class="form-control" name="new_date" data-field="newDate" value="{!! old('new_date', $day_calendar->date->format('Y-m-d')) !!}">
     </div>
 </div>
+@error('new_date')<p class="text-danger">{{ $message }}</p>@enderror
 
 <br>
 
