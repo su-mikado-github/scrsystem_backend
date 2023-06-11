@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 use App\Flags;
 use App\Genders;
@@ -137,6 +138,7 @@ class MypageController extends Controller {
         $user->telephone_no = $request->input('telephone_no');
         $user->email = $request->input('email');
         $user->last_login_dt = now();
+        $user->checkin_token = Str::uuid();
         $is_initial_setting = $user->is_initial_setting;
         $user->is_initial_setting = Flags::ON;
         $this->save($user, $user);

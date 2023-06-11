@@ -6,18 +6,23 @@ import { SCRSPage } from "/scrs-pages.js";
 import { SCRSQrCodeReaderDialog } from "/dialogs/qr-code-reader-dialog.js";
 
 class CheckinPage extends SCRSPage {
+    @if(isset($reserve) && !isset($reserve->checkin_dt))
     #checkin = null;
 
     #qrCodeReaderDialog = null;
+    @endif
 
     constructor() {
         super();
         //
+        @if(isset($reserve) && !isset($reserve->checkin_dt))
         this.#checkin = this.action("checkin", [ "click" ]);
 
         this.#qrCodeReaderDialog = new SCRSQrCodeReaderDialog(this, "qrCodeReader", null, [ "read" ]);
+        @endif
     }
 
+    @if(isset($reserve) && !isset($reserve->checkin_dt))
     checkin_click(e) {
         //
         this.#qrCodeReaderDialog.open();
@@ -26,15 +31,16 @@ class CheckinPage extends SCRSPage {
     qrCodeReader_read(e) {
         console.log(e.detail);
         this.#qrCodeReaderDialog.close();
-        this.forward("/checkin/complete");
+        this.post([ e.detail.code, @json($reserve->id) ]);
     }
+    @endif
 }
 
 SCRSPage.startup(()=>new CheckinPage());
 </x-script>
 
 @section('page.title')
-チェックイン
+@if($reserve->type == ReserveTypes::LUNCHBOX)お弁当 @else チェックイン @endif
 @endsection
 
 @section('main')
@@ -50,8 +56,8 @@ SCRSPage.startup(()=>new CheckinPage());
     様
 </h2>
 
-@isset($reserve)
-@eval(list($label, $unit, $action) = ($reserve->type == ReserveTypes::LUNCHBOX ? [ '個数', '個', 'お弁当を受け取る' ] : [ '人数', '人', 'チェックインする' ]))
+@if(isset($reserve))
+@eval(list($label, $unit, $action) = ($reserve->type == ReserveTypes::LUNCHBOX ? [ '個数', '個', '受け取る' ] : [ '人数', '人', 'チェックインする' ]))
 <br>
 <div class="px-5 py-4 scrs-sheet-normal">
     <h3 class="text-center mb-4">ご予約内容</h3>
@@ -65,14 +71,18 @@ SCRSPage.startup(()=>new CheckinPage());
 
 <br>
 <div class="d-flex justify-content-center">
+    @isset($reserve->checkin_dt)
+    <span class="btn btn-lg btn-secondary col-10 py-2">完了</span>
+    @else
     <button type="button" data-action="checkin" class="btn btn-lg scrs-main-button col-10 py-2">{{ $action }}</button>
+    @endisset
 </div>
 @else
 <div class="px-5 py-4 scrs-sheet-normal">
     <h3 class="text-center mb-4">ご予約内容</h3>
     <p>※本日のご予約はありません。</p>
 </div>
-@endisset
+@endif
 
 <br>
 <div class="px-5 py-4 scrs-sheet-ticket">
@@ -87,6 +97,8 @@ SCRSPage.startup(()=>new CheckinPage());
 </div>
 @endsection
 
+@if(isset($reserve) && !isset($reserve->checkin_dt))
 <x-qr-code-reader-dialog id="qrCodeReader">
     <x-slot name="title">&nbsp;</x-slot>
 </x-qr-code-reader-dialog>
+@endif

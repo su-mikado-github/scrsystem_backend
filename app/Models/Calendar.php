@@ -69,4 +69,8 @@ class Calendar extends Model {
     public function scopePeriodBy($query, $start_date, $end_date) {
         return $query->where('date', '>=', $start_date)->where('date', '<=', $end_date);
     }
+
+    public function scopeEnabled($query) {
+        return $query->where('is_delete', Flags::OFF);
+    }
 }

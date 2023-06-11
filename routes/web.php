@@ -31,7 +31,8 @@ Route::middleware([ 'attest' ])->group(function() {
 
     Route::prefix('/checkin')->group(function() {
         Route::get('/{date?}', [ App\Http\Controllers\CheckinController::class, 'index' ])->name('checkin')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
-        Route::get('/complete', [ App\Http\Controllers\CheckinController::class, 'complete' ])->name('checkin.complete');
+        Route::post('/{reserve_id}', [ App\Http\Controllers\CheckinController::class, 'post' ])->where('reserve_id', '^[0-9]+$');
+        // Route::get('/token', [ App\Http\Controllers\CheckinController::class, 'get_token' ])->name('checkin.token');
     });
 
     Route::prefix('/reserve')->group(function() {
@@ -39,7 +40,7 @@ Route::middleware([ 'attest' ])->group(function() {
 
         Route::prefix('/visit')->group(function() {
             Route::get('/{date?}', [ App\Http\Controllers\Reserve\VisitController::class, 'index' ])->name('reserve.visit')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
-            Route::post('/{date}', [ App\Http\Controllers\Reserve\VisitController::class, 'post' ])->name('reserve.visit')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
+            Route::post('/{date}', [ App\Http\Controllers\Reserve\VisitController::class, 'post' ])->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
         });
 
         Route::prefix('/lunchbox')->group(function() {
@@ -48,14 +49,13 @@ Route::middleware([ 'attest' ])->group(function() {
         });
 
         Route::prefix('/change')->group(function() {
-            Route::get('/', [ App\Http\Controllers\Reserve\ChangeController::class, 'index' ])->name('reserve.change');
+            Route::get('/{date?}', [ App\Http\Controllers\Reserve\ChangeController::class, 'index' ])->name('reserve.change')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
             Route::post('/{reserve_id}', [ App\Http\Controllers\Reserve\ChangeController::class, 'post' ])->where('reserve_id', '^[0-9]+$');
             Route::delete('/{reserve_id}', [ App\Http\Controllers\Reserve\ChangeController::class, 'delete' ])->where('reserve_id', '^[0-9]+$');
         });
     });
 
     Route::prefix('/mypage')->group(function() {
-        logger()->debug(request()->method());
         Route::get('/', [ App\Http\Controllers\MypageController::class, 'index' ])->name('mypage');
         Route::post('/', [ App\Http\Controllers\MypageController::class, 'post' ]);
     });

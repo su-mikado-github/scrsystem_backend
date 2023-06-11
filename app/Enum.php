@@ -205,9 +205,9 @@ final class ReserveTypes extends Enum {
     const VISIT_NO_SOCCER = 3;
 
     static $options = [
-        'LUNCHBOX' => [ 'ja'=>'お弁当' ],
-        'VISIT_SOCCER' => [ 'ja'=>'来店(サッカー部)' ],
-        'VISIT_NO_SOCCER' => [ 'ja'=>'来店(サッカー部以外)' ],
+        'LUNCHBOX' => [ 'ja'=>'お弁当', 'title'=>'お弁当' ],
+        'VISIT_SOCCER' => [ 'ja'=>'来店(サッカー部)', 'title'=>'来店' ],
+        'VISIT_NO_SOCCER' => [ 'ja'=>'来店(サッカー部以外)', 'title'=>'来店' ],
     ];
 }
 

@@ -41,6 +41,7 @@ class Attest
                     $user->line_user_id = $line_user->id;
                     $user->is_admin = false;
                     $user->last_login_dt = now();
+                    $user->checkin_token = Str::uuid();
                     $user->save();
                 }
                 logger()->debug(sprintf('[%s] SCRS-Token: %s', $user->id, $scrs_token));
@@ -67,6 +68,7 @@ class Attest
             $user->line_user_id = $line_user->id;
             $user->is_admin = false;
             $user->last_login_dt = now();
+            $user->checkin_token = Str::uuid();
             $user->save();
 
             logger()->debug(sprintf('[%s] SCRS-Token: %s', $user->id, $scrs_token));

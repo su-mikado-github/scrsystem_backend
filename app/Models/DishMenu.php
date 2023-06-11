@@ -17,4 +17,8 @@ class DishMenu extends Model {
     public function scopeDishTypeBy($query, $dish_type) {
         return $query->where('dish_type', ($dish_type instanceof DishTypes ? $dish_type->id : $dish_type));
     }
+
+    public function scopeDishTypesBy($query, array $dish_types) {
+        return $query->whereIn('dish_type', $dish_types);
+    }
 }

@@ -23,12 +23,13 @@
     </div>
 </div>
 
-{{-- <br>
+<br>
 <div class="px-3 py-4 scrs-sheet-normal">
     <h3 class="text-center mb-4">お弁当の受け取り状況</h3>
     <div class="row">
     @foreach($lunchbox_reserves as $reserve)
         @eval($reserve_user = $reserve->user)
+        @eval($is_checkin = isset($reserve->checkin_dt))
         <div class="col-6 text-nowrap text-center ps-3">
             <div class="border {!! $is_checkin ? 'scrs-bg-main' : 'scrs-border-main' !!} py-4">
                 <ruby>
@@ -43,6 +44,6 @@
         </div>
     @endforeach
     </div>
-</div> --}}
+</div>
 
 @endsection

@@ -29,6 +29,8 @@ class LineApi {
             return json_decode($response);
         }
         else {
+            logger()->error('--- check_access_token error response ---');
+            logger()->error($response);
             return false;
         }
     }
@@ -59,6 +61,8 @@ class LineApi {
             return json_decode($response);
         }
         else {
+            logger()->error('--- get_access_token error response ---');
+            logger()->error($response);
             return false;
         }
     }
@@ -88,6 +92,8 @@ class LineApi {
             return json_decode($response);
         }
         else {
+            logger()->error('--- refresh_access_token error response ---');
+            logger()->error($response);
             return false;
         }
     }
@@ -109,6 +115,8 @@ class LineApi {
             return json_decode($response);
         }
         else {
+            logger()->error('--- get_profile error response ---');
+            logger()->error($response);
             return false;
         }
     }
@@ -138,7 +146,50 @@ class LineApi {
             return json_decode($response);
         }
         else {
+            logger()->error('--- push_messages error response ---');
+            logger()->error($response);
             return false;
         }
+    }
+
+    public function push_multicast_messages(array $user_id_list, array $messages) {
+        return collect($user_id_list)->chunk(500)->map(function($chunked_user_id_list) use($messages) {
+            $request_body = [
+                'to' => $chunked_user_id_list->values()->toArray(),
+                'messages' => collect($messages)->map(function($message) {
+                    return [ 'type'=>'text', 'text'=>$message ];
+                })->toArray(),
+            ];
+            logger()->debug($request_body);
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_HTTPHEADER, config('line.api.push_multicast_message.headers'));
+            curl_setopt($ch, CURLOPT_URL, config('line.api.push_multicast_message.url'));
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, config('line.api.push_multicast_message.method'));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_body));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            $info = curl_getinfo($ch);
+            curl_close($ch);
+            logger()->debug('--- push_multicast_messages info ---');
+            logger()->debug($info);
+            if ($info['http_code'] == 200) {
+                logger()->debug('--- push_multicast_messages response ---');
+                logger()->debug($response);
+                return [ $chunked_user_id_list, json_decode($response) ];
+            }
+            else {
+                logger()->error('--- push_multicast_messages error response ---');
+                logger()->error($response);
+                return [ $chunked_user_id_list, false ];
+            }
+        })
+            ->reduce(function($carry, $item) {
+                list($user_id_list, $result) = $item;
+                foreach ($user_id_list as $user_id) {
+                    $carry[$user_id] = $result;
+                }
+                return $carry;
+            }, []);
     }
 }

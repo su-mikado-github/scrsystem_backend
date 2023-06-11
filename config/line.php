@@ -51,5 +51,14 @@ return [
                 'Content-Type: application/json',
             ],
         ],
+
+        'push_multicast_message' => [
+            'url' => 'https://api.line.me/v2/bot/message/multicast',
+            'method' => 'POST',
+            'headers' => [
+                'Authorization: Bearer ' . env('LINE_MESSAGE_CHANNEL_TOKEN', null),
+                'Content-Type: application/json',
+            ],
+        ],
     ],
 ];

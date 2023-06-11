@@ -130,6 +130,8 @@ class LunchboxController extends Controller {
             }
 
             $reserve = $reserve->fresh();
+
+            //　LINE通知
             $message = view('templates.line.lunchbox_reserved')->with('user', $user)->with('reserve', $reserve)->render();
             if (!$this->line_api()->push_messages($user->line_user->line_owner_id, [ $message ])) {
                 DB::rollBack();

@@ -43,7 +43,8 @@ class VisitController extends Controller {
             ;
         }
 
-        $calendars = Calendar::with([ 'reserves' ])->range($start_date, $end_date)->orderBy('date')->get();
+        $calendars = Calendar::with([ 'reserves' ])->enabled()->range($start_date, $end_date)->orderBy('date')->get();
+        $day_calendar = Calendar::dateBy($today)->enabled()->first();
 
         $time_schedules = ($user->affiliation_detail->is_soccer==Flags::ON ? TimeSchedule::soccer() : TimeSchedule::noSoccer())->orderBy('time')->get();
         $start_time = $time_schedules->min('time');
@@ -52,6 +53,8 @@ class VisitController extends Controller {
         $seat_count = Seat::enabled()->count();
 
         $empty_states = EmptyState::periodBy($start_date, $end_date)->timeRangeBy($start_time, $end_time)->get();
+
+        $reserves = $user->reserves()->enabled()->get();
         return view('pages.reserve.visit.index')
             ->with('start_date', $start_date)
             ->with('end_date', $end_date)
@@ -59,6 +62,8 @@ class VisitController extends Controller {
             ->with('time_schedules', $time_schedules)
             ->with('empty_states', $empty_states)
             ->with('seat_count', $seat_count)
+            ->with('day_calendar', $day_calendar)
+            ->with('reserves', $reserves)
         ;
     }
 
@@ -208,8 +213,8 @@ class VisitController extends Controller {
             $reserve = new Reserve();
             $reserve->type = ($is_soccer ? ReserveTypes::VISIT_SOCCER : ReserveTypes::VISIT_NO_SOCCER);
             $reserve->date = $date;
-            $reserve->time = $start_time_schedule_time;
-            $reserve->end_time = $end_time_schedule_time;
+            $reserve->time = $start_time;
+            $reserve->end_time = $end_time;
             $reserve->user_id = $user->id;
             $reserve->reserve_dt = now();
             $reserve->reserve_count = $person_count;
@@ -238,6 +243,8 @@ class VisitController extends Controller {
             $reserve->rebuild_empty_states();
 
             $reserve = $reserve->fresh();
+
+            //　LINE通知
             $message = view('templates.line.visit_reserved')->with('user', $user)->with('reserve', $reserve)->render();
             if (!$this->line_api()->push_messages($user->line_user->line_owner_id, [ $message ])) {
                 DB::rollBack();

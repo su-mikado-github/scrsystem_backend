@@ -9,6 +9,9 @@ import { SCRSPage } from "/scrs-pages.js";
 import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
 
 class ReserveLunchboxPage extends SCRSPage {
+    #previousMonth = null;
+    #nextMonth = null;
+    #today = null;
 
     #lunchboxCount = null;
     #reserve = null;
@@ -18,6 +21,10 @@ class ReserveLunchboxPage extends SCRSPage {
     constructor() {
         super();
         //
+        this.#previousMonth = this.action("previousMonth", [ "click" ]);
+        this.#nextMonth = this.action("nextMonth", [ "click" ]);
+        this.#today = this.action("today", [ "click" ]);
+
         this.#lunchboxCount = this.field("lunchboxCount").handle("change");
         this.#reserve = this.action("reserve", [ "click" ]);
 
@@ -39,6 +46,18 @@ class ReserveLunchboxPage extends SCRSPage {
 
     reserveConfirm_ok(e) {
         this.post("{!! route('reserve.lunchbox', [ 'date'=>$day_calendar->date->format('Y-m-d') ]) !!}");
+    }
+
+    previousMonth_click(e) {
+        this.waitScreen(true);
+    }
+
+    nextMonth_click(e) {
+        this.waitScreen(true);
+    }
+
+    today_click(e) {
+        this.waitScreen(true);
     }
 }
 
@@ -87,10 +106,10 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
 
 {{-- カレンダーコントロール --}}
 <div class="row g-0 my-3">
-    <div class="col-2 text-center fs-3"><a href="{!! route('reserve.lunchbox', [ 'date'=>$previous_date->format('Y-m-d') ]) !!}" data-action="previousMonth"><i class="fa-solid fa-angles-left text-body"></i></a></div>
+    <div class="col-2 text-center fs-3"><a data-action="previousMonth" href="{!! route('reserve.lunchbox', [ 'date'=>$previous_date->format('Y-m-d') ]) !!}"><i class="fa-solid fa-angles-left text-body"></i></a></div>
     <div class="col-5 text-center fs-3">{!! Carbon::parse($month_calendar->start_date)->format('n/j') !!}～{!! Carbon::parse($month_calendar->end_date)->format('n/j') !!}</div>
-    <div class="col-3 text-center fs-3"><a class="text-body" href="{!! route('reserve.lunchbox') !!}"><u>本日</u></a></div>
-    <div class="col-2 text-center fs-3"><a href="{!! route('reserve.lunchbox', [ 'date'=>$next_date->format('Y-m-d') ]) !!}" data-action="nextMonth"><i class="fa-solid fa-angles-right text-body"></i></a></div>
+    <div class="col-3 text-center fs-3"><a data-action="today" class="text-body" href="{!! route('reserve.lunchbox') !!}"><u>本日</u></a></div>
+    <div class="col-2 text-center fs-3"><a data-action="nextMonth" href="{!! route('reserve.lunchbox', [ 'date'=>$next_date->format('Y-m-d') ]) !!}"><i class="fa-solid fa-angles-right text-body"></i></a></div>
 </div>
 
 {{-- 曜日 --}}
@@ -132,28 +151,48 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
             <tr>
             @foreach($week as $calendar)
                 @php
+                    $is_reserved = ($calendar->reserves()->userBy($user))->exists();
                     $is_past = ($calendar->date < today()->copy()->addDays(2));
                     $is_today = ($calendar->date == $day_calendar->date);
-                    $is_sunday = ($calendar->weekday == Weekdays::SUNDAY);
-                    $is_saturday = ($calendar->weekday == Weekdays::SATURDAY);
-                    $is_dish_menu = ($calendar->dish_menus()->count() > 0);
-                    $is_reserved = ($calendar->reserves()->userBy($user))->exists();
+                    $is_dish_menu = ($calendar->dish_menus->count() > 0);
+                    $bg_color = 'bg-white';
+                    $text_color = 'text-body';
+                    if ($is_past) {
+                        list($bg_color, $text_color) = [ 'bg-secondary','text-body' ];
+                    }
+                    else if ($is_reserved) {
+                        list($bg_color, $text_color) = [ ($is_today ? 'scrs-bg-today' : 'bg-white'),'scrs-text-main' ];
+                    }
+                    else if ($is_today) {
+                        list($bg_color, $text_color) = [ 'scrs-bg-today','text-body' ];
+                    }
+                    else if ($month_calendar->contains($calendar)) {
+                        if ($calendar->weekday == Weekdays::SUNDAY) {
+                            list($bg_color, $text_color) = [ 'bg-white','text-danger' ];
+                        }
+                        else if ($calendar->weekday == Weekdays::SATURDAY) {
+                            list($bg_color, $text_color) = [ 'bg-white','text-primary' ];
+                        }
+                    }
+                    else {
+                        list($bg_color, $text_color) = [ 'scrs-bg-lightgray','text-secondary' ];
+                    }
                 @endphp
                 @if($is_reserved)
-                <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">
-                    <span class="text-body fs-bold">{!! Carbon::parse($calendar->date)->format('n/j') !!}</span>
+                <td class="text-center align-middle py-1 {!! $bg_color !!}">
+                    <a class="{!! $text_color !!} text-decoration-none fw-bold" href="#">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
                 </td>
                 @elseif($is_past || !$is_dish_menu)
-                <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">
-                    <span class="text-body">{!! Carbon::parse($calendar->date)->format('n/j') !!}</span>
+                <td class="text-center align-middle py-1 {!! $bg_color !!}">
+                    <a class="{!! $text_color !!} text-decoration-none" href="#">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
                 </td>
                 @elseif($month_calendar->contains($calendar))
-                <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">
-                    <a class="text-body" href="{!! route('reserve.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                <td class="text-center align-middle py-1 {!! $bg_color !!}">
+                    <a class="{!! $text_color !!}" href="{!! route('reserve.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
                 </td>
                 @else
-                <td class="text-center align-middle py-1 scrs-bg-lightgray text-secondary">
-                    <a class="text-body" href="{!! route('reserve.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                <td class="text-center align-middle py-1 {!! $bg_color !!}">
+                    <a class="{!! $text_color !!}" href="{!! route('reserve.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
                 </td>
                 @endif
             @endforeach
@@ -172,17 +211,17 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
     <a class="btn border border-1 scrs-bg-sub-button scrs-border-main col-8" href="/reserve">戻る</a>
 </div>
 
-@if(isset($day_calendar) && $day_calendar->dish_menus()->count() > 0)
-    @foreach(DishTypes::values() as $dish_type)
-    @if($day_calendar->dish_menus()->dishTypeBy($dish_type->id)->count() > 0)
+@if(isset($day_calendar) && $day_calendar->dish_menus()->dishTypesBy([ DishTypes::LUNCHBOX, DishTypes::BOUT_LUNCHBOX ])->count() > 0)
+    @foreach([ DishTypes::LUNCHBOX, DishTypes::BOUT_LUNCHBOX ] as $dish_type)
+    @if($day_calendar->dish_menus()->dishTypeBy($dish_type)->count() > 0)
     <br>
 
     <div class="card">
         <div class="card-header p-1">
-            <h5 class="mb-0">{{ $dish_type->column_value }}</h5>
+            <h5 class="mb-0">{{ DishTypes::of($dish_type)->column_value }}</h5>
         </div>
         <div class="card-body p-1">
-            @foreach($day_calendar->dish_menus()->dishTypeBy($dish_type->id)->orderBy('display_order')->get() as $dish_menu)
+            @foreach($day_calendar->dish_menus()->dishTypeBy($dish_type)->orderBy('display_order')->get() as $dish_menu)
             <h6 class="mb-0">{{ $dish_menu->name }}</h6>
             <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
                 <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
@@ -212,7 +251,7 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
 
         </div>
         <div class="card-footer bg-transparent p-1">
-            @eval($daily_dish_menu = $day_calendar->daily_dish_menus()->dishTypeBy(DishTypes::DINING_HALL)->first())
+            @eval($daily_dish_menu = $day_calendar->daily_dish_menus()->dishTypeBy($dish_type)->first())
             <h6 class="mb-0">total</h6>
             <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
                 <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">

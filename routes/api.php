@@ -31,4 +31,7 @@ Route::prefix('/file')->group(function() {
     Route::post('/upload', [ App\Http\Controllers\FileController::class, 'upload' ])->name("api.file_upload");
 });
 
+// Route::prefix('/checkin')->group(function() {
+//     Route::get('/token', [ App\Http\Controllers\FileController::class, 'get_token' ])->name("api.checkin.get_token");
+// });
 

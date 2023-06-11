@@ -1,3 +1,4 @@
+@use(App\ReserveTypes)
 @extends('layouts.default')
 
 <x-script>
@@ -32,10 +33,10 @@ SCRSPage.startup(()=>new CheckinPage()); --}}
 </x-script>
 
 @section('page.title')
-チェックイン完了
+@if($reserve->type == ReserveTypes::LUNCHBOX)受け取り完了 @else チェックイン完了 @endif
 @endsection
 
 @section('main')
-<p>チェックインが完了しました。<br>
+<p>{!! ($reserve->type == ReserveTypes::LUNCHBOX ? 'お弁当の受け取り' : 'チェックイン') !!}が完了しました。<br>
 右上の×ボタンを押下して画面を閉じてください。</p>
 @endsection

@@ -1,6 +1,7 @@
 @extends('layouts.default')
 
 @use(Carbon\Carbon)
+@use(App\DishTypes)
 @use(App\Flags)
 @use(App\ReserveTypes)
 @use(App\Weekdays)
@@ -12,6 +13,7 @@ import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
 class ReserveVisitPage extends SCRSPage {
     #previousWeek = null;
     #nextWeek = null;
+    #today = null;
 
     #toggles = null;
 
@@ -26,6 +28,7 @@ class ReserveVisitPage extends SCRSPage {
 
         this.#previousWeek = this.action("previousWeek", [ "click" ]);
         this.#nextWeek = this.action("nextWeek", [ "click" ]);
+        this.#today = this.action("today", [ "click" ]);
         this.#toggles = this.actions("toggle", [ "click" ]);
         this.#reserveTime = this.field("reserve_time");
         this.#isTableShareOk = this.field("is_table_share_ok");
@@ -44,6 +47,7 @@ class ReserveVisitPage extends SCRSPage {
     reserveConfirm_ok(e) {
         this.#reservedDialog.close();
 
+        this.waitScreen(true);
         this.post([ "/reserve/visit", e.detail.date ]);
     }
 
@@ -61,19 +65,17 @@ class ReserveVisitPage extends SCRSPage {
             this.#reservedDialog.field("table_share_annotation").rcss(isTableShareNg, "d-none");
             this.#reservedDialog.open({ date: date.format("YYYY-MM-DD") });
         }
-        {{-- const toggle = this.proxy(e.target, "toggle");
-        toggle.css(!toggle.hasClass("scrs-selected"), "scrs-selected"); --}}
     }
 
     previousWeek_click(e) {
-        {{-- e.preventDefault();
-        e.stopPropagation(); --}}
         this.waitScreen(true);
     }
 
     nextWeek_click(e) {
-        {{-- e.preventDefault();
-        e.stopPropagation(); --}}
+        this.waitScreen(true);
+    }
+
+    today_click(e) {
         this.waitScreen(true);
     }
 }
@@ -137,6 +139,7 @@ td:has(.scrs-selected) {
     <div class="col-4 text-center"><span class="mdi mdi-circle-outline scrs-text-available"></span><i class="fa-solid fa-ellipsis px-1"></i>予約可能</div>
     <div class="col-4 text-center"><span class="mdi mdi-triangle-outline scrs-text-few-left"></span><i class="fa-solid fa-ellipsis px-1"></i>残りわずか</div>
     <div class="col-4 text-center"><i class="fa-solid fa-minus scrs-text-fully-occupied"></i><i class="fa-solid fa-ellipsis px-1"></i>売り切れ</div>
+    <div class="col-4 text-center"><span class="fa-solid fa-registered scrs-text-available"></span><i class="fa-solid fa-ellipsis px-1"></i>予約済</div>
 </div>
 
 <p>
@@ -147,10 +150,10 @@ td:has(.scrs-selected) {
 {{-- 予約状況カレンダー（ここから） --}}
 {{-- カレンダーコントロール --}}
 <div class="row g-0 my-3">
-    <div class="col-2 text-end fs-3"><a href="/reserve/visit/{!! $start_date->copy()->addDay(-7)->format('Y-m-d') !!}" data-action="previousWeek"><u><i class="fa-solid fa-angles-left text-body"></i></u></a></div>
+    <div class="col-2 text-end fs-3"><a data-action="previousWeek" href="/reserve/visit/{!! $start_date->copy()->addDay(-7)->format('Y-m-d') !!}"><u><i class="fa-solid fa-angles-left text-body"></i></u></a></div>
     <div class="col-5 text-center fs-3">{!! $start_date->format('m/d') !!}～{!! $end_date->format('m/d') !!}</div>
-    <div class="col-3 text-center fs-3"><a class="text-body" href="{!! route('reserve.visit', [ today()->format('Y-m-d') ]) !!}"><u>本日</u></a></div>
-    <div class="col-2 fs-3"><a href="/reserve/visit/{!! $start_date->copy()->addDay(7)->format('Y-m-d') !!}" data-action="nextWeek"><u><i class="fa-solid fa-angles-right text-body"></i></u></a></div>
+    <div class="col-3 text-center fs-3"><a data-action="today" class="text-body" href="{!! route('reserve.visit') !!}"><u>本日</u></a></div>
+    <div class="col-2 fs-3"><a data-action="nextWeek" href="/reserve/visit/{!! $start_date->copy()->addDay(7)->format('Y-m-d') !!}"><u><i class="fa-solid fa-angles-right text-body"></i></u></a></div>
 </div>
 
 {{-- 曜日 --}}
@@ -196,6 +199,7 @@ td:has(.scrs-selected) {
     <th class="bg-white text-center align-middle py-1">&nbsp;</th>
     @foreach($calendars as $calendar)
     @php
+        $is_today = ($calendar->date == $day_calendar->date);
         $text_color = 'text-body';
         if ($calendar->weekday == Weekdays::SATURDAY) {
             $text_color = 'text-primary';
@@ -204,7 +208,7 @@ td:has(.scrs-selected) {
             $text_color = 'text-danger';
         }
     @endphp
-    <th class="bg-white text-center align-middle py-1 {!! $text_color !!}"><small>{!! $calendar->date->format('m/d') !!}</small></th>
+    <th class="{!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!} text-center align-middle py-1 {!! $text_color !!}"><small>{!! $calendar->date->format('m/d') !!}</small></th>
     @endforeach
 </tr>
 </thead>
@@ -214,29 +218,43 @@ td:has(.scrs-selected) {
 <tr>
     <td class="bg-white text-center align-middle py-1">{{ sprintf('%02d:%02d', $hour, $minute) }}</td>
     @foreach($calendars as $calendar)
-    @php
-        $is_past = ($calendar->date < today()->copy()->addDays(2));
-        $empty_state = $empty_states->where('date', $calendar->date->format('Y-m-d'))->where('time', $time_schedule->time)->first();
-        $empty_seat_rate = (op($empty_state)->empty_seat_rate ?? 0);
-        if ($empty_seat_rate == 0) {
-            $seat_state = 'fa-solid fa-minus scrs-text-fully-occupied';
-        }
-        else if ($empty_seat_rate < 50) {
-            $seat_state = 'mdi mdi-triangle-outline scrs-text-few-left';
-        }
-        else {
-            $seat_state = 'mdi mdi-circle-outline scrs-text-available';
-        }
-    @endphp
-    @if($is_past)
-    <td class="bg-light text-center align-middle py-1">
-        <x-icon data-empty_seat_rate="{!! $empty_seat_rate !!}" data-time="{!! $time_schedule->time !!}" data-date="{!! $calendar->date->format('Y-m-d') !!}" class="fs-4 invisible" name="{!! $seat_state !!}" />
-    </td>
-    @else
-    <td class="{!! (isset($empty_state) ? 'bg-white' : 'bg-secondary') !!} text-center align-middle py-1">
-        <x-icon data-action="toggle" data-empty_seat_rate="{!! $empty_seat_rate !!}" data-time="{!! $time_schedule->time !!}" data-date="{!! $calendar->date->format('Y-m-d') !!}" class="fs-4 {!! (isset($empty_state) ? '' : 'invisible') !!}" name="{!! $seat_state !!}" />
-    </td>
-    @endif
+        @php
+            $is_past = ($calendar->date < today()->copy()->addDays(2));
+            $is_today = ($calendar->date == $day_calendar->date);
+            $calendar_date = $calendar->date;
+            $is_reserved = $reserves->where('date', '=', $calendar_date)->isNotEmpty();
+            $is_reserved_time = $reserves->filter(function($reserve) use($calendar, $time_schedule) {
+                return ($reserve->date == $calendar->date && $reserve->time <= $time_schedule->time && $time_schedule->time <= $reserve->end_time);
+            })->isNotEmpty();
+            $empty_state = $empty_states->where('date', $calendar->date->format('Y-m-d'))->where('time', $time_schedule->time)->first();
+            $empty_seat_rate = (op($empty_state)->empty_seat_rate ?? 0);
+            if ($is_reserved_time) {
+                $seat_state = 'fa-solid fa-registered scrs-text-available';
+            }
+            else if ($empty_seat_rate == 0) {
+                $seat_state = 'fa-solid fa-minus scrs-text-fully-occupied';
+            }
+            else if ($empty_seat_rate < 50) {
+                $seat_state = 'mdi mdi-triangle-outline scrs-text-few-left';
+            }
+            else {
+                $seat_state = 'mdi mdi-circle-outline scrs-text-available';
+            }
+        @endphp
+        <!-- {!! print_r(compact('calendar_date', 'is_reserved', 'is_reserved_time'), true) !!} -->
+        @if($is_reserved)
+        <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!}">
+            <x-icon data-empty_seat_rate="{!! $empty_seat_rate !!}" data-time="{!! $time_schedule->time !!}" data-date="{!! $calendar->date->format('Y-m-d') !!}" class="fs-4 {!! ($is_reserved_time ? 'text-secondary' : 'invisible') !!}" name="{!! $seat_state !!}" />
+        </td>
+        @elseif($is_past)
+        <td class="bg-light text-center align-middle py-1">
+            <x-icon data-empty_seat_rate="{!! $empty_seat_rate !!}" data-time="{!! $time_schedule->time !!}" data-date="{!! $calendar->date->format('Y-m-d') !!}" class="fs-4 invisible" name="{!! $seat_state !!}" />
+        </td>
+        @else
+        <td class="{!! (isset($empty_state) ? 'bg-white' : 'bg-secondary') !!} text-center align-middle py-1">
+            <x-icon data-action="toggle" data-empty_seat_rate="{!! $empty_seat_rate !!}" data-time="{!! $time_schedule->time !!}" data-date="{!! $calendar->date->format('Y-m-d') !!}" class="fs-4 {!! (isset($empty_state) ? '' : 'invisible') !!}" name="{!! $seat_state !!}" />
+        </td>
+        @endif
     @endforeach
 </tr>
 @endforeach
@@ -246,13 +264,87 @@ td:has(.scrs-selected) {
 
 <br>
 
-{{-- <div class="d-flex justify-content-center py-2">
-    <button data-action="reserve" type="button" class="btn scrs-bg-main-button col-8" data-bs-toggle="modal" data-bs-target="#reserveConfirm">予約する</button>
-</div> --}}
-
 <div class="d-flex justify-content-center py-2">
     <a class="btn border border-1 scrs-bg-sub-button scrs-border-main col-8" href="/reserve">戻る</a>
 </div>
+
+{{--
+@if(isset($day_calendar) && $day_calendar->dish_menus()->dishTypesBy([ DishTypes::DINING_HALL ])->count() > 0)
+    @foreach([ DishTypes::DINING_HALL ] as $dish_type)
+    @if($day_calendar->dish_menus()->dishTypeBy($dish_type)->count() > 0)
+    <br>
+
+    <div class="card">
+        <div class="card-header p-1">
+            <h5 class="mb-0">{{ DishTypes::of($dish_type)->column_value }}</h5>
+        </div>
+        <div class="card-body p-1">
+            @foreach($day_calendar->dish_menus()->dishTypeBy($dish_type)->orderBy('display_order')->get() as $dish_menu)
+            <h6 class="mb-0">{{ $dish_menu->name }}</h6>
+            <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+                <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+                <tbody>
+                <tr>
+                    <th class="">エネルギー</th>
+                    <td class="text-nowrap text-end">{{ number_format($dish_menu->energy, 1) }}<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                    <th class=""></th>
+                    <td class="text-nowrap text-end"></td>
+                </tr>
+                <tr>
+                    <th class="">炭水化物</th>
+                    <td class="text-nowrap text-end">{{ number_format($dish_menu->carbohydrates, 1) }}<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                    <th class="">たんぱく質</th>
+                    <td class="text-nowrap text-end">{{ number_format($dish_menu->protein, 1) }}<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+                </tr>
+                <tr>
+                    <th class="">脂質</th>
+                    <td class="text-nowrap text-end">{{ number_format($dish_menu->lipid, 1) }}<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                    <th class="">食物繊維</th>
+                    <td class="text-nowrap text-end">{{ number_format($dish_menu->dietary_fiber, 1) }}<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+                </tr>
+                </tbody>
+                </table>
+            </div>
+            @endforeach
+
+        </div>
+        <div class="card-footer bg-transparent p-1">
+            @eval($daily_dish_menu = $day_calendar->daily_dish_menus()->dishTypeBy($dish_type)->first())
+            <h6 class="mb-0">total</h6>
+            <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
+                <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+                <tbody>
+                <tr>
+                    <th class="">エネルギー</th>
+                    <td class="text-nowrap text-end">{{ number_format($daily_dish_menu->energy, 1) }}<b class="d-inline-block" style="font-size:80%;width:2em;">kcal</b></td>
+                    <th class=""></th>
+                    <td class="text-nowrap text-end"></td>
+                </tr>
+                <tr>
+                    <th class="">炭水化物</th>
+                    <td class="text-nowrap text-end">{{ number_format($daily_dish_menu->carbohydrates, 1) }}<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                    <th class="">たんぱく質</th>
+                    <td class="text-nowrap text-end">{{ number_format($daily_dish_menu->protein, 1) }}<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+                </tr>
+                <tr>
+                    <th class="">脂質</th>
+                    <td class="text-nowrap text-end">{{ number_format($daily_dish_menu->lipid, 1) }}<b class="d-inline-block text-start" style="font-size:80%;width:2em;">g</b></td>
+                    <th class="">食物繊維</th>
+                    <td class="text-nowrap text-end">{{ number_format($daily_dish_menu->dietary_fiber, 1) }}<b class="d-inline-block text-start" style="font-size:80%;">g</b></td>
+                </tr>
+                </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    @endif
+    @endforeach
+@else
+<br>
+
+<h6>※メニューはありません。</h6>
+@endif --}}
 
 @endsection
 
