@@ -84,7 +84,79 @@ class ChangeController extends Controller {
         }
     }
 
-    public function post(Request $request, $reserve_id) {
+    public function post_visit(Request $request, $reserve_id) {
+        $user = $this->user();
+
+        $reserve = Reserve::enabled()->find($reserve_id);
+        abort_if(!$reserve, 404, __('messages.not_found.reserve'));
+
+        if (isset($reserve->cancel_dt)) {
+            return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
+                ->withInput()
+                ->with('error', __('messages.error.canceled'));
+        }
+        else if (isset($reserve->checkin_dt)) {
+            return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
+                ->withInput()
+                ->with('error', __('messages.error.lunchbox_checkin'));
+        }
+
+        // バリデーション
+        $rules = [
+            'new_time' => [ 'required', 'regex:/^[0-9]{2}[:][0-9]{2}[:][0-9]{2}$/i' ],
+        ];
+        $messages = [
+            'new_time.required' => '変更先の時刻は必須です。',
+            'new_time.regex' => '正しい時刻を入力してください。',
+        ];
+        $this->try_validate($request->all(), $rules, $messages);
+
+        return $this->trans(function() use($request, $user, $reserve) {
+            $new_time = $request->input('new_time');
+            $start_mins = $this->time_to_mins($new_time);
+            $end_mins = $start_mins + intval(config('system.dining_hall.stay_time_mins', 20)) - 1;
+            $start_time = $this->mins_to_time($start_mins);
+            $end_time = $this->mins_to_time($end_mins);
+            logger()->debug(compact('new_time', 'start_mins', 'end_mins', 'start_time', 'end_time'));
+
+            $is_empty_seat_short = EmptyState::dateBy($reserve->date)->timeRangeBy($start_time, $end_time)->where('empty_seat_count', '<', $reserve->reserve_count)->exists();
+            if ($is_empty_seat_short) {
+                return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
+                    ->withInput()
+                    ->with('error', __('messages.error.reserve_seat_short'));
+            }
+
+            $old_start_time = $reserve->time;
+            $old_end_time = $reserve->end_time;
+
+            $reserve->time = $start_time;
+            $reserve->end_time = $end_time;
+            $this->save($reserve, $user);
+
+            // 変更前の予約時間の空き情報を更新する
+            EmptyState::rebuild($reserve->date, $old_start_time, $old_end_time);
+
+            // 変更後の予約時間の空き情報を更新する
+            $reserve->rebuild_empty_states();
+
+            // LINE通知
+            $canceled_view = 'templates.line.visit_changed';
+            $message = view($canceled_view)->with('user', $user)->with('reserve', $reserve)->render();
+            if (!$this->line_api()->push_messages($user->line_user->line_owner_id, [ $message ])) {
+                DB::rollBack();
+                return redirect()->action([ self::class, 'index' ], [ 'date'=>$date ])
+                    ->withInput()
+                    ->with('error', __('messages.error.push_messages'));
+            }
+
+            $reserve = $reserve->fresh();
+            return view('pages.reserve.change.post')
+                ->with('reserve', $reserve)
+            ;
+        });
+    }
+
+    public function post_lunchbox(Request $request, $reserve_id) {
         $user = $this->user();
 
         $reserve = Reserve::enabled()->find($reserve_id);
@@ -131,7 +203,7 @@ class ChangeController extends Controller {
         }
 
         // 予約の重複チェック
-        $reserve_types = ($reserve->type == ReserveTypes::LUNCHBOX ? [ ReserveTypes::LUNCHBOX ] : [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ]);
+        $reserve_types = [ ReserveTypes::LUNCHBOX ];
         $is_reserve_exists = Reserve::dateBy($new_date)->userBy($user)->typesBy($reserve_types)->enabled()->unCanceled()->exists();
         if ($is_reserve_exists) {
             return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
@@ -140,7 +212,7 @@ class ChangeController extends Controller {
         }
 
         // 料理メニューの設定有無のチェック
-        $dish_types = ($reserve->type == ReserveTypes::LUNCHBOX ? [ DishTypes::LUNCHBOX, DishTypes::BOUT_LUNCHBOX ] : [ DishTypes::DINING_HALL ]);
+        $dish_types = [ DishTypes::LUNCHBOX, DishTypes::BOUT_LUNCHBOX ];
         $is_dish_menu_exists = $calendar->dish_menus()->dishTypesBy($dish_types)->exists();
         if (!$is_dish_menu_exists) {
             return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
@@ -153,7 +225,7 @@ class ChangeController extends Controller {
             $this->save($reserve, $user);
 
             // LINE通知
-            $canceled_view = ($reserve->type==ReserveTypes::LUNCHBOX ? 'templates.line.lunchbox_changed' : 'templates.line.visit_changed');
+            $canceled_view = 'templates.line.lunchbox_changed';
             $message = view($canceled_view)->with('user', $user)->with('reserve', $reserve)->render();
             if (!$this->line_api()->push_messages($user->line_user->line_owner_id, [ $message ])) {
                 DB::rollBack();

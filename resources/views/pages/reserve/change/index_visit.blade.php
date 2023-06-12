@@ -3,11 +3,18 @@
 @use(App\Weekdays)
 @extends('layouts.default')
 
+@eval($from_time = transform($reserve->time, function($v) { list($h, $m, $s) = explode(":", $v); return sprintf('%02d:%02d', $h, $m); }));
+
 <x-script>
 import { SCRSPage } from "/scrs-pages.js";
 import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
 
 class ChangePage extends SCRSPage {
+    {{-- #timeSchedule = null; --}}
+
+    #newTime = null;
+
+    #toggles = null;
     #cancel = null;
 
     #changeConfirmDialog = null;
@@ -16,10 +23,28 @@ class ChangePage extends SCRSPage {
     constructor() {
         super();
         //
+        {{-- this.#timeSchedule = this.field("timeSchedule"); --}}
+        this.#newTime = this.field("newTime");
+
+        this.#toggles = this.actions("toggle", [ "click" ]);
         this.#cancel = this.action("cancel", [ "click" ]);
 
         this.#changeConfirmDialog = new SCRSConfirmDialog(this, "changeConfirm", null, [ "ok" ]);
         this.#cancelConfirmDialog = new SCRSConfirmDialog(this, "cancelConfirm", null, [ "ok" ]);
+    }
+
+    toggle_click(e) {
+        {{-- e.preventDefault();
+        e.stopPropagation(); --}}
+        const time = e.target.dataset["time"];
+        {{-- alert(time); --}}
+        this.#newTime.value = time;
+
+        const fromTime = @json($from_time);
+        const [ hour, minute, sec ] = time.split(":");
+        const message = `${fromTime} → ${hour}:${minute}<br>変更してもよろしいですか？`;
+        this.#changeConfirmDialog.field("message").html(message);
+        this.#changeConfirmDialog.open();
     }
 
     cancel_click(e) {
@@ -35,7 +60,7 @@ class ChangePage extends SCRSPage {
     } --}}
 
     changeConfirm_ok(e) {
-        this.post([ "/reserve/change", @json($reserve->id) ]);
+        this.post([ "/reserve/change", @json($reserve->id), 'visit' ]);
         {{-- this.#changeConfirmDialog.close(); --}}
     }
 
@@ -111,7 +136,7 @@ SCRSPage.startup(()=>new ChangePage());
 </div>
 
 {{-- 曜日 --}}
-<table class="w-100" style="border-collapse:separate;border-spacing:1px;">
+<table data-field="timeSchedule" class="w-100" style="border-collapse:separate;border-spacing:1px;">
 <colgroup>
     <col style="width:14.28%;">
     <col style="width:14.28%;">
@@ -204,6 +229,7 @@ SCRSPage.startup(()=>new ChangePage());
 <p>お時間の変更の際は、下記の<x-icon name="mdi mdi-circle-outline" class="scrs-text-available fs-4" />または<x-icon name="mdi mdi-triangle-outline" class="scrs-text-few-left fs-4" />のいずれかをタップしてください。</p>
 <p>※<x-icon name="fa-solid fa-registered" class="scrs-text-available fs-4" />は、現在の予約時間です。</p>
 
+<input type="hidden" data-field="newTime" name="new_time">
 <table class="w-100" style="border-collapse:separate;border-spacing:2px;">
 <colgroup>
     <col style="width:25%;">
@@ -231,7 +257,11 @@ SCRSPage.startup(()=>new ChangePage());
     <tr class="scrs-bg">
         <td class="bg-white text-center align-middle py-2">{{ sprintf('%02d:%02d', $hour, $minute) }}</td>
         <td class="bg-white text-center align-middle py-2">
-            <a href="#" @if($is_reserved_time) class="text-decoration-none" @else data-action="toggle" @endif><x-icon name="{!! $icon_name !!}" class="{!! $class !!}" />
+            @if($is_reserved_time)
+            <x-icon name="{!! $icon_name !!}" class="{!! $class !!}" data-time="{!! $time_schedule->time !!}"  />
+                @else
+            <x-icon name="{!! $icon_name !!}" class="{!! $class !!}" data-time="{!! $time_schedule->time !!}" data-action="toggle"  />
+            @endif
         </td>
     </tr>
 @endforeach
@@ -259,8 +289,8 @@ SCRSPage.startup(()=>new ChangePage());
 
 <x-confirm-dialog id="changeConfirm" type="change">
     <x-slot name="title">確認</x-slot>
-    <h3 data-name="message" class="text-center mb-3"></h3>
-    <p data-name="description" class="text-center">※混雑時はお待ちいただく場合がございます</p>
+    <h3 data-field="message" class="text-center mb-3"></h3>
+    <p class="text-center">※混雑時はお待ちいただく場合がございます</p>
     <x-slot name="ok_button">予約を変更する</x-slot>
     <x-slot name="cancel_button">戻る</x-slot>
 </x-confirm-dialog>

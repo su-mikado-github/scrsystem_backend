@@ -1,9 +1,15 @@
 class Enum {
     constructor(source) {
-        Object.setPrototypeOf(this, source);
-        // for (let name in source) {
-        //     this[name] = source[name];
-        // }
+        const enumObject = {};
+        for (let name in source) {
+            const enumValue = source[name];
+            const properties = {
+                id: enumValue.id
+            };
+            Object.assign(properties, enumValue.option);
+            enumObject[name] = properties;
+        }
+        Object.setPrototypeOf(this, enumObject);
     }
 }
 
@@ -45,7 +51,9 @@ class SCRSElementProxyHandler {
             }
 
             if (typeof(handlerMethod) === "function") {
-                target.addEventListener(eventName, (e)=>handlerMethod.apply(this.#owner, [ e ]));
+                target.addEventListener(eventName, (e)=>{
+                    handlerMethod.apply(this.#owner, [ e ]);
+                });
             }
         }
     }

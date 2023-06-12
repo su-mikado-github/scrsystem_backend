@@ -123,13 +123,12 @@ class VisitController extends Controller {
         $person_count = intval($request->input('person_count'));
         $is_table_share = Flags::of($request->input('is_table_share'))->id;
 
-        list($hour, $minute, $second) = explode(':', $reserve_time);
-        $start_mins = $hour * 60 + $minute;
-        $end_mins = $start_mins + 20 - 1;  //TODO:暫定で20分間の利用と考える
+        $start_mins = $this->time_to_mins($reserve_time);
+        $end_mins = $start_mins + intval(config('system.dining_hall.stay_time_mins', 20)) - 1;  //TODO:暫定で20分間の利用と考える
         $need_seat_count = 20 * $person_count;
 
-        $start_time = sprintf('%02d:%02d:00', floor($start_mins / 60), ($start_mins % 60));
-        $end_time = sprintf('%02d:%02d:00', floor($end_mins / 60), ($end_mins % 60));
+        $start_time = $this->mins_to_time($start_mins);
+        $end_time = $this->mins_to_time($end_mins);
 
         $empty_seats = EmptySeat::dateBy($date)->timeRangeBy($start_time, $end_time)
             ->selectRaw('time, seat_group_no, COUNT(*) as seat_count')
@@ -206,8 +205,6 @@ class VisitController extends Controller {
             $is_soccer = $user->affiliation_detail->is_soccer;
 
             $time_schedule_times = ($is_soccer ? TimeSchedule::soccer() : TimeSchedule::noSoccer())->timePeriodBy($start_time, $end_time)->get()->pluck('time');
-            $start_time_schedule_time = $time_schedule_times->min();
-            $end_time_schedule_time = $time_schedule_times->max();
 
             // 予約情報の保存
             $reserve = new Reserve();

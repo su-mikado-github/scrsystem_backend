@@ -80,4 +80,23 @@ class Controller extends BaseController {
     protected function trans(callable $scope) {
         return DB::transaction($scope);
     }
+
+    protected function time_to_mins($time, $default=null) {
+        if (isset($time) && preg_match('/^[0-9]{2}[:][0-9]{2}[:][0-9]{2}$/i', $time)) {
+            list($h, $m, $s) = explode(":", $time);
+            if (0 <= $h && 0 <= $m && $m < 60 && 0 <= $s && $s < 60) {
+                return ($h * 60 + $m);
+            }
+        }
+        return $default;
+    }
+
+    protected function mins_to_time($mins, $default=null) {
+        if (isset($mins) && is_integer($mins) && 0 <= $mins) {
+            $h = intval(floor($mins / 60));
+            $m = ($mins % 60);
+            return sprintf('%02d:%02d:00', $h, $m);
+        }
+        return $default;
+    }
 }

@@ -45,7 +45,7 @@ class ChangePage extends SCRSPage {
     } --}}
 
     changeConfirm_ok(e) {
-        this.post([ "/reserve/change", @json($reserve->id) ]);
+        this.post([ "/reserve/change", @json($reserve->id), 'lunchbox' ]);
         {{-- this.#changeConfirmDialog.close(); --}}
     }
 
