@@ -40,7 +40,7 @@ SCRSPage.startup(()=>new CheckinPage());
 </x-script>
 
 @section('page.title')
-@if($reserve->type == ReserveTypes::LUNCHBOX)お弁当 @else チェックイン @endif
+@if(op($reserve)->type == ReserveTypes::LUNCHBOX)お弁当 @else チェックイン @endif
 @endsection
 
 @section('main')
