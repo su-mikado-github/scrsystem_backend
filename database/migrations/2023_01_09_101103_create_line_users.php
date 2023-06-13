@@ -22,7 +22,7 @@ class CreateLineUsers extends BaseMigration {
             $table->string('access_token', 256)->nullable()->comment('アクセス・トークン');
             $table->string('refresh_token', 256)->nullable()->comment('リフレッシュ・トークン');
             $table->text('profile_picture_url')->nullable()->comment('プロフィール画像URL');
-            $table->text('line_name')->nullable()->comment('LINE名');
+            $table->text('display_name')->nullable()->comment('LINE名');
             $table->string('screen_path', 1024)->nullable()->comment('画面パス');
             $this->build_common_columns($table);
         });
