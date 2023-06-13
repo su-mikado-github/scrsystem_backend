@@ -30,7 +30,7 @@ class LineController extends Controller {
 
         $line_user = new LineUser();
         $line_user->line_owner_id = $line_owner_id;
-        $line_user->token = Str::uuid();
+        $line_user->token = strval(Str::uuid());
         $line_user->profile_picture_url = $profile_picture_url;
         $line_user->display_name = $display_name;
         $this->save($line_user);
