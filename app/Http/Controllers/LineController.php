@@ -25,8 +25,8 @@ class LineController extends Controller {
             return false;
         }
 
-        $display_name = $get_bot_profile['displayName'];
-        $profile_picture_url = $get_bot_profile['pictureUrl'];
+        $display_name = $get_bot_profile->displayName;
+        $profile_picture_url = $get_bot_profile->pictureUrl;
 
         $line_user = new LineUser();
         $line_user->line_owner_id = $line_owner_id;

@@ -35,7 +35,7 @@ class Attest
         abort_if(!$line_user, 400, __('messages.error.follow_retry'));
 
         Auth::login($line_user->user);
-        if ($user->is_initial_setting || $screen_path == 'mypage') {
+        if ($line_user->user->is_initial_setting || $screen_path == 'mypage') {
             Cookie::queue(self::SCRS_TOKEN_NAME, $scrs_token, self::SCRS_TOKEN_MINUTES);
             return $next($request);
         }
