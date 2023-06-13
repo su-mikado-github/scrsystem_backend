@@ -6,13 +6,21 @@ RUN apt -y install nodejs
 RUN apt -y install npm
 RUN apt -y install unzip
 RUN apt -y install mariadb-client
+RUN apt -y install cron
+RUN apt -y install vim
+RUN apt -y install procps
+
 RUN docker-php-ext-install zip
 RUN pecl install xdebug-3.1.6 && docker-php-ext-enable xdebug
+
+COPY cron.root /var/spool/cron/crontabs/root
 
 COPY --from=composer:2.3.5 /usr/bin/composer /usr/bin/composer
 COPY php.ini /etc/php/8.1/cli/conf.d/99-etc.ini
 
 RUN docker-php-ext-install pdo_mysql
+
+WORKDIR /var/www/laravel
 
 RUN mkdir -p /var/www/laravel/storage/framework/cache/data && \
     mkdir -p /var/www/laravel/storage/framework/app/cache && \
@@ -24,6 +32,3 @@ RUN mkdir -p /var/www/laravel/storage/framework/cache/data && \
 ADD docker-entrypoint.sh ./
 RUN chmod +x ./docker-entrypoint.sh
 CMD ["./docker-entrypoint.sh"]
-
-WORKDIR /var/www/laravel
-
