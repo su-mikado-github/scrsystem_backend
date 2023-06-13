@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 use App\BaseMigration;
 
-use App\DishTypes;
-
-class CreateDishs extends BaseMigration {
+class CreateFiles extends BaseMigration {
     /**
      * Run the migrations.
      *
@@ -16,10 +14,11 @@ class CreateDishs extends BaseMigration {
      */
     public function up()
     {
-        Schema::create('dishs', function (Blueprint $table) {
-            //
-            $table->id()->comment('料理ID');
-            $table->enum('dish_type', DishTypes::id_list())->comment('料理種類');
+        Schema::create('files', function (Blueprint $table) {
+            $table->id();
+            $table->string('path', 1024)->comment('パス');
+            $table->text('name')->nullable()->comment('ファイル名');
+            $table->string('mime_type', 256)->comment('MIMEタイプ');
             $this->build_common_columns($table);
         });
     }
@@ -31,6 +30,6 @@ class CreateDishs extends BaseMigration {
      */
     public function down()
     {
-        Schema::dropIfExists('dishs');
+        Schema::dropIfExists('files');
     }
 }

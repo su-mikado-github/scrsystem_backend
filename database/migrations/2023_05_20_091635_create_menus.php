@@ -21,6 +21,7 @@ class CreateMenus extends BaseMigration
         Schema::create('menus', function (Blueprint $table) {
             $table->id()->comment('メニューID');
             $table->string('category', 1024)->comment('メニュー分類');
+            $table->string('item_key', 1024)->comment('メニューアイテム識別キー');
             $table->enum('item_type', MenuItemTypes::id_list())->comment('メニューアイテム種類');
             $table->text('name')->nullable()->comment('名称');
             $table->string('path', 1024)->nullable()->comment('パス');

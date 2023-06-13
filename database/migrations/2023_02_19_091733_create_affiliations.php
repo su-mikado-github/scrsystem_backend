@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+use App\AffiliationDetailTypes;
+
 use App\BaseMigration;
 
 class CreateAffiliations extends BaseMigration {
@@ -18,7 +20,7 @@ class CreateAffiliations extends BaseMigration {
             $table->id()->comment('所属ID');
             $table->text('name')->nullable()->comment('名称');
             $table->integer('display_order')->default(1)->comment('表示順');
-            $table->integer('detail_type')->comment('詳細分類');
+            $table->enum('detail_type', AffiliationDetailTypes::id_list())->comment('詳細分類');
             $this->build_common_columns($table);
         });
 

@@ -22,9 +22,10 @@ class CreateReserves extends BaseMigration {
             $table->time('end_time')->nullable()->comment('利用終了時刻');
             $table->bigInteger('user_id')->comment('利用者ID');
             $table->dateTime('reserve_dt')->comment('予約日時');
-            $table->integer('reserve_time_range')->nullable()->comment('時刻(分)');
             $table->integer('reserve_count')->comment('予約数');
             $table->boolean('is_table_share')->comment('相席可フラグ');
+            $table->dateTime('checkin_dt')->nullable()->comment('チェックイン日時');
+            $table->dateTime('cancel_dt')->nullable()->comment('取消日時');
             $this->build_common_columns($table);
         });
     }

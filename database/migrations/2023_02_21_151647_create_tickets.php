@@ -17,7 +17,7 @@ class CreateTickets extends BaseMigration {
         Schema::create('tickets', function (Blueprint $table) {
             //
             $table->id()->comment('回数券ID');
-            $table->text('name')->nullable()->comment('名称');
+            $table->text('name')->comment('名称');
             $table->integer('ticket_count')->comment('枚数');
             $table->integer('display_order')->default(1)->comment('表示順');
             $this->build_common_columns($table);

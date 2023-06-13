@@ -18,9 +18,8 @@ class CreateAffiliationDetails extends BaseMigration {
     {
         Schema::create('affiliation_details', function (Blueprint $table) {
             $table->id()->comment('所属詳細ID');
-            $table->enum('detail_type')->comment('詳細分類');
+            $table->enum('detail_type', AffiliationDetailTypes::id_list())->comment('詳細分類');
             $table->boolean('is_soccer')->default(false)->comment('サッカー部フラグ');
-
             $table->text('name')->nullable()->comment('名称');
             $table->integer('display_order')->default(1)->comment('表示順');
             $this->build_common_columns($table);

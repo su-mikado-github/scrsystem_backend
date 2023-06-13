@@ -37,6 +37,7 @@ class CreateUsers extends BaseMigration
             $table->boolean('is_admin')->default(false)->comment('システム管理者フラグ');
             $table->string('admin_password', 256)->comment('システム管理者パスワード')->default('*');
             $table->datetime('last_login_dt')->nullable()->comment('最終ログイン日時');
+            $table->string('checkin_token', 256)->comment('IDトークン');
             $table->boolean('is_initial_setting')->default(false)->comment('初期設定済フラグ');
             $this->build_common_columns($table);
         });
