@@ -39,7 +39,7 @@ class Attest
             Cookie::queue(self::SCRS_TOKEN_NAME, $scrs_token, self::SCRS_TOKEN_MINUTES);
             return $next($request);
         }
-        else ($screen_path != 'mypage') {
+        else {
             return redirect(route('mypage'))
                 ->cookie(self::SCRS_TOKEN_NAME, $scrs_token, self::SCRS_TOKEN_MINUTES)
                 ->with('warning', 'ご利用者の情報を登録してください。');
