@@ -1,5 +1,5 @@
 -- Project Name : 学食予約システム
--- Date/Time    : 2023/05/21 23:55:20
+-- Date/Time    : 2023/06/13 22:09:37
 -- Author       : Shuji Ushiyama
 -- RDBMS Type   : MySQL
 -- Application  : A5:SQL Mk-2
@@ -13,9 +13,9 @@
 */
 
 -- 週カレンダー
-drop view if exists week_calendars;
+drop view if exists `week_calendars`;
 
-create view week_calendars as 
+create view `week_calendars` as 
 select
   T.id -- カレンダーID
   , T.date -- 日付

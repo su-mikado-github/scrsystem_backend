@@ -18,6 +18,7 @@ class CreateEmptyStates extends BaseMigration {
     {
         Schema::create('empty_states', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('calendar_id')->comment('カレンダーID');
             $table->date('date')->comment('日付');
             $table->integer('year')->comment('西暦年');
             $table->integer('month')->comment('月');
