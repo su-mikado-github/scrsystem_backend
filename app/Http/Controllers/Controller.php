@@ -60,6 +60,13 @@ class Controller extends BaseController {
         $model->save();
     }
 
+    protected function delete(Model $model) {
+        if (isset($model)) {
+            $model->is_delete = Flags::ON;
+            $model->save();
+        }
+    }
+
     protected function validate(array $input, array $rules, array $messages=null, callable $after=null) {
         $validator = Validator::make($input, $rules, $messages ?? []);
         if (isset($after)) {

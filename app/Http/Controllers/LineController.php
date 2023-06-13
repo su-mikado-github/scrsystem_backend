@@ -16,54 +16,81 @@ class LineController extends Controller {
     /**
      * Webhook（フォローイベント）の処理
      */
-    protected function webhook_follow(LineApi $line_api, array $webhook) {
+    protected function webhook_follow(array $webhook) {
+        $line_owner_id = $webhook['source']['userId'];
+
+        $get_bot_profile = $this->line_api()->get_bot_profile($line_owner_id);
+        if ($get_bot_profile === false) {
+            logger()->error(sprintf('[get_bot_profile] %s', $line_owner_id));
+            return false;
+        }
+
+        $display_name = $get_bot_profile['displayName'];
+        $profile_picture_url = $get_bot_profile['pictureUrl'];
+
         $line_user = new LineUser();
-        $line_user->line_owner_id = $webhook['source']['userId'];
+        $line_user->line_owner_id = $line_owner_id;
         $line_user->token = Str::uuid();
-        $line_user->save();
+        $line_user->profile_picture_url = $profile_picture_url;
+        $line_user->display_name = $display_name;
+        $this->save($line_user);
 
         $user = new User();
         $user->line_user_id = $line_user->id;
-        $user->save();
+        $this->save($user);
 
         $query = [
             'token' => $line_user->token,
         ];
-        $url = url('/mypage');
-        $message = <<<END_OF_TEXT
-CLUBHOUSE membershipへのご登録ありがとうございます。
-下記のリンクより、マイページにてプロフィールのご記入をお願いします。
+        $url = sprintf('%s?%s', route('mypage'), http_build_query($query));
+        $message = view('templates.line.follow')->with('url', $url)->render();
+        if ($this->line_api()->push_messages($line_user->line_owner_id, [ $message ]) === false) {
+            logger()->warning(sprintf('[get_bot_profile] %s', $line_owner_id));
+        }
 
-■マイページ
-{$url}
+        return true;
+    }
 
-※プロフィールの更新が終わりましたら、画面右上の「×」をタップして画面を閉じてください。
-※サービスのご利用については、当チャネルの下部にあるメニューよりご利用できます。
-END_OF_TEXT;
-        $line_api->push_messages($line_user->line_owner_id, [ $message ]);
+    protected function webhook_unfollow(array $webhook) {
+        $line_owner_id = $webhook['source']['userId'];
+        $line_user = LineUser::enabled()->lineOwnerIdBy($line_owner_id)->first();
+        if (isset($line_user)) {
+            if (isset($line_user->user)) {
+                $this->delete($line_user->user);
+            }
+            $this->delete($line_user);
+        }
+
+        return true;
     }
 
     //
-    public function webhook(Request $request, LineApi $line_api) {
+    public function webhook(Request $request) {
         //
         $data = file_get_contents('php://input');
         $webhook_json = json_decode($data, true);
 //        logger()->debug($webhook_json);
 
-        DB::transaction(function() use($line_api, $data, $webhook_json) {
+        return DB::transaction(function() use($data, $webhook_json) {
             $line_webhook = new LineWebhook();
             $line_webhook->data = $data;
             $line_webhook->save();
 
-            collect($webhook_json['events'])
-                ->each(function($item, $key) use($line_api) {
-                    if ($item['type'] === 'follow') {
-                        $this->webhook_follow($line_api, $item);
-                    }
-                })
-            ;
+            $events = $webhook_json['events'];
+            $type = $events['type'];
+            if ($type === 'follow') {
+                if ($this->webhook_follow($item) === false) {
+                    return response('', 400);
+                }
+            }
+            else if ($type === 'unfollow') {
+                if ($this->webhook_unfollow($item) === false) {
+                    return response('', 400);
+                }
+            }
+
+            return response('', 200);
         });
 
-        return response('', 200);
     }
 }

@@ -22,6 +22,8 @@ return [
         'ticket_by_short' => 'チケットが不足しています。',
     ],
     'error' => [
+        'not_line_follow' => 'CLUBHOUSE公式アカウントを友達に追加してください。',
+        'follow_retry' => 'システムに問題が発生しました。',
         'reserve_seat_short' => '座席が空いていないため、予約出来ませんでした。',
         'push_messages' => 'LINEへの通知ができませんでした。',
         'ticket_by_short' => 'チケットが不足しています。',

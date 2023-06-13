@@ -121,6 +121,29 @@ class LineApi {
         }
     }
 
+    public function get_bot_profile($user_id) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HTTPHEADER, config('line.api.get_bot_profile.headers'));
+        curl_setopt($ch, CURLOPT_URL, sprintf('%s/%s', config('line.api.get_bot_profile.url'), $user_id));
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, config('line.api.get_bot_profile.method'));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        curl_close($ch);
+        logger()->debug('--- get_bot_profile info ---');
+        logger()->debug($info);
+        if ($info['http_code'] == 200) {
+            logger()->debug('--- get_bot_profile response ---');
+            logger()->debug($response);
+            return json_decode($response);
+        }
+        else {
+            logger()->error('--- get_bot_profile error response ---');
+            logger()->error($response);
+            return false;
+        }
+    }
+
     public function push_messages($user_id, array $messages) {
         $request_body = [
             'to' => $user_id,
