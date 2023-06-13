@@ -80,12 +80,12 @@ class LineController extends Controller {
             foreach ($events as $event) {
                 $type = $event['type'];
                 if ($type === 'follow') {
-                    if ($this->webhook_follow($item) === false) {
+                    if ($this->webhook_follow($event) === false) {
                         return response('', 400);
                     }
                 }
                 else if ($type === 'unfollow') {
-                    if ($this->webhook_unfollow($item) === false) {
+                    if ($this->webhook_unfollow($event) === false) {
                         return response('', 400);
                     }
                 }
