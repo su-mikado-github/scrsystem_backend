@@ -61,7 +61,7 @@ class ReserveVisitPage extends SCRSPage {
             const isTableShareNg = this.#isTableShareNg.checked;
             date.weekday(-7)
             this.#reserveTime.value = time;
-            this.#reservedDialog.field("message").text(`${date.format("MM月DD日")}(${date.weekday().option.ja})　${time}～`);
+            this.#reservedDialog.field("message").text(`${date.format("MM月DD日")}(${date.weekday().ja})　${time}～`);
             this.#reservedDialog.field("table_share_annotation").rcss(isTableShareNg, "d-none");
             this.#reservedDialog.open({ date: date.format("YYYY-MM-DD") });
         }
