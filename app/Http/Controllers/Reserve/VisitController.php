@@ -54,7 +54,7 @@ class VisitController extends Controller {
 
         $empty_states = EmptyState::periodBy($start_date, $end_date)->timeRangeBy($start_time, $end_time)->get();
 
-        $reserves = $user->reserves()->enabled()->get();
+        $reserves = $user->reserves()->enabled()->unCanceled()->noCheckin()->get();
         return view('pages.reserve.visit.index')
             ->with('start_date', $start_date)
             ->with('end_date', $end_date)

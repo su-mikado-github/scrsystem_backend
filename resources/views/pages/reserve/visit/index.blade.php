@@ -1,6 +1,7 @@
 @extends('layouts.default')
 
 @use(Carbon\Carbon)
+@use(App\AffiliationDetailTypes)
 @use(App\DishTypes)
 @use(App\Flags)
 @use(App\ReserveTypes)
@@ -18,8 +19,10 @@ class ReserveVisitPage extends SCRSPage {
     #toggles = null;
 
     #reserveTime = null;
+    @if((optional($user->affiliation_detail)->is_soccer ?? Flags::OFF) == Flags::OFF)
     #isTableShareOk = null;
     #isTableShareNg = null;
+    @endif
 
     #reservedDialog = null;
 
@@ -31,8 +34,10 @@ class ReserveVisitPage extends SCRSPage {
         this.#today = this.action("today", [ "click" ]);
         this.#toggles = this.actions("toggle", [ "click" ]);
         this.#reserveTime = this.field("reserve_time");
+        @if((optional($user->affiliation_detail)->is_soccer ?? Flags::OFF) == Flags::OFF)
         this.#isTableShareOk = this.field("is_table_share_ok");
         this.#isTableShareNg = this.field("is_table_share_ng");
+        @endif
         this.#reservedDialog = new SCRSConfirmDialog(this, "reserveConfirm", null, [ "show", "hide", "ok" ]);
     }
 
@@ -58,11 +63,13 @@ class ReserveVisitPage extends SCRSPage {
         if (emptySeatRate > 0) {
             const date = dayjs(e.target.dataset["date"]);
             const time = e.target.dataset["time"];
-            const isTableShareNg = this.#isTableShareNg.checked;
-            date.weekday(-7)
+            {{-- date.weekday(-7) --}}
             this.#reserveTime.value = time;
             this.#reservedDialog.field("message").text(`${date.format("MM月DD日")}(${date.weekday().ja})　${time}～`);
+            @if((optional($user->affiliation_detail)->is_soccer ?? Flags::OFF) == Flags::OFF)
+            const isTableShareNg = this.#isTableShareNg.checked;
             this.#reservedDialog.field("table_share_annotation").rcss(isTableShareNg, "d-none");
+            @endif
             this.#reservedDialog.open({ date: date.format("YYYY-MM-DD") });
         }
     }
