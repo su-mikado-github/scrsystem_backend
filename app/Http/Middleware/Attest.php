@@ -32,11 +32,14 @@ class Attest
             'query.token' => $request->query('token'),
         ]);
 
-        $scrs_token = $request->cookie(self::SCRS_TOKEN_NAME, $request->query('token'));
+        $scrs_token = $request->cookie(self::SCRS_TOKEN_NAME);
         if (!$scrs_token) {
-            return redirect(route('error'))
-                ->cookie(self::SCRS_TOKEN_NAME, $scrs_token, self::SCRS_TOKEN_MINUTES)
-                ->with('error', '最初にLINEで通知されたマイページへのリンクから、ご利用者様の情報をご登録ください。');
+            $scrs_token = $request->query('token');
+            if (!$scrs_token) {
+                return redirect(route('error'))
+                    ->cookie(self::SCRS_TOKEN_NAME, $scrs_token, self::SCRS_TOKEN_MINUTES)
+                    ->with('error', '最初にLINEで通知されたマイページへのリンクから、ご利用者様の情報をご登録ください。');
+            }
         }
 
         $screen_path = $request->path();
