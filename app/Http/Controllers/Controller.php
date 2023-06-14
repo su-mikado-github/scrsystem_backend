@@ -12,6 +12,8 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
+use App\Flags;
+
 use App\LineApi;
 
 use App\Models\User;
@@ -60,7 +62,7 @@ class Controller extends BaseController {
         $model->save();
     }
 
-    protected function delete(Model $model) {
+    protected function remove(Model $model) {
         if (isset($model)) {
             $model->is_delete = Flags::ON;
             $model->save();

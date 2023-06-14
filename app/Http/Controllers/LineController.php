@@ -56,9 +56,9 @@ class LineController extends Controller {
         $line_user = LineUser::enabled()->lineOwnerIdBy($line_owner_id)->first();
         if (isset($line_user)) {
             if (isset($line_user->user)) {
-                $this->delete($line_user->user);
+                $this->remove($line_user->user);
             }
-            $this->delete($line_user);
+            $this->remove($line_user);
         }
 
         return true;

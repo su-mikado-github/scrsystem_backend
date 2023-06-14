@@ -94,6 +94,8 @@ Route::prefix('/login')->group(function() {
     Route::post('/', [ App\Http\Controllers\LoginController::class, 'post' ]);
 });
 
+Route::get('/error', function() { return view('pages.error'); })->name('error');
+
 Route::get('/logout', [ App\Http\Controllers\LoginController::class, 'logout' ])->name('logout');
 
 // Route::prefix('/file')->group(function() {

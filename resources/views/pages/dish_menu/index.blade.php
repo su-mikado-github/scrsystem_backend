@@ -108,15 +108,19 @@ SCRSPage.startup(()=>new DishMenuPage());
             <tr>
             @foreach($week as $calendar)
                 @php
-                    $is_past = ($calendar->date < today()->copy()->addDays(2));
+                    $is_past = ($calendar->date < today());
                     $is_today = ($calendar->date == optional($day_calendar)->date);
                     $is_sunday = ($calendar->weekday == Weekdays::SUNDAY);
                     $is_saturday = ($calendar->weekday == Weekdays::SATURDAY);
                     $is_dish_menu = ($calendar->dish_menus()->count() > 0);
                 @endphp
-                @if($is_past || !$is_dish_menu)
-                <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">
+                @if(!$is_dish_menu)
+                <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-secondary') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">
                     <span class="text-body">{!! Carbon::parse($calendar->date)->format('n/j') !!}</span>
+                </td>
+                @elseif($is_past)
+                <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-secondary') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">
+                    <a class="text-body {!! ($is_dish_menu ? 'fw-bold' : '') !!}" href="{!! url('/dish_menu') !!}?year_month={!! $month_calendar->date->format('Y-m') !!}&date={!! $calendar->date->format('Y-m-d') !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
                 </td>
                 @elseif($month_calendar->contains($calendar))
                 <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">

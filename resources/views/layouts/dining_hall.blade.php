@@ -36,7 +36,8 @@ window.addEventListener("load", function() {
 @yield('header')
 </header>
 <main class="p-3 mb-3"><form method="POST">@csrf
-@if(session('success'))
+@include('includes.messages', [ 'closable'=>false ])
+{{-- @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show" role="alert">
     {{ session('success') }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -53,7 +54,7 @@ window.addEventListener("load", function() {
     {{ session('error') }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-@endif
+@endif --}}
 <div class="py-5">
     @eval($weekday = Weekdays::fromDate($today))
     <h1 class="text-center">{{ $today->format('Y年m月d日') }}（{{ $weekday->ja }}）</h1>

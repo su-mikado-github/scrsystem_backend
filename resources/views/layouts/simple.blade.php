@@ -21,7 +21,8 @@
 @yield('header')
 </header>
 <main class="p-3 mb-3"><form method="POST">@csrf
-@if(session('success'))
+@include('includes.messages', [ 'closable'=>false ])
+{{-- @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show" role="alert">
     {{ session('success') }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -38,7 +39,7 @@
     {{ session('error') }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-@endif
+@endif --}}
 @yield('main')
 </form>
 </main>

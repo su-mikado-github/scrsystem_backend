@@ -27,8 +27,17 @@ class Attest
      */
     public function handle(Request $request, Closure $next)
     {
+        logger()->debug([
+            self::SCRS_TOKEN_NAME => $request->cookie(self::SCRS_TOKEN_NAME),
+            'query.token' => $request->query('token'),
+        ]);
+
         $scrs_token = $request->cookie(self::SCRS_TOKEN_NAME, $request->query('token'));
-        abort_if(!$scrs_token, 400, __('messages.error.not_line_follow'));
+        if (!$scrs_token) {
+            return redirect(route('error'))
+                ->cookie(self::SCRS_TOKEN_NAME, $scrs_token, self::SCRS_TOKEN_MINUTES)
+                ->with('error', '最初にLINEで通知されたマイページへのリンクから、ご利用者様の情報をご登録ください。');
+        }
 
         $screen_path = $request->path();
         $line_user = LineUser::enabled()->tokenBy($scrs_token)->first();
