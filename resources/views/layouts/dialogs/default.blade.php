@@ -10,7 +10,7 @@
                 @yield($id . 'dialog-body', $slot ?? '')
             </div>
             <div class="modal-footer border-top-0 d-block">
-                @yield($id . 'dialog-footer', '')
+                @yield($id . 'dialog-footer', $footer ?? '')
             </div>
         </div>
     </div>

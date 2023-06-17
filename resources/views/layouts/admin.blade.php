@@ -15,8 +15,8 @@
 @stack('scripts')
 <title>@yield('title', ($title ?? '[CLUBHOUSE提供] 食堂予約システム（管理ツール）'))</title>
 </head>
-<body class="scrs-bg" style="height:100%;">
-<header class="scrs-bg position-sticky w-100" style="top:0;left:0;">
+<body class="scrs-bg position-relative" style="height:100%;">
+<header class="scrs-bg position-sticky w-100 top-0 start-0" style="z-index:2000;">
 <h3 class="scrs-bg-main p-1">
     <div class="row m-0">
         <div class="col text-start">&nbsp;</div>
@@ -26,7 +26,7 @@
 </h3>
 @yield('header')
 </header>
-<main class="p-3 mb-3"><form method="POST">@csrf
+<main class="p-3 mb-3 position-relative top-0 start-0"><form method="POST">@csrf
 <div class="container-fluid">
     <div class="row">
         <div class="col-2">
@@ -58,7 +58,7 @@
 </div>
 </form>
 </main>
-<footer class="scrs-bg-footer text-center position-sticky w-100 py-1" style="bottom:0;left:0;">
+<footer class="scrs-bg-footer text-center position-sticky w-100 py-1 bottom-0 start-0" style="z-index:2001;">
 @yield('footer')
 <span class="font-weight-bold">CLUBHOUSE &copy; 2023</span>
 </footer>

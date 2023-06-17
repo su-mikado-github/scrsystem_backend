@@ -36,7 +36,7 @@ class CreateMenus extends BaseMigration
             // 左サイドメニュー
             [ 'category'=>'left.side.menu', 'item_key'=>'root', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'トップページ', 'path'=>'/admin', 'display_order'=>1 ],
             [ 'category'=>'left.side.menu', 'item_key'=>'separator1', 'item_type'=>strval(MenuItemTypes::SEPARATER), 'display_order'=>2 ],
-            [ 'category'=>'left.side.menu', 'item_key'=>'dish_menu', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'メニュー編集', 'path'=>'/admin/dish_menu', 'display_order'=>3 ],
+            [ 'category'=>'left.side.menu', 'item_key'=>'dish_menu', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'メニュー編集', 'path'=>'/admin/dish_menus', 'display_order'=>3 ],
             [ 'category'=>'left.side.menu', 'item_key'=>'status', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'利用状況', 'path'=>'/admin/status', 'display_order'=>4 ],
             [ 'category'=>'left.side.menu', 'item_key'=>'users', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'登録者一覧', 'path'=>'/admin/users', 'display_order'=>5 ],
             [ 'category'=>'left.side.menu', 'item_key'=>'separator2', 'item_type'=>strval(MenuItemTypes::SEPARATER), 'display_order'=>6 ],
@@ -46,7 +46,7 @@ class CreateMenus extends BaseMigration
 
         // メニュー編集タブ
         foreach (DishTypes::values() as $i => $dish_type) {
-            $rows[] = [ 'category'=>'dish_menu.tab', 'item_key'=>$dish_type->key, 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>$dish_type->ja, 'path'=>sprintf('/admin/dish_menu/%s', $dish_type->key), 'display_order'=>1 ];
+            $rows[] = [ 'category'=>'dish_menus.tab', 'item_key'=>$dish_type->key, 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>$dish_type->ja, 'path'=>sprintf('/admin/dish_menus/%s', $dish_type->key), 'display_order'=>1 ];
         }
 
         $this->insert_rows('menus', $rows);

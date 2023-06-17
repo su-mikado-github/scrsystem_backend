@@ -275,3 +275,14 @@ final class MenuItemTypes extends Enum {
         'SUB_MENUS' => [ 'ja'=>'別メニュー展開' ],
     ];
 }
+
+final class SortTypes extends Enum {
+    const ASC = 1;
+    const DESC = 2;
+
+    static $options = [
+        'ASC' => [ 'ja'=>'昇順', 'sql_order_by'=>'asc' ],
+        'DESC' => [ 'ja'=>'降順', 'sql_order_by'=>'desc' ],
+    ];
+}
+

@@ -6,9 +6,11 @@ return [
         'calendar' => 'カレンダーが存在しません。',
         'month_calender' => 'カレンダーが存在しません。',
         'reserve' => '予約されていません。',
+        'user' => '指定された利用者は、登録されていないか既に退会しています。',
     ],
     'io_error' => [
         'dish_menu_csv_read' => 'メニューCSVファイルの読み込みに失敗しました。',
+        'users_csv_write' => '利用者CSVファイルの作成に失敗しました。',
     ],
     'invalidate' => [
         'upload' => [
@@ -20,6 +22,7 @@ return [
     ],
     'warning' => [
         'ticket_by_short' => 'チケットが不足しています。',
+        'no_initialize' => 'マイページで利用者情報を登録されていません。',
     ],
     'error' => [
         'not_line_follow' => 'CLUBHOUSE公式アカウントを友達に追加してください。',
@@ -37,6 +40,11 @@ return [
         'no_dish_menu' => 'メニューが設定されていません。',
         'reserve_exists' => '既に予約されています。',
         'same_date' => '同じ日付は指定できません。',
-        'same_time' => '同じ時刻は指定できません。'
+        'same_time' => '同じ時刻は指定できません。',
+    ],
+    'success' => [
+        'user' => [
+            'delete' => '利用者を削除しました。',
+        ]
     ],
 ];

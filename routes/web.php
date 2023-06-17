@@ -73,12 +73,16 @@ Route::middleware([ 'attest' ])->group(function() {
 
 Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(function() {
 
-    Route::prefix('/dish_menu')->group(function() {
-        Route::get('/{dish_type_key?}', [ App\Http\Controllers\Admin\DishMenuController::class, 'index' ])->name('admin.dish_menu')->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
-        Route::post('/{dish_type_key?}/upload', [ App\Http\Controllers\Admin\DishMenuController::class, 'post_upload' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
-        // foreach (DishTypes::values() as $dish_type) {
-        //     Route::get(sprintf('/%s', $dish_type->key), [ App\Http\Controllers\Admin\DishMenuController::class, $dish_type->key ])->name(sprintf('admin.dish_menu.%s', $dish_type->key));
-        // }
+    Route::prefix('/dish_menus')->group(function() {
+        Route::get('/{dish_type_key?}', [ App\Http\Controllers\Admin\DishMenusController::class, 'index' ])->name('admin.dish_menus')->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
+        Route::post('/{dish_type_key?}/upload', [ App\Http\Controllers\Admin\DishMenusController::class, 'post_upload' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
+    });
+
+    Route::prefix('/users')->group(function() {
+        Route::get('/', [ App\Http\Controllers\Admin\UsersController::class, 'index' ])->name('admin.users');
+        Route::get('/download', [ App\Http\Controllers\Admin\UsersController::class, 'download' ])->name('admin.users.download');
+        Route::get('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'index' ])->name('admin.user')->where('user_id', '^[0-9]+$');
+        Route::delete('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'delete' ])->name('admin.user.delete')->where('user_id', '^[0-9]+$');
     });
 
     Route::get('/', [ App\Http\Controllers\AdminController::class, 'index' ])->name('admin');

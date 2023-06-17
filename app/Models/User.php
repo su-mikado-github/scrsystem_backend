@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use App\Flags;
+use App\SortTypes;
 
 use App\Models\LineUser;
 use App\Models\Affiliation;
@@ -20,6 +21,10 @@ use App\Models\ValidTicket;
 
 class User extends Authenticatable {
     use HasFactory;
+
+    protected $casts = [
+        'birthday' => 'date'
+    ];
 
     protected $appends = [
         'last_ticket_count'
@@ -57,8 +62,38 @@ class User extends Authenticatable {
         return $this->hasMany(Reserve::class, 'user_id');
     }
 
+    public function scopeSettings($query) {
+        return $query->where('is_initial_setting', Flags::ON);
+    }
+
     public function scopeEnabled($query) {
         return $query->where('is_delete', Flags::OFF);
+    }
+
+    public function scopeFullNameOrder($query, $sort_type_id) {
+        $sort_type = SortTypes::of($sort_type_id, SortTypes::ASC());
+        return $query->orderBy('users.last_name_kana', $sort_type->sql_order_by)->orderBy('users.first_name_kana', $sort_type->sql_order_by);
+    }
+
+    public function scopeAffiliationOrder($query, $sort_type_id) {
+        $sort_type = SortTypes::of($sort_type_id, SortTypes::ASC());
+        return $query
+            ->leftJoin('affiliations', 'affiliations.id', '=', 'users.affiliation_id')
+            ->orderBy('affiliations.display_order', $sort_type->sql_order_by);
+    }
+
+    public function scopeAffiliationDetailOrder($query, $sort_type_id) {
+        $sort_type = SortTypes::of($sort_type_id, SortTypes::ASC());
+        return $query
+            ->leftJoin('affiliation_details', 'affiliation_details.id', '=', 'users.affiliation_detail_id')
+            ->orderBy('affiliation_details.display_order', $sort_type->sql_order_by);
+    }
+
+    public function scopeSchoolYearOrder($query, $sort_type_id) {
+        $sort_type = SortTypes::of($sort_type_id, SortTypes::ASC());
+        return $query
+            ->leftJoin('school_years', 'school_years.id', '=', 'users.school_year_id')
+            ->orderBy('school_years.display_order', $sort_type->sql_order_by);
     }
 
     public function getLastTicketCountAttribute() {
@@ -67,5 +102,9 @@ class User extends Authenticatable {
             ->groupBy('user_id')
             ->first();
         return (op($valid_ticket)->valid_ticket_count ?? 0);
+    }
+
+    public function getAgeAttribute() {
+        return op($this->birthday)->age;
     }
 }

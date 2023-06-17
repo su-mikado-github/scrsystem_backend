@@ -7,6 +7,7 @@ const ReserveTypes = new Enum(@json(\App\ReserveTypes::to_json()));
 const AffiliationDetailTypes = new Enum(@json(\App\AffiliationDetailTypes::to_json()));
 const DishTypes = new Enum(@json(\App\DishTypes::to_json()));
 const MenuItemTypes = new Enum(@json(\App\MenuItemTypes::to_json()));
+const SortTypes = new Enum(@json(\App\SortTypes::to_json()));
 </script>
 <script type="text/javascript">
 dayjs.prototype.weekday = function() {

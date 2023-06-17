@@ -39,9 +39,10 @@ class AdminDishMenuPage extends SCRSPage {
     }
 
     uploadFile_ok(e) {
+        this.waitScreen(true);
         this.#file_path.value = e.detail.data?.path;
         this.#uploadFileDialog.close();
-        this.submit("POST", "/admin/dish_menu/{!! $dish_type_key !!}/upload");
+        this.submit("POST", "/admin/dish_menus/{!! $dish_type_key !!}/upload");
     }
 
     uploadFile_error(e) {
@@ -57,7 +58,7 @@ SCRSPage.startup(()=>new AdminDishMenuPage());
 @endsection
 
 @section('side-menu')
-<x-virtical-menu id="idLeftSideMenu" category="left.side.menu" item_key="dish_menu" />
+<x-virtical-menu id="idLeftSideMenu" category="left.side.menu" item_key="dish_menus" />
 @endsection
 
 @section('main')
@@ -65,16 +66,16 @@ SCRSPage.startup(()=>new AdminDishMenuPage());
     <div class="col-8">
         <div class="row">
             <div class="col-4 text-end">
-                <a class="btn btn-link text-body" href="{!! url('/admin/dish_menu', [ $dish_type_key ]) !!}?year_month={!! Carbon::parse($month_calendar->previous_date)->format('Y-m') !!}">≪前月</a>
+                <a class="btn btn-link text-body" href="{!! url('/admin/dish_menus', [ $dish_type_key ]) !!}?year_month={!! Carbon::parse($month_calendar->previous_date)->format('Y-m') !!}">≪前月</a>
             </div>
             <div class="col-2 text-center py-2">
                 <span class="text-nowrap3">{!! sprintf('%04d年%02d月', $month_calendar->year, $month_calendar->month) !!}</span>
             </div>
             <div class="col-2 text-center">
-                <a class="btn btn-link text-body" href="{!! url('/admin/dish_menu', [ $dish_type_key ]) !!}">当月</a>
+                <a class="btn btn-link text-body" href="{!! url('/admin/dish_menus', [ $dish_type_key ]) !!}">当月</a>
             </div>
             <div class="col-4 text-start">
-                <a class="btn btn-link text-body" href="{!! url('/admin/dish_menu', [ $dish_type_key ]) !!}?year_month={!! Carbon::parse($month_calendar->next_date)->format('Y-m') !!}">次月≫</a>
+                <a class="btn btn-link text-body" href="{!! url('/admin/dish_menus', [ $dish_type_key ]) !!}?year_month={!! Carbon::parse($month_calendar->next_date)->format('Y-m') !!}">次月≫</a>
             </div>
         </div>
     </div>
@@ -85,7 +86,7 @@ SCRSPage.startup(()=>new AdminDishMenuPage());
     </div>
 </div>
 <br>
-<x-horizontal-tab id="idDishMenuTab" category="dish_menu.tab" item-key="{!! $dish_type_key !!}" />
+<x-horizontal-tab id="idDishMenuTab" category="dish_menus.tab" item-key="{!! $dish_type_key !!}" />
 <div class="bg-white p-3">
     <div class="table-responsive">
         <table class="table table-hover table-bordered">

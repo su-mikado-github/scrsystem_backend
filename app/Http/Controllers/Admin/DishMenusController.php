@@ -12,7 +12,7 @@ use App\Models\MonthCalendar;
 use App\Models\Calendar;
 use App\Models\DishMenu;
 
-class DishMenuController extends Controller {
+class DishMenusController extends Controller {
     private $before_date;
 
     protected function check_header(array $record, array &$errors) {
@@ -204,7 +204,7 @@ class DishMenuController extends Controller {
             $query->where('dish_type', $dish_type->id);
         } ])->yearMonthBy($month_calendar->year, $month_calendar->month)->orderBy('day')->get();
 
-        return view('pages.admin.dish_menu.index')
+        return view('pages.admin.dish_menus.index')
             ->with('dish_type_key', $dish_type->key)
             ->with('year_month', $year_month)
             ->with('month_calendar', $month_calendar)
@@ -292,7 +292,7 @@ class DishMenuController extends Controller {
 
         if ($errors->count() > 0) {
             unlink($path);
-            return view('pages.admin.dish_menu.post_upload')
+            return view('pages.admin.dish_menus.post_upload')
                 ->with('errors', $errors)
             ;
         }

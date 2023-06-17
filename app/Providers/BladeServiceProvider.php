@@ -15,6 +15,7 @@ use App\View\Components\VirticalMenu;
 use App\View\Components\HorizontalTab;
 use App\View\Components\Dialogs\UploadFile;
 use App\View\Components\Dialogs\Reserve;
+use App\View\Components\Dialogs\Information;
 
 class BladeServiceProvider extends ServiceProvider
 {
@@ -47,6 +48,7 @@ class BladeServiceProvider extends ServiceProvider
 
         Blade::component('dialogs.upload-file', UploadFile::class);
         Blade::component('dialogs.reserve', Reserve::class);
+        Blade::component('dialogs.information', Information::class);
 
         //blade拡張
         Blade::directive('use', function($expression) {
