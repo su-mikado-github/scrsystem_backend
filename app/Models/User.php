@@ -62,8 +62,20 @@ class User extends Authenticatable {
         return $this->hasMany(Reserve::class, 'user_id');
     }
 
+    public function scopeEmailBy($query, $email) {
+        return $query->where('email', $email);
+    }
+
+    public function scopeResetTokenBy($query, $reset_token) {
+        return $query->where('reset_token', $reset_token);
+    }
+
     public function scopeSettings($query) {
         return $query->where('is_initial_setting', Flags::ON);
+    }
+
+    public function scopeStaffs($query) {
+        return $query->where('is_admin', Flags::ON);
     }
 
     public function scopeEnabled($query) {

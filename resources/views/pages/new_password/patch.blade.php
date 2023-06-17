@@ -1,7 +1,7 @@
 @extends('layouts.simple')
 
 @section('page.title')
-<span>ログイン<span><x-icon name="fa-solid fa-angles-right" /><span>パスワード・リセット<span><x-icon name="fa-solid fa-angles-right" /><span>完了<span>
+<span>ログイン<span><x-icon name="fa-solid fa-angles-right" /><span>パスワード再設定<span><x-icon name="fa-solid fa-angles-right" /><span>完了<span>
 @endsection
 
 @section('main')
@@ -9,8 +9,8 @@
     <div class="col-5">
         <div class="mb-3 row">
             <div class="col-12 text-center">
-                <p>パスワードをリセットしました。<br>
-                送信されたメールのリンクからパスワードを再設定してください。</p>
+                <p>パスワードを再設定しました。<br>
+                ログインする際には、設定した新パスワードでログインしてください。</p>
             </div>
         </div>
         <br>

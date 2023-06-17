@@ -85,13 +85,30 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
         Route::delete('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'delete' ])->name('admin.user.delete')->where('user_id', '^[0-9]+$');
     });
 
+    Route::prefix('/staffs')->group(function() {
+        Route::get('/', [ App\Http\Controllers\Admin\StaffsController::class, 'index' ])->name('admin.staffs');
+        Route::post('/', [ App\Http\Controllers\Admin\StaffController::class, 'post' ]);
+        Route::put('/{user_id}', [ App\Http\Controllers\Admin\StaffController::class, 'put' ]);
+        Route::delete('/{user_id}', [ App\Http\Controllers\Admin\StaffController::class, 'delete' ]);
+        // Route::get('/download', [ App\Http\Controllers\Admin\UsersController::class, 'download' ])->name('admin.users.download');
+        // Route::get('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'index' ])->name('admin.user')->where('user_id', '^[0-9]+$');
+        // Route::delete('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'delete' ])->name('admin.user.delete')->where('user_id', '^[0-9]+$');
+    });
+
+    Route::prefix('/password_change')->group(function() {
+        Route::get('/', [ App\Http\Controllers\Admin\PasswordChangeController::class, 'index' ])->name('admin.password_change');
+        // Route::post('/{dish_type_key?}/upload', [ App\Http\Controllers\Admin\DishMenusController::class, 'post_upload' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
+    });
+
+
+
     Route::get('/', [ App\Http\Controllers\AdminController::class, 'index' ])->name('admin');
 });
 
 Route::prefix('/login')->group(function() {
     Route::prefix('/password_reset')->group(function() {
         Route::get('/', [ App\Http\Controllers\PasswordResetController::class, 'index' ])->name('login.password_reset');
-        Route::post('/', [ App\Http\Controllers\PasswordResetController::class, 'post' ]);
+        Route::patch('/', [ App\Http\Controllers\PasswordResetController::class, 'patch' ]);
     });
 
     Route::get('/', [ App\Http\Controllers\LoginController::class, 'index' ])->name('login');
@@ -99,6 +116,11 @@ Route::prefix('/login')->group(function() {
 });
 
 Route::get('/error', function() { return view('pages.error'); })->name('error');
+
+Route::prefix('/new_password')->group(function() {
+    Route::get('/{reset_token}', [ App\Http\Controllers\NewPasswordController::class, 'index' ])->name('new_password');
+    Route::patch('/{user_id}/{reset_token}', [ App\Http\Controllers\NewPasswordController::class, 'patch' ])->where('user_id', '^[0-9]+$');
+});
 
 Route::get('/logout', [ App\Http\Controllers\LoginController::class, 'logout' ])->name('logout');
 

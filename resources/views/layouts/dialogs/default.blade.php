@@ -1,5 +1,5 @@
 @push('dialogs')
-<div class="modal fade px-3" id="{!! $id !!}" tabindex="-1" aria-labelledby="{!! $id !!}_title" aria-hidden="true">
+<div class="modal fade px-3" id="{!! $id !!}" style="z-index:3000;" tabindex="-1" aria-labelledby="{!! $id !!}_title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 16px;">
             <div class="modal-header border-bottom-0 py-1">

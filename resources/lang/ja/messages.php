@@ -7,6 +7,7 @@ return [
         'month_calender' => 'カレンダーが存在しません。',
         'reserve' => '予約されていません。',
         'user' => '指定された利用者は、登録されていないか既に退会しています。',
+        'staff' => '指定された管理者は、存在しません。',
     ],
     'io_error' => [
         'dish_menu_csv_read' => 'メニューCSVファイルの読み込みに失敗しました。',
@@ -19,6 +20,7 @@ return [
         'format' => [
             'year_month' => '指定された年月は正しくありません。',
         ],
+        'email' => 'ご指定のメールアドレスは登録されていません。',
     ],
     'warning' => [
         'ticket_by_short' => 'チケットが不足しています。',
@@ -45,6 +47,15 @@ return [
     'success' => [
         'user' => [
             'delete' => '利用者を削除しました。',
-        ]
+        ],
+        'staff' => [
+            'post' => '管理者を登録しました。',
+            'put' => '管理者を保存しました。',
+            'delete' => '管理者を削除しました。',
+        ],
+    ],
+    'subject' => [
+        'create_staff' => '[CLUBHOUSE] 管理者として登録されました',
+        'password_reset' => '[CLUBHOUSE] パスワードがリセットされました',
     ],
 ];

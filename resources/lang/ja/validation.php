@@ -184,6 +184,7 @@ return [
         'telephone_no' => '電話番号',
         'email' => 'メールアドレス',
         'password' => 'パスワード',
+        'password_confirm' => 'パスワード（確認用）',
         'input_file' => 'ファイル',
     ],
 
