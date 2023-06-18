@@ -56,6 +56,9 @@ return [
         'account' => [
             'put' => 'アカウント情報を変更しました。',
         ],
+        'dish_menu' => [
+            'put' => '料理メニューを更新しました。',
+        ],
     ],
     'subject' => [
         'create_staff' => '[CLUBHOUSE] 管理者として登録されました',

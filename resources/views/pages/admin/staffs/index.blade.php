@@ -122,7 +122,7 @@ SCRSPage.startup(()=>new AdminUsersPage());
 </x-script>
 
 @section('page.title')
-<span>管理画面<span>≫<span>管理者一覧<span>
+<span>管理画面<span><x-icon name="fa-solid fa-angles-right" /><span>管理者一覧<span>
 @endsection
 
 @section('side-menu')

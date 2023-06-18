@@ -77,6 +77,8 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
         Route::get('/{dish_type_key?}', [ App\Http\Controllers\Admin\DishMenusController::class, 'index' ])->name('admin.dish_menus')->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
         Route::post('/{dish_type_key?}/upload', [ App\Http\Controllers\Admin\DishMenusController::class, 'post_upload' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
         Route::get('/{dish_type_key}/download', [ App\Http\Controllers\Admin\DishMenusController::class, 'get_download' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
+        Route::get('/{dish_type_key}/{date}', [ App\Http\Controllers\Admin\DishMenuController::class, 'index' ])->name('admin.dish_menu')->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))))->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+        Route::put('/{dish_type_key}/{date}', [ App\Http\Controllers\Admin\DishMenuController::class, 'put' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))))->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
     });
 
     Route::prefix('/users')->group(function() {
@@ -98,8 +100,6 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
         Route::put('/', [ App\Http\Controllers\Admin\AccountController::class, 'put' ]);
         // Route::post('/{dish_type_key?}/upload', [ App\Http\Controllers\Admin\DishMenusController::class, 'post_upload' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
     });
-
-
 
     Route::get('/', [ App\Http\Controllers\AdminController::class, 'index' ])->name('admin');
 });

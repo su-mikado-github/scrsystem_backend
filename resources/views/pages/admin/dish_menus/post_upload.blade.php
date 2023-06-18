@@ -15,7 +15,7 @@ SCRSPage.startup(()=>new AdminDishMenuPostUploadPage());
 </x-script>
 
 @section('page.title')
-<span>管理画面<span>≫<span>メニュー編集<span>
+<span>管理画面<span><x-icon name="fa-solid fa-angles-right" /><span>メニュー編集<span>
 @endsection
 
 @section('side-menu')

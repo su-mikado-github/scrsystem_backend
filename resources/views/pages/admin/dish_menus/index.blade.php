@@ -17,6 +17,8 @@ class AdminDishMenuPage extends SCRSPage {
 
     #file_path = null;
 
+    #modify = null;
+
     constructor() {
         super();
         //
@@ -24,6 +26,7 @@ class AdminDishMenuPage extends SCRSPage {
         this.#upload = this.action("upload", [ "click" ]);
         this.#download = this.action("download", [ "click" ]);
         this.#file_path = this.field("file_path");
+        this.#modify = this.actions("modify", [ "click" ]);
     }
 
     uploadFile_ok(e) {
@@ -47,6 +50,11 @@ class AdminDishMenuPage extends SCRSPage {
 
     uploadFile_error(e) {
         this.#uploadFileDialog.close();
+    }
+
+    modify_click(e) {
+        const date = e.target.dataset["date"];
+        this.forward([ "/admin/dish_menus", @json($dish_type->key), date ]);
     }
 }
 
@@ -126,7 +134,13 @@ SCRSPage.startup(()=>new AdminDishMenuPage());
             <td class="text-end">@isset($dish_menu){!! number_format(optional($calendar->daily_dish_menus->first())->protein, 1) !!}<span class="px-1">g</span>@else&nbsp;@endisset</td>
             <td class="text-end">@isset($dish_menu){!! number_format(optional($calendar->daily_dish_menus->first())->lipid, 1) !!}<span class="px-1">g</span>@else&nbsp;@endisset</td>
             <td class="text-end">@isset($dish_menu){!! number_format(optional($calendar->daily_dish_menus->first())->dietary_fiber, 1) !!}<span class="px-1">g</span>@else&nbsp;@endisset</td>
-            <td class="text-center">&nbsp;</td>
+            <td class="text-center">
+                @isset($dish_menu)
+                <div class="d-flex flex-row">
+                    <div class="col-6 text-center"><x-icon name="fa-solid fa-magnifying-glass" style="font-size:22px;margin:0!important;cursor:pointer;" data-action="modify" data-date="{!! $calendar->date->format('Y-m-d') !!}" /></div>
+                </div>
+                @endisset
+            </td>
         </tr>
         @endforeach
         </tbody>

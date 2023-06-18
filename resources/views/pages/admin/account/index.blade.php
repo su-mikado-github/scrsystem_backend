@@ -10,7 +10,7 @@
 import { SCRSPage } from "/scrs-pages.js";
 import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
 
-class AdminPasswordChangePage extends SCRSPage {
+class AdminAccountPage extends SCRSPage {
 
     #commit = null;
 
@@ -25,11 +25,11 @@ class AdminPasswordChangePage extends SCRSPage {
     }
 }
 
-SCRSPage.startup(()=>new AdminPasswordChangePage());
+SCRSPage.startup(()=>new AdminAccountPage());
 </x-script>
 
 @section('page.title')
-<span>管理画面<span>≫<span>管理者一覧<span>
+<span>管理画面<span><x-icon name="fa-solid fa-angles-right" /><span>管理者一覧<span>
 @endsection
 
 @section('side-menu')
