@@ -90,13 +90,11 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
         Route::post('/', [ App\Http\Controllers\Admin\StaffController::class, 'post' ]);
         Route::put('/{user_id}', [ App\Http\Controllers\Admin\StaffController::class, 'put' ]);
         Route::delete('/{user_id}', [ App\Http\Controllers\Admin\StaffController::class, 'delete' ]);
-        // Route::get('/download', [ App\Http\Controllers\Admin\UsersController::class, 'download' ])->name('admin.users.download');
-        // Route::get('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'index' ])->name('admin.user')->where('user_id', '^[0-9]+$');
-        // Route::delete('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'delete' ])->name('admin.user.delete')->where('user_id', '^[0-9]+$');
     });
 
-    Route::prefix('/password_change')->group(function() {
-        Route::get('/', [ App\Http\Controllers\Admin\PasswordChangeController::class, 'index' ])->name('admin.password_change');
+    Route::prefix('/account')->group(function() {
+        Route::get('/', [ App\Http\Controllers\Admin\AccountController::class, 'index' ])->name('admin.account');
+        Route::put('/', [ App\Http\Controllers\Admin\AccountController::class, 'put' ]);
         // Route::post('/{dish_type_key?}/upload', [ App\Http\Controllers\Admin\DishMenusController::class, 'post_upload' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
     });
 

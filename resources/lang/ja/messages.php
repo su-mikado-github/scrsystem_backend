@@ -53,9 +53,13 @@ return [
             'put' => '管理者を保存しました。',
             'delete' => '管理者を削除しました。',
         ],
+        'account' => [
+            'put' => 'アカウント情報を変更しました。',
+        ],
     ],
     'subject' => [
         'create_staff' => '[CLUBHOUSE] 管理者として登録されました',
         'password_reset' => '[CLUBHOUSE] パスワードがリセットされました',
+        'password_change' => '[CLUBHOUSE] パスワードを変更しました。',
     ],
 ];
