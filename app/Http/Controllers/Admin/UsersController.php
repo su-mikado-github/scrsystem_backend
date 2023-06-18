@@ -9,9 +9,13 @@ use App\AffiliationDetailTypes;
 use App\Flags;
 use App\SortTypes;
 
+use App\Traits\CsvBuilder;
+
 use App\Models\User;
 
 class UsersController extends Controller {
+    use CsvBuilder;
+
     //
     public function index(Request $request) {
         $full_name_sort = $request->input('full_name_sort', SortTypes::ASC);
@@ -90,46 +94,32 @@ class UsersController extends Controller {
         $filename = sprintf('admin_users-%s.csv', uniqid());
         $path = storage_path(sprintf('app/download_files/%s', $filename));
 
-        $fp = fopen($path, 'w');
-        try {
-            // CSV列ヘッダーの出力
-            $header = [ '氏名', '所属', '学年', '年齢', 'メールアドレス', '電話番号' ];
-            mb_convert_variables('SJIS', 'UTF-8', $header);
-            fputcsv($fp, $header);
-
-            // CSV列データの出力
-            foreach($users as $user) {
-                $full_name = collect()
-                    ->when(isset($user->last_name), function($collection) use($user) { return $collection->push($user->last_name); })
-                    ->when(isset($user->first_name), function($collection) use($user) { return $collection->push($user->first_name); })
-                    ->join(' ')
-                ;
-                $affiliation = collect()
-                    ->when(isset($user->affiliation_id), function($collection) use($user) { return $collection->push($user->affiliation->name); })
-                    ->when(isset($user->affiliation_detail_id), function($collection) use($user) { return $collection->push($user->affiliation_detail->name); })
-                    ->join(' ')
-                ;
-                $school_year = (op($user->affiliation)->detail_type == AffiliationDetailTypes::INTERNAL ? op($user->school_year)->name : null) ?? '';
-                $record = [
-                    $full_name,
-                    $affiliation,
-                    $school_year, ($user->age ?? ''),
-                    ($user->email ?? ''),
-                    ($user->telephone_no ?? '')
-                ];
-                mb_convert_variables('SJIS', 'UTF-8', $record);
-                fputcsv($fp, $record);
+        $this->write_csv($path, [ '氏名', '所属', '学年', '年齢', 'メールアドレス', '電話番号' ], function($index) use($users) {
+            if ($users->count() <= $index) {
+                return false;
             }
-        }
-        catch (\Exception $ex) {
-            logger()->error($ex);
-            return redirect()->route('admin.users')
-                ->with('error', __('messages.io_error.users_csv_write'))
+
+            $user = $users[$index];
+
+            $full_name = collect()
+                ->when(isset($user->last_name), function($collection) use($user) { return $collection->push($user->last_name); })
+                ->when(isset($user->first_name), function($collection) use($user) { return $collection->push($user->first_name); })
+                ->join(' ')
             ;
-        }
-        finally {
-            fclose($fp);
-        }
+            $affiliation = collect()
+                ->when(isset($user->affiliation_id), function($collection) use($user) { return $collection->push($user->affiliation->name); })
+                ->when(isset($user->affiliation_detail_id), function($collection) use($user) { return $collection->push($user->affiliation_detail->name); })
+                ->join(' ')
+            ;
+            $school_year = (op($user->affiliation)->detail_type == AffiliationDetailTypes::INTERNAL ? op($user->school_year)->name : null) ?? '';
+            return [
+                $full_name,
+                $affiliation,
+                $school_year, ($user->age ?? ''),
+                ($user->email ?? ''),
+                ($user->telephone_no ?? '')
+            ];
+        });
 
         return response()->download($path, sprintf('利用者一覧_%s.csv', date('Ymd-Hms')), [
             'Content-Type: text/csv'

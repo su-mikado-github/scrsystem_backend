@@ -8,11 +8,15 @@ use Illuminate\Http\Request;
 use App\Flags;
 use App\DishTypes;
 
+use App\Traits\CsvBuilder;
+
 use App\Models\MonthCalendar;
 use App\Models\Calendar;
 use App\Models\DishMenu;
 
 class DishMenusController extends Controller {
+    use CsvBuilder;
+
     private $before_date;
 
     protected function check_header(array $record, array &$errors) {
@@ -205,7 +209,7 @@ class DishMenusController extends Controller {
         } ])->yearMonthBy($month_calendar->year, $month_calendar->month)->orderBy('day')->get();
 
         return view('pages.admin.dish_menus.index')
-            ->with('dish_type_key', $dish_type->key)
+            ->with('dish_type', $dish_type)
             ->with('year_month', $year_month)
             ->with('month_calendar', $month_calendar)
             ->with('calendars', $calendars)
@@ -302,5 +306,79 @@ class DishMenusController extends Controller {
         return redirect()->action([ self::class, 'index' ], [ 'dish_type_key'=>$dish_type_key ])
             ->with('success', 'アップロードが完了しました。')
         ;
+    }
+
+    public function get_download(Request $request, $dish_type_key) {
+        //
+        $today = today();
+        $year = $request->input('year', $today->year);
+        $month = $request->input('month', $today->month);
+        $dish_type = DishTypes::key_of($dish_type_key);
+
+        logger()->debug(compact('year','month','dish_type'));
+
+        $calendar_ids = Calendar::enabled()->yearMonthBy($year, $month)->pluck('id');
+        $dish_menus = DishMenu::withCasts([ 'date'=>'date' ])->join('calendars', 'calendars.id', '=', 'dish_menus.calendar_id')
+            ->where('dish_menus.dish_type', $dish_type->id)
+            ->whereIn('dish_menus.calendar_id', $calendar_ids)
+            ->orderBy('calendars.date')
+            ->orderBy('dish_menus.display_order')
+            ->selectRaw('dish_menus.*, calendars.date as date')
+            ->get()
+        ;
+
+        $filename = sprintf('dish_menus-%s.csv', uniqid());
+        $path = storage_path(sprintf('app/download_files/%s', $filename));
+
+        $header = ($dish_type->id == DishTypes::DINING_HALL ? [
+            '日付', '種類',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            // '', '', '', '', '', '',
+        ] : [
+            '日付', '種類',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+            '名称', 'エネルギー', '炭水化物', 'タンパク質', '脂質', '食物繊維',
+        ]);
+        $this->write_csv($path, $header, function($index) use($dish_menus, $dish_type) {
+            $row_count = ($dish_type->id == DishTypes::DINING_HALL ? 8 : 9);
+            $row_index = $index * $row_count;
+
+            if ($dish_menus->count() <= $row_index + $row_count) {
+                return false;
+            }
+
+            $record = [
+                $dish_menus[$row_index]->date->format('Y/m/d'),
+                $dish_type->column_value,
+            ];
+            for ($i=0; $i<$row_count; $i++) {
+                $dish_menu = $dish_menus[$row_index+$i];
+                $record[] = $dish_menu->name;
+                $record[] = $dish_menu->energy;
+                $record[] = $dish_menu->carbohydrates;
+                $record[] = $dish_menu->protein;
+                $record[] = $dish_menu->lipid;
+                $record[] = $dish_menu->dietary_fiber;
+            }
+            return $record;
+        });
+
+        return response()->download($path, sprintf('メニュー一覧_%s.csv', date('Ymd-Hms')), [
+            'Content-Type: text/csv'
+        ]);
     }
 }

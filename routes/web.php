@@ -76,6 +76,7 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
     Route::prefix('/dish_menus')->group(function() {
         Route::get('/{dish_type_key?}', [ App\Http\Controllers\Admin\DishMenusController::class, 'index' ])->name('admin.dish_menus')->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
         Route::post('/{dish_type_key?}/upload', [ App\Http\Controllers\Admin\DishMenusController::class, 'post_upload' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
+        Route::get('/{dish_type_key}/download', [ App\Http\Controllers\Admin\DishMenusController::class, 'get_download' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
     });
 
     Route::prefix('/users')->group(function() {

@@ -26,11 +26,29 @@
 {{-- 現在未対応 --}}
 @elseif($menu->item_type == MenuItemTypes::INSIDE_LINK)
 <li class="nav-item">
-    <a href="{!! url($menu->path) !!}" class="nav-link {{ ($menu->item_key == $item_key ? 'active fw-bold' : '') }}"><u>{{ $menu->name }}</u></a>
+    @isset($menu->path)
+        @php
+            $url = [ url($menu->path) ];
+            if (isset($query)) {
+                $url[] = $query;
+            }
+            $href = implode('?', $url);
+        @endphp
+    @endif
+    <a href="{!! $href ?? '#' !!}" class="nav-link {{ ($menu->item_key == $item_key ? 'active fw-bold' : '') }}"><u>{{ $menu->name }}</u></a>
 </li>
 @elseif($menu->item_type == MenuItemTypes::OUTSIDE_LINK)
 <li class="nav-item">
-    <a href="{!! url($menu->url) ?? '#' !!}" target="_blank" class="nav-link"><u>{{ $menu->name }}</u></a>
+    @isset($menu->url)
+        @php
+            $url = [ url($menu->url) ];
+            if (isset($query)) {
+                $url[] = $query;
+            }
+            $href = implode('?', $url);
+        @endphp
+    @endif
+    <a href="{!! $href ?? '#' !!}" target="_blank" class="nav-link"><u>{{ $menu->name }}</u></a>
 </li>
 @elseif($menu->item_type == MenuItemTypes::ACTION)
 <li class="nav-item">

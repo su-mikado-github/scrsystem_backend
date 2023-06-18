@@ -20,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
         require_once(app_path('Enum.php'));
         require_once(app_path('LineApi.php'));
         require_once(app_path('Helper/HelperFunctions.php'));
+        require_once(app_path('Traits/CsvBuilder.php'));
 
         $this->app->singleton(\App\LineApi::class, function($app) {
             return new \App\LineApi();
