@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Flags;
+use App\ReserveTypes;
 use App\Weekdays;
 
 use App\Models\DishMenu;
 use App\Models\DailyDishMenu;
 use App\Models\MonthCalendar;
 use App\Models\Reserve;
+use App\Models\EmptyState;
 
 class Calendar extends Model {
     use HasFactory;
@@ -56,6 +58,38 @@ class Calendar extends Model {
 
     public function reserves() {
         return $this->hasMany(Reserve::class, 'date', 'date')->where('is_delete', Flags::OFF);
+    }
+
+    public function getDiningHallReserveSummaryAttribute() {
+        return $this->reserves()
+            ->where('is_delete', Flags::OFF)
+            ->whereIn('type', [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ])
+            ->selectRaw('user_id,date,SUM(reserve_count) as reserve_count,SUM(IF(checkin_dt IS NOT NULL, reserve_count, 0)) as checkin_reserve_count, SUM(IF(cancel_dt IS NOT NULL, reserve_count, 0)) as cancel_reserve_count')
+            ->groupByRaw('user_id,date')
+            ->first()
+        ;
+    }
+
+    public function getLunchboxReserveSummaryAttribute() {
+        return $this->reserves()
+            ->where('is_delete', Flags::OFF)
+            ->where('type', ReserveTypes::LUNCHBOX)
+            ->selectRaw('user_id,date,SUM(reserve_count) as reserve_count,SUM(IF(checkin_dt IS NOT NULL, reserve_count, 0)) as checkin_reserve_count, SUM(IF(cancel_dt IS NOT NULL, reserve_count, 0)) as cancel_reserve_count')
+            ->groupByRaw('user_id,date')
+            ->first()
+        ;
+    }
+
+    public function empty_states() {
+        return $this->hasMany(EmptyState::class, 'calendar_id')->where('is_delete', Flags::OFF);
+    }
+
+    public function empty_state_summary() {
+        return $this->hasOne(EmptyState::class, 'calendar_id')
+            ->where('is_delete', Flags::OFF)
+            ->selectRaw('date,year,month,day,weekday,SUM(seat_count) as seat_count,SUM(empty_seat_count) as empty_seat_count')
+            ->groupByRaw('date,year,month,day,weekday')
+        ;
     }
 
     public function scopeYearMonthBy($query, $year, $month) {

@@ -81,6 +81,10 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
         Route::put('/{dish_type_key}/{date}', [ App\Http\Controllers\Admin\DishMenuController::class, 'put' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))))->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
     });
 
+    Route::prefix('/status')->group(function() {
+        Route::get('/', [ App\Http\Controllers\Admin\StatusController::class, 'index' ])->name('admin.status');
+    });
+
     Route::prefix('/users')->group(function() {
         Route::get('/', [ App\Http\Controllers\Admin\UsersController::class, 'index' ])->name('admin.users');
         Route::get('/download', [ App\Http\Controllers\Admin\UsersController::class, 'download' ])->name('admin.users.download');
