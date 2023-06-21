@@ -83,6 +83,10 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
 
     Route::prefix('/status')->group(function() {
         Route::get('/', [ App\Http\Controllers\Admin\StatusController::class, 'index' ])->name('admin.status');
+
+        Route::prefix('/daily')->group(function() {
+            Route::get('/{date}', [ App\Http\Controllers\Admin\StatusDailyController::class, 'index' ])->name('admin.status.daily')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+        });
     });
 
     Route::prefix('/users')->group(function() {

@@ -56,6 +56,7 @@ class LineController extends Controller {
         $line_user = LineUser::enabled()->lineOwnerIdBy($line_owner_id)->first();
         if (isset($line_user)) {
             if (isset($line_user->user)) {
+                $line_user->user->unregist_date = today();
                 $this->remove($line_user->user);
             }
             $this->remove($line_user);

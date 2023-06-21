@@ -140,7 +140,10 @@ class MypageController extends Controller {
         $user->last_login_dt = now();
         $user->checkin_token = Str::uuid();
         $is_initial_setting = $user->is_initial_setting;
-        $user->is_initial_setting = Flags::ON;
+        if ($is_initial_setting == Flags::OFF) {
+            $user->is_initial_setting = Flags::ON;
+            $user->regist_date = today();
+        }
         $this->save($user, $user);
 
         // 初回設定後に必要な画面に遷移する
