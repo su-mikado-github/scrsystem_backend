@@ -9,9 +9,7 @@
 import { SCRSPage } from "/scrs-pages.js";
 import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
 
-class ChangePage extends SCRSPage {
-    {{-- #timeSchedule = null; --}}
-
+class ChangeVisitPage extends SCRSPage {
     #newTime = null;
 
     #toggles = null;
@@ -23,7 +21,6 @@ class ChangePage extends SCRSPage {
     constructor() {
         super();
         //
-        {{-- this.#timeSchedule = this.field("timeSchedule"); --}}
         this.#newTime = this.field("newTime");
 
         this.#toggles = this.actions("toggle", [ "click" ]);
@@ -34,10 +31,7 @@ class ChangePage extends SCRSPage {
     }
 
     toggle_click(e) {
-        {{-- e.preventDefault();
-        e.stopPropagation(); --}}
         const time = e.target.dataset["time"];
-        {{-- alert(time); --}}
         this.#newTime.value = time;
 
         const fromTime = @json($from_time);
@@ -51,34 +45,16 @@ class ChangePage extends SCRSPage {
         this.#cancelConfirmDialog.open();
     }
 
-    {{-- changeConfirm_show(e) {
-//        e.preventDefault();
-    }
-
-    changeConfirm_hide(e) {
-
-    } --}}
-
     changeConfirm_ok(e) {
         this.post([ "/reserve/change", @json($reserve->id), 'visit' ]);
-        {{-- this.#changeConfirmDialog.close(); --}}
     }
-
-    {{-- cancelConfirm_show(e) {
-//        e.preventDefault();
-    }
-
-    cancelConfirm_hide(e) {
-
-    } --}}
 
     cancelConfirm_ok(e) {
         this.delete([ "/reserve/change", @json($reserve->id) ]);
-        {{-- this.#cancelConfirmDialog.close(); --}}
     }
 }
 
-SCRSPage.startup(()=>new ChangePage());
+SCRSPage.startup(()=>new ChangeVisitPage());
 </x-script>
 
 @section('page.title')

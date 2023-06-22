@@ -50,7 +50,11 @@ class ChangeController extends Controller {
 
         $day_calendar = $calendars->where('date', $today)->first();
 
-        if (op($reserve)->type == ReserveTypes::LUNCHBOX) {
+        if (empty($reserve)) {
+            return view('pages.reserve.change.index')
+            ;
+        }
+        else if (op($reserve)->type == ReserveTypes::LUNCHBOX) {
             return view('pages.reserve.change.index_lunchbox')
                 ->with('reserve', $reserve)
                 ->with('day_calendar', $day_calendar)

@@ -7,7 +7,7 @@
 import { SCRSPage } from "/scrs-pages.js";
 import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
 
-class ChangePage extends SCRSPage {
+class ChangeLunchboxPage extends SCRSPage {
     #newDate = null;
     #change = null;
     #cancel = null;
@@ -36,36 +36,16 @@ class ChangePage extends SCRSPage {
         this.#cancelConfirmDialog.open();
     }
 
-    {{-- changeConfirm_show(e) {
-//        e.preventDefault();
-    }
-
-    changeConfirm_hide(e) {
-
-    } --}}
-
     changeConfirm_ok(e) {
         this.post([ "/reserve/change", @json($reserve->id), 'lunchbox' ]);
-        {{-- this.#changeConfirmDialog.close(); --}}
     }
-
-    {{-- cancelConfirm_show(e) {
-//        e.preventDefault();
-    }
-
-    cancelConfirm_hide(e) {
-
-    } --}}
-
-
 
     cancelConfirm_ok(e) {
         this.delete([ "/reserve/change", @json($reserve->id) ]);
-        {{-- this.#cancelConfirmDialog.close(); --}}
     }
 }
 
-SCRSPage.startup(()=>new ChangePage());
+SCRSPage.startup(()=>new ChangeLunchboxPage());
 </x-script>
 
 @section('page.title')
