@@ -157,6 +157,8 @@ SCRSPage.startup(()=>new AdminUserPage());
             <span class="text-nowrap fs-6">○<x-icon name="fa-solid fa-ellipsis" />予約あり</span>
             &nbsp;
             <span class="text-nowrap fs-6">●<x-icon name="fa-solid fa-ellipsis" />チェックイン（受取）済</span>
+            &nbsp;
+            <span class="text-nowrap fs-6">×<x-icon name="fa-solid fa-ellipsis" />キャンセル済</span>
         </div></h5>
         <table class="table table-bordered">
         <thead class="scrs-bg-main">
@@ -184,8 +186,8 @@ SCRSPage.startup(()=>new AdminUserPage());
             <tr>
                 <td class="text-center">{{ $date }}</td>
                 <td class="text-center">{{ $time }}</td>
-                <td class="text-center">@if($reserve->type != ReserveTypes::LUNCHBOX)<span>{{ (isset($reserve->checkin_dt) ? '●' : '○') }}</span>@else<span>&nbsp;</span>@endif</td>
-                <td class="text-center">@if($reserve->type == ReserveTypes::LUNCHBOX)<span>{{ (isset($reserve->checkin_dt) ? '●' : '○') }}</span>@else<span>&nbsp;</span>@endif</td>
+                <td class="text-center">@if(in_array($reserve->type, [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ]))<span>@if(isset($reserve->cancel_dt)) × @elseif(isset($reserve->checkin_dt)) ● @else ○ @endif</span>@else<span>&nbsp;</span>@endif</td>
+                <td class="text-center">@if(in_array($reserve->type, [ ReserveTypes::LUNCHBOX ]))<span>@if(isset($reserve->cancel_dt)) × @elseif(isset($reserve->checkin_dt)) ● @else ○ @endif</span>@else<span>&nbsp;</span>@endif</td>
                 <td class="text-end">{{ $reserve->reserve_count }}枚</td>
             </tr>
             @endforeach
