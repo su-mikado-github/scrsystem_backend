@@ -41,7 +41,9 @@ class Calendar extends Model {
     }
 
     protected $casts = [
-        'date' => 'date'
+        'date' => 'date',
+        'previous_date' => 'date',
+        'next_date' => 'date',
     ];
 
     public function dish_menus() {
@@ -64,6 +66,14 @@ class Calendar extends Model {
         return $this->reserves()
             ->where('is_delete', Flags::OFF)
             ->whereIn('type', [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ])
+            ->whereExists(function($sub_query) {
+                $sub_query
+                    ->selectRaw(1)
+                    ->from('users')
+                    ->where('users.is_delete', Flags::OFF)
+                    ->whereRaw('users.id = reserves.user_id')
+                ;
+            })
             ->selectRaw('user_id,date,SUM(reserve_count) as reserve_count,SUM(IF(checkin_dt IS NOT NULL, reserve_count, 0)) as checkin_reserve_count, SUM(IF(cancel_dt IS NOT NULL, reserve_count, 0)) as cancel_reserve_count')
             ->groupByRaw('user_id,date')
             ->first()
@@ -74,6 +84,14 @@ class Calendar extends Model {
         return $this->reserves()
             ->where('is_delete', Flags::OFF)
             ->where('type', ReserveTypes::LUNCHBOX)
+            ->whereExists(function($sub_query) {
+                $sub_query
+                    ->selectRaw(1)
+                    ->from('users')
+                    ->where('users.is_delete', Flags::OFF)
+                    ->whereRaw('users.id = reserves.user_id')
+                ;
+            })
             ->selectRaw('user_id,date,SUM(reserve_count) as reserve_count,SUM(IF(checkin_dt IS NOT NULL, reserve_count, 0)) as checkin_reserve_count, SUM(IF(cancel_dt IS NOT NULL, reserve_count, 0)) as cancel_reserve_count')
             ->groupByRaw('user_id,date')
             ->first()
@@ -106,5 +124,13 @@ class Calendar extends Model {
 
     public function scopeEnabled($query) {
         return $query->where('is_delete', Flags::OFF);
+    }
+
+    public function getPreviousDateAttribute() {
+        return $this->date->copy()->subDays();
+    }
+
+    public function getNextDateAttribute() {
+        return $this->date->copy()->addDays();
     }
 }

@@ -30,6 +30,7 @@ calendars.*,
     WHERE
         (users.regist_date <= calendars.date)
         AND ((users.unregist_date IS NULL) OR users.unregist_date >= calendars.date)
+        AND users.is_delete = 0
 ) AS user_count,
 (
     SELECT COUNT(*)
@@ -41,10 +42,15 @@ calendars.*,
     WHERE
         (users.regist_date<=calendars.date)
         AND ((users.unregist_date IS NULL) OR users.unregist_date >= calendars.date)
+        AND users.is_delete = 0
 ) AS soccer_user_count,
 IFNULL((
     SELECT SUM(reserves.reserve_count)
     FROM reserves
+        INNER JOIN users ON (
+            users.id = reserves.user_id
+            AND users.is_delete = 0
+        )
     WHERE
         reserves.is_delete = ?
         AND reserves.date = calendars.date
@@ -55,6 +61,7 @@ IFNULL((
     FROM reserves
         INNER JOIN users ON (
             users.id = reserves.user_id
+            AND users.is_delete = 0
         )
         INNER JOIN affiliation_details ON (
             affiliation_details.id = users.affiliation_detail_id

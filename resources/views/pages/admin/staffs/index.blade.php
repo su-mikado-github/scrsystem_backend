@@ -126,7 +126,7 @@ SCRSPage.startup(()=>new AdminUsersPage());
 @endsection
 
 @section('side-menu')
-<x-virtical-menu id="idLeftSideMenu" category="left.side.menu" item-key="admin_users" />
+<x-virtical-menu id="idLeftSideMenu" category="left.side.menu" item-key="staffs" />
 @endsection
 
 @section('main')
