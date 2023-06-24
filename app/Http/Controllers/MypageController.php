@@ -150,10 +150,10 @@ class MypageController extends Controller {
         if ($is_initial_setting == Flags::OFF) {
             $screen_path = optional($user->line_user)->screen_path;
             if (isset($screen_path)) {
-                return redirect(url("/{$screen_path}"));
+                return redirect(url("/{$screen_path}"))->with('success', __('messages.success.mypage.post'));
             }
         }
 
-        return redirect()->action([ self::class, 'index' ]);
+        return redirect()->action([ self::class, 'index' ])->with('success', __('messages.success.mypage.post'));
     }
 }
