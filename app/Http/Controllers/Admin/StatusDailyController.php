@@ -55,6 +55,7 @@ class StatusDailyController extends Controller {
             ->get();
 
         return view('pages.admin.status.daily.index')
+            ->with('date', $date)
             ->with('calendar', $calendar)
             ->with('users', $users)
             ->with('full_name_sort', $full_name_sort)

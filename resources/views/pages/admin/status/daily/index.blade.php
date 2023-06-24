@@ -11,9 +11,96 @@
 import { SCRSPage } from "/scrs-pages.js";
 
 class AdminStatusDailyPage extends SCRSPage {
+
+    #date = @json($date);
+
+    #oldSortOrders = @json($sort_orders->toArray())
+
+    #fullNameSort = null;
+    #affiliationSort = null;
+    #affiliationDetailSort = null;
+    #schoolYearSort = null;
+    #sortOrders = null;
+
+    #fullNameSortAsc = null;
+    #fullNameSortDesc = null;
+    #affiliationSortAsc = null;
+    #affiliationSortDesc = null;
+    #affiliationDetailSortAsc = null;
+    #affiliationDetailSortDesc = null;
+    #schoolYearSortAsc = null;
+    #schoolYearSortDesc = null;
+
+    #rebuildSortOrders(columnName) {
+        return [columnName].concat(this.#oldSortOrders.filter((sortOrder)=>(sortOrder!=columnName)));
+    }
+
     constructor() {
         super();
         //
+
+        this.#fullNameSort = this.field("fullNameSort");
+        this.#affiliationSort = this.field("affiliationSort");
+        this.#affiliationDetailSort = this.field("affiliationDetailSort");
+        this.#schoolYearSort = this.field("schoolYearSort");
+        this.#sortOrders = this.field("sortOrders");
+
+        this.#fullNameSortAsc = this.action("fullNameSortAsc", [ "click" ]);
+        this.#fullNameSortDesc = this.action("fullNameSortDesc", [ "click" ]);
+        this.#affiliationSortAsc = this.action("affiliationSortAsc", [ "click" ]);
+        this.#affiliationSortDesc = this.action("affiliationSortDesc", [ "click" ]);
+        this.#affiliationDetailSortAsc = this.action("affiliationDetailSortAsc", [ "click" ]);
+        this.#affiliationDetailSortDesc = this.action("affiliationDetailSortDesc", [ "click" ]);
+        this.#schoolYearSortAsc = this.action("schoolYearSortAsc", [ "click" ]);
+        this.#schoolYearSortDesc = this.action("schoolYearSortDesc", [ "click" ]);
+    }
+
+    fullNameSortAsc_click(e) {
+        this.#sortOrders.value = this.#rebuildSortOrders("full_name").join(",");
+        this.#fullNameSort.value = SortTypes.ASC.id;
+        this.get([ "/admin/status/daily", this.#date ]);
+    }
+
+    fullNameSortDesc_click(e) {
+        this.#sortOrders.value = this.#rebuildSortOrders("full_name").join(",");
+        this.#fullNameSort.value = SortTypes.DESC.id;
+        this.get([ "/admin/status/daily", this.#date ]);
+    }
+
+    affiliationSortAsc_click(e) {
+        this.#sortOrders.value = this.#rebuildSortOrders("affiliation").join(",");
+        this.#affiliationSort.value = SortTypes.ASC.id;
+        this.get([ "/admin/status/daily", this.#date ]);
+    }
+
+    affiliationSortDesc_click(e) {
+        this.#sortOrders.value = this.#rebuildSortOrders("affiliation").join(",");
+        this.#affiliationSort.value = SortTypes.DESC.id;
+        this.get([ "/admin/status/daily", this.#date ]);
+    }
+
+    affiliationDetailSortAsc_click(e) {
+        this.#sortOrders.value = this.#rebuildSortOrders("affiliation_detail").join(",");
+        this.#affiliationDetailSort.value = SortTypes.ASC.id;
+        this.get([ "/admin/status/daily", this.#date ]);
+    }
+
+    affiliationDetailSortDesc_click(e) {
+        this.#sortOrders.value = this.#rebuildSortOrders("affiliation_detail").join(",");
+        this.#affiliationDetailSort.value = SortTypes.DESC.id;
+        this.get([ "/admin/status/daily", this.#date ]);
+    }
+
+    schoolYearSortAsc_click(e) {
+        this.#sortOrders.value = this.#rebuildSortOrders("school_year").join(",");
+        this.#schoolYearSort.value = SortTypes.ASC.id;
+        this.get([ "/admin/status/daily", this.#date ]);
+    }
+
+    schoolYearSortDesc_click(e) {
+        this.#sortOrders = this.#rebuildSortOrders("school_year").join(",");
+        this.#schoolYearSort.value = SortTypes.DESC.id;
+        this.get([ "/admin/status/daily", this.#date ]);
     }
 }
 
