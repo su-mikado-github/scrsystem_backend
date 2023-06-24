@@ -109,7 +109,7 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
         // Route::post('/{dish_type_key?}/upload', [ App\Http\Controllers\Admin\DishMenusController::class, 'post_upload' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
     });
 
-    Route::get('/', [ App\Http\Controllers\AdminController::class, 'index' ])->name('admin');
+    Route::get('/{date?}', [ App\Http\Controllers\AdminController::class, 'index' ])->name('admin')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
 });
 
 Route::prefix('/login')->group(function() {
