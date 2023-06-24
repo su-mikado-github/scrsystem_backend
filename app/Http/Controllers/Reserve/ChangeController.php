@@ -25,7 +25,7 @@ class ChangeController extends Controller {
 
         $today = (isset($date) ? Carbon::parse($date) : today()->copy()->addDays());
 
-        $reserve = $user->reserves()->where('date', '>=', $today)->orderBy('date')->first();
+        $reserve = $user->reserves()->unCanceled()->where('date', '>=', $today)->orderBy('date')->first();
         if (isset($reserve)) {
             $today = $reserve->date;
         }
