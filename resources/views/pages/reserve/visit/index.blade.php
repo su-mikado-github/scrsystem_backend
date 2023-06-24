@@ -145,7 +145,7 @@ td:has(.scrs-selected) {
 <div class="row g-0 my-2">
     <div class="col-4 text-center"><span class="mdi mdi-circle-outline scrs-text-available"></span><i class="fa-solid fa-ellipsis px-1"></i>予約可能</div>
     <div class="col-4 text-center"><span class="mdi mdi-triangle-outline scrs-text-few-left"></span><i class="fa-solid fa-ellipsis px-1"></i>残りわずか</div>
-    <div class="col-4 text-center"><i class="fa-solid fa-minus scrs-text-fully-occupied"></i><i class="fa-solid fa-ellipsis px-1"></i>売り切れ</div>
+    <div class="col-4 text-center"><i class="fa-solid fa-minus scrs-text-fully-occupied"></i><i class="fa-solid fa-ellipsis px-1"></i>予約不可</div>
     <div class="col-4 text-center"><span class="fa-solid fa-registered scrs-text-available"></span><i class="fa-solid fa-ellipsis px-1"></i>予約済</div>
 </div>
 

@@ -19,7 +19,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('build:calendar')->monthly();
         $schedule->command('build:empty_state')->monthly();
         $schedule->command('update:status')->daily();
-//        $schedule->call(function() { logger()->debug(sprintf('schedule run: %s', now()->format('Y-m-d H:i:s'))); })->everyMinute();
+        $schedule->command('execute:reminder --all')->dailyAt('9:00');
+        $schedule->command('execute:reminder')->everyMinute();
+        $schedule->call(function() { logger()->debug(sprintf('schedule run: %s', now()->format('Y-m-d H:i:s'))); })->everyMinute();
     }
 
     /**

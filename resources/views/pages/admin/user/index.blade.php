@@ -69,29 +69,29 @@ SCRSPage.startup(()=>new AdminUserPage());
         <div class="row g-2 mb-3">
             <div class="col">
                 <label class="form-label">姓</label>
-                <input type="text" name="last_name" class="form-control-plaintext border bg-white py-2" placeholder="姓" value="{{ $target_user->last_name }}">
+                <input type="text" name="last_name" class="form-control-plaintext border bg-white py-2" placeholder="姓" value="{{ $target_user->last_name }}" readonly>
             </div>
             <div class="col">
                 <label class="form-label">名</label>
-                <input type="text" name="first_name" class="form-control-plaintext border bg-white py-2" placeholder="名" value="{{ $target_user->first_name }}">
+                <input type="text" name="first_name" class="form-control-plaintext border bg-white py-2" placeholder="名" value="{{ $target_user->first_name }}" readonly>
             </div>
         </div>
 
         <div class="row g-2 mb-3">
             <div class="col">
                 <label class="form-label">せい</label>
-                <input type="text" name="last_name_kana" class="form-control-plaintext border bg-white py-2" placeholder="せい" value="{{ $target_user->last_name_kana }}">
+                <input type="text" name="last_name_kana" class="form-control-plaintext border bg-white py-2" placeholder="せい" value="{{ $target_user->last_name_kana }}" readonly>
             </div>
             <div class="col">
                 <label class="form-label">めい</label>
-                <input type="text" name="first_name_kana" class="form-control-plaintext border bg-white py-2" placeholder="めい" value="{{ $target_user->first_name_kana }}">
+                <input type="text" name="first_name_kana" class="form-control-plaintext border bg-white py-2" placeholder="めい" value="{{ $target_user->first_name_kana }}" readonly>
             </div>
         </div>
 
         <div class="row g-2 mb-3">
             <div class="col-2">
                 <label class="form-label">性別</label>
-                <input type="text" name="sex" class="form-control-plaintext border bg-white py-2" value="{{ op(Genders::of($target_user->sex))->ja ?? '（不明）' }}">
+                <input type="text" name="sex" class="form-control-plaintext border bg-white py-2" value="{{ op(Genders::of($target_user->sex))->ja ?? '（不明）' }}" readonly>
             </div>
         </div>
 
@@ -105,12 +105,12 @@ SCRSPage.startup(()=>new AdminUserPage());
         <div class="row g-2 mb-3">
             <div class="col-6">
                 <label class="form-label">所属</label>
-                <input type="text" name="affiliation" class="form-control-plaintext border bg-white py-2" value="{{ op($target_user->affiliation)->name }}">
+                <input type="text" name="affiliation" class="form-control-plaintext border bg-white py-2" value="{{ op($target_user->affiliation)->name }}" readonly>
             </div>
 
             <div class="col-6">
                 <label class="form-label">&nbsp;</label>
-                <input type="text" name="affiliation_detail" class="form-control-plaintext border bg-white py-2" value="{{ op($target_user->affiliation_detail)->name }}">
+                <input type="text" name="affiliation_detail" class="form-control-plaintext border bg-white py-2" value="{{ op($target_user->affiliation_detail)->name }}" readonly>
             </div>
         </div>
 
@@ -118,7 +118,7 @@ SCRSPage.startup(()=>new AdminUserPage());
         <div class="row g-2 mb-3">
             <div class="col-6">
                 <label class="form-label">学年</label>
-                <input type="text" name="school_year" class="form-control-plaintext border bg-white py-2" value="{{ op($target_user->school_year)->name }}">
+                <input type="text" name="school_year" class="form-control-plaintext border bg-white py-2" value="{{ op($target_user->school_year)->name }}" readonly>
             </div>
         </div>
         @elseif(op($target_user->affiliation)->detail_type == AffiliationDetailTypes::EXTERNAL)
@@ -127,14 +127,14 @@ SCRSPage.startup(()=>new AdminUserPage());
         <div class="row g-2 mb-3">
             <div class="col-4">
                 <label class="form-label">電話番号</label>
-                <input type="text" name="telephone_no" class="form-control-plaintext border bg-white py-2" value="{{ $target_user->telephone_no }}">
+                <input type="text" name="telephone_no" class="form-control-plaintext border bg-white py-2" value="{{ $target_user->telephone_no }}" readonly>
             </div>
         </div>
 
         <div class="row g-2 mb-3">
             <div class="col">
                 <label class="form-label">メールアドレス</label>
-                <input type="text" name="email" class="form-control-plaintext border bg-white py-2" value="{{ $target_user->email }}">
+                <input type="text" name="email" class="form-control-plaintext border bg-white py-2" value="{{ $target_user->email }}" readonly>
             </div>
         </div>
 
@@ -142,8 +142,8 @@ SCRSPage.startup(()=>new AdminUserPage());
             <div class="col-3">
                 <label class="form-label">食券残数</label>
                 <div class="input-group">
-                    <input type="text" name="valid_ticket_count" class="form-control border bg-white py-2 text-end" value="{{ $target_user->lastTicketCount }}" {{-- aria-describedby="validTicketCountUnit" --}} readonly>
-                    <span {{-- id="validTicketCountUnit" --}} class="input-group-text bg-transparent border-top-0 border-bottom-0 border-end-0">枚</span>
+                    <input type="text" name="valid_ticket_count" class="form-control border bg-white py-2 text-end" value="{{ $target_user->lastTicketCount }}" readonly>
+                    <span class="input-group-text bg-transparent border-top-0 border-bottom-0 border-end-0">枚</span>
                 </div>
             </div>
             <div class="col-3">
@@ -153,7 +153,11 @@ SCRSPage.startup(()=>new AdminUserPage());
         </div>
     </div>
     <div class="col-5">
-        <h5>利用履歴</h5>
+        <h5 class="d-flex"><div>利用履歴</div><div class="flex-grow-1 text-end">
+            <span class="text-nowrap fs-6">○<x-icon name="fa-solid fa-ellipsis" />予約あり</span>
+            &nbsp;
+            <span class="text-nowrap fs-6">●<x-icon name="fa-solid fa-ellipsis" />チェックイン（受取）済</span>
+        </div></h5>
         <table class="table table-bordered">
         <thead class="scrs-bg-main">
             <tr>

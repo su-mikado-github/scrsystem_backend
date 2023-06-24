@@ -121,7 +121,6 @@ class ChangeController extends Controller {
             $end_mins = $start_mins + intval(config('system.dining_hall.stay_time_mins', 20)) - 1;
             $start_time = $this->mins_to_time($start_mins);
             $end_time = $this->mins_to_time($end_mins);
-            logger()->debug(compact('new_time', 'start_mins', 'end_mins', 'start_time', 'end_time'));
 
             $is_empty_seat_short = EmptyState::dateBy($reserve->date)->timeRangeBy($start_time, $end_time)->where('empty_seat_count', '<', $reserve->reserve_count)->exists();
             if ($is_empty_seat_short) {
@@ -135,6 +134,7 @@ class ChangeController extends Controller {
 
             $reserve->time = $start_time;
             $reserve->end_time = $end_time;
+            $reserve->remind_dt = null;
             $this->save($reserve, $user);
 
             // 変更前の予約時間の空き情報を更新する
@@ -226,6 +226,7 @@ class ChangeController extends Controller {
 
         return $this->trans(function() use($request, $user, $reserve, $calendar) {
             $reserve->date = $calendar->date;
+            $reserve->remind_dt = null;
             $this->save($reserve, $user);
 
             // LINE通知

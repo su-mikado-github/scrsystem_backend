@@ -41,6 +41,8 @@ class CreateUsers extends BaseMigration
             $table->datetime('last_login_dt')->nullable()->comment('最終ログイン日時');
             $table->string('checkin_token', 256)->nullable()->comment('IDトークン');
             $table->boolean('is_initial_setting')->default(false)->comment('初期設定済フラグ');
+            $table->date('regist_date')->nullable()->comment('登録日');
+            $table->date('unregist_date')->nullable()->comment('退会日');
             $this->build_common_columns($table);
         });
 
