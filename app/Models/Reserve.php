@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Flags;
+use App\ReserveTypes;
 
 use App\Models\User;
 use App\Models\Calendar;
@@ -56,6 +57,14 @@ class Reserve extends Model {
 
     public function scopeTypesBy($query, array $types) {
         return $query->whereIn('type', $types);
+    }
+
+    public function scopeLunchboxBy($query) {
+        return $query->whereIn('type', [ ReserveTypes::LUNCHBOX ]);
+    }
+
+    public function scopeDiningHallBy($query) {
+        return $query->whereIn('type', [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ]);
     }
 
     public function scopeNoCheckin($query) {

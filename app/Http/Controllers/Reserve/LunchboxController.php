@@ -57,7 +57,7 @@ class LunchboxController extends Controller {
 
         $day_calendar = $calendars->where('date', $today)->first();
 
-        $reserve = $day_calendar->reserves()->enabled()->unCanceled()->userBy($user)->first();
+        $reserve = $day_calendar->reserves()->enabled()->lunchboxBy()->unCanceled()->userBy($user)->first();
 
         return view('pages.reserve.lunchbox.index')
             ->with('day_calendar', $day_calendar)

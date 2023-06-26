@@ -21,4 +21,12 @@ class DishMenu extends Model {
     public function scopeDishTypesBy($query, array $dish_types) {
         return $query->whereIn('dish_type', $dish_types);
     }
+
+    public function scopeLunchboxBy($query) {
+        return $query->whereIn('dish_type', [ DishTypes::LUNCHBOX, DishTypes::BOUT_LUNCHBOX ]);
+    }
+
+    public function scopeDiningHallBy($query) {
+        return $query->whereIn('dish_type', [ DishTypes::DINING_HALL ]);
+    }
 }
