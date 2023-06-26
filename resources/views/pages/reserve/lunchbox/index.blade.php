@@ -1,8 +1,10 @@
 @extends('layouts.default')
 
 @use(Carbon\Carbon)
-@use(App\Weekdays)
+
 @use(App\DishTypes)
+@use(App\ReserveTypes)
+@use(App\Weekdays)
 
 <x-script>
 import { SCRSPage } from "/scrs-pages.js";
@@ -84,6 +86,17 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
 
 <br>
 
+@isset($reserve)
+<div class="px-5 py-4 scrs-sheet-normal">
+    <h3 class="text-center mb-4">ご予約内容（{{ ReserveTypes::of($reserve->type)->title }}）</h3>
+    <dl class="scrs-item-group mb-0">
+        <dt class="label">日時</dt>
+        <dd class="item"><span>{{ $reserve->date->format('m月d日') }}</span>@isset($reserve->time)<span class="px-2"></span><span>{{ $reserve->time }}～</span>@endisset</dd>
+        <dt class="label">個数</dt>
+        <dd class="item"><span>{{ $reserve->reserve_count }}</span>個</dd>
+    </dl>
+</div>
+@else
 <h5 class="text-start mb-3">ご注文数を選択して下さい。</h5>
 <div class="form-group row g-2 mb-3">
     <label for="reserveCount" class="col-4 col-form-label">ご注文数<span class="text-danger">*</span></label>
@@ -101,6 +114,7 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
         </div>
     </div>
 </div>
+@endisset
 
 <br>
 
@@ -180,19 +194,19 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
                 @endphp
                 @if($is_reserved)
                 <td class="text-center align-middle py-1 {!! $bg_color !!}">
-                    <a class="{!! $text_color !!} text-decoration-none fw-bold" href="#">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="{!! $text_color !!} fw-bold" href="{!! route('reserve.change', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! $calendar->date->format('n/j') !!}</a>
                 </td>
                 @elseif($is_past || !$is_dish_menu)
                 <td class="text-center align-middle py-1 {!! $bg_color !!}">
-                    <a class="{!! $text_color !!} text-decoration-none" href="#">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="{!! $text_color !!} text-decoration-none" href="#">{!! $calendar->date->format('n/j') !!}</a>
                 </td>
                 @elseif($month_calendar->contains($calendar))
                 <td class="text-center align-middle py-1 {!! $bg_color !!}">
-                    <a class="{!! $text_color !!}" href="{!! route('reserve.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="{!! $text_color !!}" href="{!! route('reserve.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! $calendar->date->format('n/j') !!}</a>
                 </td>
                 @else
                 <td class="text-center align-middle py-1 {!! $bg_color !!}">
-                    <a class="{!! $text_color !!}" href="{!! route('reserve.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="{!! $text_color !!}" href="{!! route('reserve.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! $calendar->date->format('n/j') !!}</a>
                 </td>
                 @endif
             @endforeach
@@ -203,9 +217,15 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
 
 <br>
 
+@isset($reserve)
+<div class="d-flex justify-content-center py-2">
+    <span class="btn btn-secondary col-8">既に予約済みです。</span>
+</div>
+@else
 <div class="d-flex justify-content-center py-2">
     <button data-action="reserve" type="button" class="btn scrs-bg-main-button col-8" disabled>予約する</button>
 </div>
+@endisset
 
 <div class="d-flex justify-content-center py-2">
     <a class="btn border border-1 scrs-bg-sub-button scrs-border-main col-8" href="/reserve">戻る</a>

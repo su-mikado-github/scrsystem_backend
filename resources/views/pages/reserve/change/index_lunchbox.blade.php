@@ -195,9 +195,10 @@ SCRSPage.startup(()=>new ChangeLunchboxPage());
 
 <br>
 <div class="row">
-    <label for="newDate" class="col-5 col-form-label">変更先の日付</label>
-    <div class="col-7">
+    <label for="newDate" class="col-4 col-form-label">変更先の日付</label>
+    <div class="col-8">
         <input id="newDate" type="date" class="form-control" name="new_date" data-field="newDate" value="{!! old('new_date', $day_calendar->date->format('Y-m-d')) !!}">
+        <small>※日付をタップして変更できます。</small>
     </div>
 </div>
 @error('new_date')<p class="text-danger">{{ $message }}</p>@enderror

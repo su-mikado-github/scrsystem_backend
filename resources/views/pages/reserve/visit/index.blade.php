@@ -17,6 +17,7 @@ class ReserveVisitPage extends SCRSPage {
     #today = null;
 
     #toggles = null;
+    #changes = null;
 
     #reserveTime = null;
     @if((optional($user->affiliation_detail)->is_soccer ?? Flags::OFF) == Flags::OFF)
@@ -33,6 +34,7 @@ class ReserveVisitPage extends SCRSPage {
         this.#nextWeek = this.action("nextWeek", [ "click" ]);
         this.#today = this.action("today", [ "click" ]);
         this.#toggles = this.actions("toggle", [ "click" ]);
+        this.#toggles = this.actions("change", [ "click" ]);
         this.#reserveTime = this.field("reserve_time");
         @if((optional($user->affiliation_detail)->is_soccer ?? Flags::OFF) == Flags::OFF)
         this.#isTableShareOk = this.field("is_table_share_ok");
@@ -72,6 +74,13 @@ class ReserveVisitPage extends SCRSPage {
             @endif
             this.#reservedDialog.open({ date: date.format("YYYY-MM-DD") });
         }
+    }
+
+    change_click(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const date = dayjs(e.target.dataset["date"]);
+        this.forward([ "/reserve/change", date.format("YYYY-MM-DD") ]);
     }
 
     previousWeek_click(e) {
@@ -146,7 +155,7 @@ td:has(.scrs-selected) {
     <div class="col-4 text-center"><span class="mdi mdi-circle-outline scrs-text-available"></span><i class="fa-solid fa-ellipsis px-1"></i>予約可能</div>
     <div class="col-4 text-center"><span class="mdi mdi-triangle-outline scrs-text-few-left"></span><i class="fa-solid fa-ellipsis px-1"></i>残りわずか</div>
     <div class="col-4 text-center"><i class="fa-solid fa-minus scrs-text-fully-occupied"></i><i class="fa-solid fa-ellipsis px-1"></i>予約不可</div>
-    <div class="col-4 text-center"><span class="fa-solid fa-registered scrs-text-available"></span><i class="fa-solid fa-ellipsis px-1"></i>予約済</div>
+    <div class="col-12 text-center"><span class="fa-solid fa-registered scrs-text-available"></span><i class="fa-solid fa-ellipsis px-1"></i>予約済&nbsp;※タップすると時間変更出来ます。</div>
 </div>
 
 <p>
@@ -251,7 +260,7 @@ td:has(.scrs-selected) {
         <!-- {!! print_r(compact('calendar_date', 'is_reserved', 'is_reserved_time'), true) !!} -->
         @if($is_reserved)
         <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!}">
-            <x-icon data-empty_seat_rate="{!! $empty_seat_rate !!}" data-time="{!! $time_schedule->time !!}" data-date="{!! $calendar->date->format('Y-m-d') !!}" class="fs-4 {!! ($is_reserved_time ? 'text-secondary' : 'invisible') !!}" name="{!! $seat_state !!}" />
+            <x-icon data-action="change" data-empty_seat_rate="{!! $empty_seat_rate !!}" data-time="{!! $time_schedule->time !!}" data-date="{!! $calendar->date->format('Y-m-d') !!}" class="fs-4 {!! ($is_reserved_time ? 'text-secondary' : 'invisible') !!}" name="{!! $seat_state !!}" />
         </td>
         @elseif($is_past)
         <td class="bg-light text-center align-middle py-1">
