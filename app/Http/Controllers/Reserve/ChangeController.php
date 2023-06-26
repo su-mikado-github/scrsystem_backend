@@ -25,7 +25,7 @@ class ChangeController extends Controller {
 
         $today = (isset($date) ? Carbon::parse($date) : today()->copy()->addDays());
 
-        $reserve = $user->reserves()->unCanceled()->where('date', '>=', $today)->orderBy('date')->first();
+        $reserve = $user->reserves()->enabled()->unCanceled()->where('date', '>=', $today)->orderBy('date')->first();
         if (isset($reserve)) {
             $today = $reserve->date;
         }
@@ -52,6 +52,11 @@ class ChangeController extends Controller {
 
         if (empty($reserve)) {
             return view('pages.reserve.change.index')
+                ->with('day_calendar', $day_calendar)
+                ->with('previous_date', $previous_date)
+                ->with('next_date', $next_date)
+                ->with('month_calendar', $month_calendar)
+                ->with('calendars', $calendars)
             ;
         }
         else if (op($reserve)->type == ReserveTypes::LUNCHBOX) {

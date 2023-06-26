@@ -120,8 +120,14 @@ class VisitController extends Controller {
         $this->try_validate($request->all(), $rules, $messages);
 
         $reserve_time = $request->input('reserve_time');
-        $person_count = intval($request->input('person_count'));
-        $is_table_share = Flags::of($request->input('is_table_share'))->id;
+        if ($user->affiliation_detail->is_soccer == Flags::ON) {
+            $person_count = 1;
+            $is_table_share = Flags::ON;
+        }
+        else {
+            $person_count = intval($request->input('person_count'));
+            $is_table_share = Flags::of($request->input('is_table_share'))->id;
+        }
 
         $start_mins = $this->time_to_mins($reserve_time);
         $end_mins = $start_mins + intval(config('system.dining_hall.stay_time_mins', 20)) - 1;  //TODO:暫定で20分間の利用と考える

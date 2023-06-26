@@ -150,7 +150,7 @@ SCRSPage.startup(()=>new ChangeVisitPage());
             <tr>
             @foreach($week as $calendar)
                 @php
-                    $is_reserved = $calendar->reserves()->userBy($user)->exists();
+                    $is_reserved = $calendar->reserves()->enabled()->unCanceled()->userBy($user)->exists();
                     $is_past = ($calendar->date < today()->copy()->addDays(1));
                     $is_today = ($calendar->date == $day_calendar->date);
                     $is_dish_menu = ($calendar->dish_menus->count() > 0);
@@ -179,19 +179,19 @@ SCRSPage.startup(()=>new ChangeVisitPage());
                 @endphp
                 @if($is_past || !$is_dish_menu)
                 <td class="text-center align-middle py-1 {!! $bg_color !!}">
-                    <a class="{!! $text_color !!} text-decoration-none" href="#">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="{!! $text_color !!} text-decoration-none" href="#">{!! $calendar->date->format('n/j') !!}</a>
                 </td>
                 @elseif($is_reserved)
                 <td class="text-center align-middle py-1 {!! $bg_color !!}">
-                    <a class="{!! $text_color !!} fw-bold" href="{!! route('reserve.change', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="{!! $text_color !!} fw-bold" href="{!! route('reserve.change', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! $calendar->date->format('n/j') !!}</a>
                 </td>
                 @elseif($month_calendar->contains($calendar))
                 <td class="text-center align-middle py-1 {!! $bg_color !!}">
-                    <a class="{!! $text_color !!} text-decoration-none" href="#">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="{!! $text_color !!} text-decoration-none" href="#">{!! $calendar->date->format('n/j') !!}</a>
                 </td>
                 @else
                 <td class="text-center align-middle py-1 {!! $bg_color !!}">
-                    <a class="{!! $text_color !!} text-decoration-none" href="#">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="{!! $text_color !!} text-decoration-none" href="#">{!! $calendar->date->format('n/j') !!}</a>
                 </td>
                 @endif
             @endforeach
@@ -214,7 +214,7 @@ SCRSPage.startup(()=>new ChangeVisitPage());
 <thead>
 @foreach($time_schedules as $time_schedule)
     @php
-        $is_reserved_time = ($reserve->time <= $time_schedule->time && $time_schedule->time <= $reserve->end_time);
+        $is_reserved_time = ($reserve->time == $time_schedule->time);
         $empty_seat_rate = (op($empty_states->where('time', $time_schedule->time)->first())->empty_seat_rate ?? 0);
         if ($is_reserved_time) {
             list($icon_name, $class) = [ 'fa-solid fa-registered', 'scrs-text-available' ];
@@ -235,7 +235,7 @@ SCRSPage.startup(()=>new ChangeVisitPage());
         <td class="bg-white text-center align-middle py-2">
             @if($is_reserved_time)
             <x-icon name="{!! $icon_name !!}" class="{!! $class !!}" data-time="{!! $time_schedule->time !!}"  />
-                @else
+            @else
             <x-icon name="{!! $icon_name !!}" class="{!! $class !!}" data-time="{!! $time_schedule->time !!}" data-action="toggle"  />
             @endif
         </td>

@@ -147,6 +147,8 @@ td:has(.scrs-selected) {
 </div>
 
 <br>
+@else
+<input type="hidden" name="person_count" value="1">
 @endif
 
 <h5 class="text-start">ご来店希望日時を選択してください。</h5>
@@ -257,7 +259,6 @@ td:has(.scrs-selected) {
                 $seat_state = 'mdi mdi-circle-outline scrs-text-available';
             }
         @endphp
-        <!-- {!! print_r(compact('calendar_date', 'is_reserved', 'is_reserved_time'), true) !!} -->
         @if($is_reserved)
         <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!}">
             <x-icon data-action="change" data-empty_seat_rate="{!! $empty_seat_rate !!}" data-time="{!! $time_schedule->time !!}" data-date="{!! $calendar->date->format('Y-m-d') !!}" class="fs-4 {!! ($is_reserved_time ? 'text-secondary' : 'invisible') !!}" name="{!! $seat_state !!}" />

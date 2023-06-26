@@ -141,7 +141,7 @@ SCRSPage.startup(()=>new ChangeLunchboxPage());
             <tr>
             @foreach($week as $calendar)
                 @php
-                    $calendar_reserve = $calendar->reserves()->userBy($user)->first();
+                    $calendar_reserve = $calendar->reserves()->enabled()->userBy($user)->first();
                     $is_reserved = isset($calendar_reserve);
                     $is_checkin = isset(op($calendar_reserve)->checkin_dt);
                     $is_past = ($calendar->date < today()->copy()->addDays(1));
