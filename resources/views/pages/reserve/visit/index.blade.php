@@ -280,7 +280,6 @@ td:has(.scrs-selected) {
 {{-- 予約状況カレンダー（ここまで） --}}
 
 <br>
-
 <div class="d-flex justify-content-center py-2">
     <a class="btn border border-1 scrs-bg-sub-button scrs-border-main col-8" href="/reserve">戻る</a>
 </div>

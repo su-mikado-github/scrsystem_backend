@@ -84,9 +84,8 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
     様
 </h2>
 
-<br>
-
 @isset($reserve)
+<br>
 <div class="px-5 py-4 scrs-sheet-normal">
     <h3 class="text-center mb-4">ご予約内容（{{ ReserveTypes::of($reserve->type)->title }}）</h3>
     <dl class="scrs-item-group mb-0">
@@ -96,27 +95,10 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
         <dd class="item"><span>{{ $reserve->reserve_count }}</span>個</dd>
     </dl>
 </div>
-@else
-<h5 class="text-start mb-3">ご注文数を選択して下さい。</h5>
-<div class="form-group row g-2 mb-3">
-    <label for="reserveCount" class="col-4 col-form-label">ご注文数<span class="text-danger">*</span></label>
-    <div class="col-6">
-        <div class="input-group">
-            <select class="form-control" id="lunchboxCount" name="lunchbox_count" data-field="lunchboxCount" placeholder="col-form-label">
-                <option value="0">選択してください</option>
-                @for($i=1; $i<100; $i++)
-                <option value="{!! $i !!}" {!! (old('lunchbox_count', 0)==$i ? 'selected' : '') !!}>{!! $i !!}</option>
-                @endfor
-            </select>
-            <div class="input-group-append">
-                <span class="input-group-text">個</span>
-            </div>
-        </div>
-    </div>
-</div>
 @endisset
 
 <br>
+<h5 class="text-start mb-3">ご予約日を選択して下さい。</h5>
 <div class="row">
 <div class="col-6 text-center">
     <dl class="d-inline-block mb-0" style="font-size:80%;">
@@ -239,12 +221,30 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
 </table>
 
 <br>
-
 @isset($reserve)
 <div class="d-flex justify-content-center py-2">
     <span class="btn btn-secondary col-8">既に予約済みです。</span>
 </div>
 @else
+<h5 class="text-start mb-3">ご注文数を選択して下さい。</h5>
+<div class="form-group row g-2 mb-3">
+    <label for="reserveCount" class="col-4 col-form-label">ご注文数<span class="text-danger">*</span></label>
+    <div class="col-6">
+        <div class="input-group">
+            <select class="form-control" id="lunchboxCount" name="lunchbox_count" data-field="lunchboxCount" placeholder="col-form-label">
+                <option value="0">選択してください</option>
+                @for($i=1; $i<100; $i++)
+                <option value="{!! $i !!}" {!! (old('lunchbox_count', 0)==$i ? 'selected' : '') !!}>{!! $i !!}</option>
+                @endfor
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text">個</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br>
 <div class="d-flex justify-content-center py-2">
     <button data-action="reserve" type="button" class="btn scrs-bg-main-button col-8" disabled>予約する</button>
 </div>
