@@ -55,7 +55,7 @@ class ExecuteReminder extends Command
         $target_mins = $hour * 60 + $minute + $prior_mins;
         $target_time = sprintf('%02d:%02d:00', floor($target_mins / 60), ($target_mins % 60));
 
-        $reserves = Reserve::enabled()->dateBy($date)->noCheckin()->unCanceled()->where(function($query) use($target_time) {
+        $reserves = Reserve::enabled()->dateBy($date)->noCheckin()->unCanceled()->diningHallBy()->where(function($query) use($target_time) {
             $query->orWhereNull('time')->orWhere('time', '<=', $target_time);
         })->whereNull('remind_dt')->orderBy('type')->orderBy('time')->get();
 
