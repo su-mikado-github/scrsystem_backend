@@ -48,10 +48,11 @@ SCRSPage.startup(()=>new MypagePage());
 </x-script>
 
 @section('page.title')
-マイページ
+マイページ（編集）
 @endsection
 
 @section('main')
+<p class="mb-0">※更新する場合には、<b>最下部の「保存する」ボタン</b>をタップしてください。</p>
 <div class="rounded-3 scrs-bg-sheet px-2 py-3">
     <h6>氏名（漢字）<span class="text-danger">*</span></h6>
     <div class="row g-2 mb-3">
