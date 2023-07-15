@@ -51,9 +51,6 @@ class ExecuteReminder extends Command
     }
 
     protected function remined_prior($date, $time, $prior_mins) {
-//        list($hour, $minute) = explode(':', $time);
-//        $target_mins = $hour * 60 + $minute + $prior_mins;
-//        $target_time = sprintf('%02d:%02d:00', floor($target_mins / 60), ($target_mins % 60));
         $target_mins = hhmm_to_mins($time) + $prior_mins;
         $target_time = mins_to_time($target_mins);
 
