@@ -33,7 +33,7 @@ SCRSPage.startup(()=>new AdminAccountPage());
 @endsection
 
 @section('side-menu')
-<x-virtical-menu id="idLeftSideMenu" category="left.side.menu" item-key="password_change" />
+<x-virtical-menu id="idLeftSideMenu" category="left.side.menu" item-key="account" />
 @endsection
 
 @section('main')

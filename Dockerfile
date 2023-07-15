@@ -11,7 +11,7 @@ RUN apt -y install vim
 RUN apt -y install procps
 
 RUN docker-php-ext-install zip
-RUN pecl install xdebug-3.1.6 && docker-php-ext-enable xdebug
+#RUN pecl install xdebug-3.1.6 && docker-php-ext-enable xdebug
 
 COPY cron.root /var/spool/cron/crontabs/root
 
