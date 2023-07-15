@@ -6,6 +6,7 @@ use Carbon\Carbon;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 use App\Flags;
 use App\ReserveTypes;
@@ -60,6 +61,8 @@ class ChangeController extends Controller {
             ;
         }
         else if (op($reserve)->type == ReserveTypes::LUNCHBOX) {
+            $time_schedules = TimeSchedule::lunchbox()->enabled()->orderBy('time')->get();
+
             return view('pages.reserve.change.index_lunchbox')
                 ->with('reserve', $reserve)
                 ->with('day_calendar', $day_calendar)
@@ -67,10 +70,11 @@ class ChangeController extends Controller {
                 ->with('next_date', $next_date)
                 ->with('month_calendar', $month_calendar)
                 ->with('calendars', $calendars)
+                ->with('time_schedules', $time_schedules)
             ;
         }
         else {
-            $time_schedules = ($user->affiliation_detail->is_soccer==Flags::ON ? TimeSchedule::soccer() : TimeSchedule::noSoccer())->orderBy('time')->get();
+            $time_schedules = ($user->affiliation_detail->is_soccer==Flags::ON ? TimeSchedule::soccer() : TimeSchedule::noSoccer())->enabled()->orderBy('time')->get();
             $start_time = $time_schedules->min('time');
             $end_time = $time_schedules->max('time');
 
@@ -112,11 +116,11 @@ class ChangeController extends Controller {
 
         // バリデーション
         $rules = [
-            'new_time' => [ 'required', 'regex:/^[0-9]{2}[:][0-9]{2}[:][0-9]{2}$/i' ],
+            'new_time' => [ 'required', Rule::exists('time_schedules', 'time')->where('type', $reserve->type)->where('is_delete', Flags::OFF) ],
         ];
         $messages = [
             'new_time.required' => '変更先の時刻は必須です。',
-            'new_time.regex' => '正しい時刻を入力してください。',
+            'new_time.exists' => '正しい時刻を選択してください。',
         ];
         $this->try_validate($request->all(), $rules, $messages);
 
@@ -192,11 +196,14 @@ class ChangeController extends Controller {
         // バリデーション
         $rules = [
             'new_date' => [ 'required', 'date', 'after_or_equal:' . today()->copy()->addDays(2)->format('Y-m-d') ],
+            'new_time' => [ 'required', Rule::exists('time_schedules', 'time')->where('type', ReserveTypes::LUNCHBOX)->where('is_delete', Flags::OFF) ],
         ];
         $messages = [
             'new_date.required' => '変更先の日付は必須です。',
             'new_date.date' => '正しい日付を入力してください。',
             'new_date.after_or_equal' => '変更先の日付は２日後以降にしてください。',
+            'new_time.required' => '変更先の受取時間を選択してください。',
+            'new_time.exists' => '変更先の受取時間が正しくありません。',
         ];
         $this->try_validate($request->all(), $rules, $messages);
 
@@ -231,6 +238,10 @@ class ChangeController extends Controller {
 
         return $this->trans(function() use($request, $user, $reserve, $calendar) {
             $reserve->date = $calendar->date;
+            $new_time = $request->input('new_time');
+            if ($reserve->time != $new_time) {
+                $reserve->time = $new_time;
+            }
             $reserve->remind_dt = null;
             $this->save($reserve, $user);
 

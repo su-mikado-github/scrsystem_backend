@@ -71,8 +71,8 @@ SCRSPage.startup(()=>new ChangeLunchboxPage());
 <div class="px-5 py-4 scrs-sheet-normal">
     <h3 class="text-center mb-4">ご予約内容（{{ ReserveTypes::of($reserve->type)->title }}）</h3>
     <dl class="scrs-item-group mb-0">
-        <dt class="label">日時</dt>
-        <dd class="item"><span>{{ $reserve->date->format('m月d日') }}</span>@isset($reserve->time)<span class="px-2"></span><span>{{ $reserve->time }}～</span>@endisset</dd>
+        <dt class="label">日付／受取時間</dt>
+        <dd class="item"><span class="text-nowrap">{{ $reserve->date->format('m月d日') }}</span>&nbsp;<span class="text-nowrap">{{ time_to_hhmm($reserve->time) ?? ' ' }}</span></dd>
         <dt class="label">{{ $label }}</dt>
         <dd class="item"><span>{{ $reserve->reserve_count }}</span>{{ $unit }}</dd>
     </dl>
@@ -224,9 +224,22 @@ SCRSPage.startup(()=>new ChangeLunchboxPage());
     </div>
 </div>
 @error('new_date')<p class="text-danger">{{ $message }}</p>@enderror
+<br>
+<div class="row">
+    <label for="newTime" class="col-4 col-form-label">変更先の受取時間</label>
+    <div class="col-8">
+        <select class="form-control" id="newTime" name="new_time" data-field="new_time">
+            <option value="">選択してください</option>
+            @foreach($time_schedules as $time_schedule)
+            <option value="{!! $time_schedule->time !!}" {!! (old('new_time', op($reserve)->time)==$time_schedule->time ? 'selected' : '') !!}>{!! time_to_hhmm($time_schedule->time) !!}</option>
+            @endforeach
+        </select>
+        <small>※受取時刻をタップして変更できます。</small>
+    </div>
+</div>
+@error('new_time')<p class="text-danger">{{ $message }}</p>@enderror
 
 <br>
-
 <div class="d-flex justify-content-center py-2">
     <button data-action="change" type="button" class="btn scrs-bg-main-button col-8">予約日を変更</button>
 </div>

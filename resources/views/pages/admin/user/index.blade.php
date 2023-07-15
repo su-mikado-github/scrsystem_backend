@@ -175,17 +175,10 @@ SCRSPage.startup(()=>new AdminUserPage());
             @php
                 $calendar = $reserve->calendar;
                 $date = sprintf('%s (%s)', $calendar->date->format('Y/m/d'), Weekdays::of($calendar->weekday)->ja);
-                if ($reserve->type == ReserveTypes::LUNCHBOX) {
-                    $time = '－';
-                }
-                else {
-                    list($h,$m,$s) = explode(':', $reserve->time);
-                    $time = sprintf('%02d:%02d', $h, $s);
-                }
             @endphp
             <tr>
                 <td class="text-center">{{ $date }}</td>
-                <td class="text-center">{{ $time }}</td>
+                <td class="text-center">{{ time_to_hhmm($reserve->time) ?? ' ' }}</td>
                 <td class="text-center">@if(in_array($reserve->type, [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ]))<span>@if(isset($reserve->cancel_dt)) × @elseif(isset($reserve->checkin_dt)) ● @else ○ @endif</span>@else<span>&nbsp;</span>@endif</td>
                 <td class="text-center">@if(in_array($reserve->type, [ ReserveTypes::LUNCHBOX ]))<span>@if(isset($reserve->cancel_dt)) × @elseif(isset($reserve->checkin_dt)) ● @else ○ @endif</span>@else<span>&nbsp;</span>@endif</td>
                 <td class="text-end">{{ $reserve->reserve_count }}枚</td>

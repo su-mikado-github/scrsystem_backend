@@ -16,9 +16,16 @@ class ReserveLunchboxPage extends SCRSPage {
     #today = null;
 
     #lunchboxCount = null;
+    #time = null;
     #reserve = null;
 
     #reservedDialog = null;
+
+    #isReserveDisabled() {
+        const lunchboxCount = this.#lunchboxCount.value;
+        const time = this.#time.value;
+        this.#reserve.disabled = (lunchboxCount == 0 || !time);
+    }
 
     constructor() {
         super();
@@ -28,14 +35,18 @@ class ReserveLunchboxPage extends SCRSPage {
         this.#today = this.action("today", [ "click" ]);
 
         this.#lunchboxCount = this.field("lunchboxCount").handle("change");
+        this.#time = this.field("time").handle("change");
         this.#reserve = this.action("reserve", [ "click" ]);
 
         this.#reservedDialog = new SCRSConfirmDialog(this, "reserveConfirm", null, [ "ok" ]);
     }
 
     lunchboxCount_change(e) {
-        const lunchboxCount = this.#lunchboxCount.value;
-        this.#reserve.disabled = (lunchboxCount == 0);
+        this.#isReserveDisabled();
+    }
+
+    time_change(e) {
+        this.#isReserveDisabled();
     }
 
     reserve_click(e) {
@@ -89,8 +100,8 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
 <div class="px-5 py-4 scrs-sheet-normal">
     <h3 class="text-center mb-4">ご予約内容（{{ ReserveTypes::of($reserve->type)->title }}）</h3>
     <dl class="scrs-item-group mb-0">
-        <dt class="label">日時</dt>
-        <dd class="item"><span>{{ $reserve->date->format('m月d日') }}</span>@isset($reserve->time)<span class="px-2"></span><span>{{ $reserve->time }}～</span>@endisset</dd>
+        <dt class="label">日付／受取時間</dt>
+        <dd class="item"><span>{{ $reserve->date->format('m月d日') }}</span>@isset($reserve->time)<span class="px-2"></span><span>{{ $reserve->time }}</span>@endisset</dd>
         <dt class="label">個数</dt>
         <dd class="item"><span>{{ $reserve->reserve_count }}</span>個</dd>
     </dl>
@@ -220,15 +231,16 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
     </tbody>
 </table>
 
-<br>
 @isset($reserve)
+<br>
 <div class="d-flex justify-content-center py-2">
     <span class="btn btn-secondary col-8">既に予約済みです。</span>
 </div>
 @else
+<br>
 <h5 class="text-start mb-3">ご注文数を選択して下さい。</h5>
 <div class="form-group row g-2 mb-3">
-    <label for="reserveCount" class="col-4 col-form-label">ご注文数<span class="text-danger">*</span></label>
+    <label for="lunchboxCount" class="col-4 col-form-label">ご注文数<span class="text-danger">*</span></label>
     <div class="col-6">
         <div class="input-group">
             <select class="form-control" id="lunchboxCount" name="lunchbox_count" data-field="lunchboxCount" placeholder="col-form-label">
@@ -241,6 +253,20 @@ SCRSPage.startup(()=>new ReserveLunchboxPage());
                 <span class="input-group-text">個</span>
             </div>
         </div>
+    </div>
+</div>
+
+<br>
+<h5 class="text-start mb-3">受取り時間を選択してください。</h5>
+<div class="form-group row g-2 mb-3">
+    <label for="time" class="col-4 col-form-label">受取り時間<span class="text-danger">*</span></label>
+    <div class="col-6">
+        <select class="form-control" id="time" name="time" data-field="time">
+            <option value="">選択してください</option>
+            @foreach($time_schedules as $time_schedule)
+            <option value="{!! $time_schedule->time !!}" {!! (old('time')==$time_schedule->time ? 'selected' : '') !!}>{!! time_to_hhmm($time_schedule->time) !!}</option>
+            @endforeach
+        </select>
     </div>
 </div>
 

@@ -86,9 +86,10 @@
             <div class="card-body p-0">
                 <table class="table table-bordered table-hover">
                 <colgroup>
-                    <col style="width:10em;">
+                    <col style="width:9em;">
                     <col>
                     <col style="width:6em;">
+                    <col style="width:4em;">
                     <col style="width:4em;">
                     <col style="width:8em;">
                 </colgroup>
@@ -97,7 +98,8 @@
                         <th>氏名</th>
                         <th>所属</th>
                         <th>学年</th>
-                        <th>時刻</th>
+                        <th>時間</th>
+                        <th>人数</th>
                         <th>状態</th>
                     </tr>
                 </thead>
@@ -114,6 +116,7 @@
                         </td>
                         <td class="text-center">@if($reserve->user->affiliation->detail_type == AffiliationDetailTypes::INTERNAL){{ $reserve->user->school_year->name }}@else &nbsp; @endif</td>
                         <td class="text-center">{{ $time ?? ' ' }}</td>
+                        <td class="text-end">{{ $reserve->reserve_count }}人</td>
                         <td class="text-center">@if(isset($reserve->cancel_dt))取消 @elseif(isset($reserve->checkin_dt))来店済 @else 予約中 @endif</td>
                     </tr>
                     @endforeach
@@ -141,6 +144,7 @@
                     <col>
                     <col style="width:6em;">
                     <col style="width:4em;">
+                    <col style="width:4em;">
                     <col style="width:8em;">
                 </colgroup>
                 <thead class="scrs-bg-main">
@@ -148,6 +152,7 @@
                         <th>氏名</th>
                         <th>所属</th>
                         <th>学年</th>
+                        <th>時間</th>
                         <th>個数</th>
                         <th>状態</th>
                     </tr>
@@ -164,6 +169,7 @@
                             </div>
                         </td>
                         <td class="text-center">@if($reserve->user->affiliation->detail_type == AffiliationDetailTypes::INTERNAL){{ $reserve->user->school_year->name }}@else &nbsp; @endif</td>
+                        <td class="text-center">{{ time_to_hhmm($reserve->time) }}</td>
                         <td class="text-end">{{ $reserve->reserve_count }}</td>
                         <td class="text-center">@if(isset($reserve->cancel_dt))取消 @elseif(isset($reserve->checkin_dt))受取済 @else 予約中 @endif</td>
                     </tr>

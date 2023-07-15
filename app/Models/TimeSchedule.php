@@ -30,4 +30,8 @@ class TimeSchedule extends Model {
     public function scopeLunchbox($query) {
         return $query->where('type', ReserveTypes::LUNCHBOX)->where('is_delete', Flags::OFF);
     }
+
+    public function scopeEnabled($query) {
+        return $query->where('time_schedules.is_delete', Flags::OFF);
+    }
 }

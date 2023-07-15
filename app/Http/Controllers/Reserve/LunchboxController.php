@@ -6,6 +6,7 @@ use Carbon\Carbon;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 use App\DishTypes;
 use App\Flags;
@@ -59,6 +60,8 @@ class LunchboxController extends Controller {
 
         $reserve = $day_calendar->reserves()->enabled()->lunchboxBy()->unCanceled()->userBy($user)->first();
 
+        $time_schedule = TimeSchedule::lunchbox()->orderBy('time')->get();
+
         return view('pages.reserve.lunchbox.index')
             ->with('day_calendar', $day_calendar)
             ->with('reserve', $reserve)
@@ -66,6 +69,7 @@ class LunchboxController extends Controller {
             ->with('next_date', $next_date)
             ->with('month_calendar', $month_calendar)
             ->with('calendars', $calendars)
+            ->with('time_schedule', $time_schedule)
         ;
     }
 
@@ -74,6 +78,7 @@ class LunchboxController extends Controller {
 
         $rules = [
             'lunchbox_count' => [ 'required', 'integer', 'min:1' ],
+            'time' => [ 'required', 'string', Rule::exists('time_schedules', 'time')->where('type', ReserveTypes::LUNCHBOX)->where('is_delete', Flags::OFF) ],
         ];
         $this->try_validate($request->all(), $rules);
 
@@ -115,7 +120,7 @@ class LunchboxController extends Controller {
             $reserve = new Reserve();
             $reserve->type = ReserveTypes::LUNCHBOX;
             $reserve->date = $date;
-            // $reserve->time = null;
+            $reserve->time = $request->input('time');
             // $reserve->end_time = null;
             $reserve->user_id = $user->id;
             $reserve->reserve_dt = now();
