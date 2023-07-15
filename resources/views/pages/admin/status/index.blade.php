@@ -102,17 +102,17 @@ SCRSPage.startup(()=>new AdminStatusPage());
         $lunchbox_reserve_count = $calendar->lunchbox_reserve_count;
     @endphp
     <tr>
-        <td class="text-center">{!! sprintf('%2d', $calendar->day) !!}</td>
-        <td class="text-center">{{ Weekdays::of($calendar->weekday)->ja }}</td>
-        <td class="text-end">{{ op($calendar->dining_hall_reserve_summary)->reserve_count ?? 0 }}&nbsp;人</td>
-        <td class="text-end">{{ op($calendar->dining_hall_reserve_summary)->cancel_reserve_count ?? 0 }}&nbsp;人</td>
-        <td class="text-end">{{ op($calendar->dining_hall_reserve_summary)->checkin_reserve_count ?? 0 }}&nbsp;人</td>
-        <td class="text-end">{{ (!$soccer_user_count ? 0 : floor($soccer_reserve_count * 100 / $soccer_user_count)) }}&nbsp;％</td>
-        <td class="text-end">{{ op($calendar->lunchbox_reserve_summary)->reserve_count ?? 0 }}&nbsp;個</td>
-        <td class="text-end">{{ op($calendar->lunchbox_reserve_summary)->cancel_reserve_count ?? 0 }}&nbsp;個</td>
-        <td class="text-end">{{ op($calendar->lunchbox_reserve_summary)->checkin_reserve_count ?? 0 }}&nbsp;個</td>
-        <td class="text-end">{{ (!$soccer_user_count ? 0 : floor($lunchbox_reserve_count * 100 / $soccer_user_count)) }}&nbsp;％</td>
-        <td class="text-center"><x-icon name="fa-solid fa-magnifying-glass" style="font-size:22px;margin:0!important;cursor:pointer;" data-action="daily" data-date="{!! $calendar->date->format('Y-m-d') !!}" /></td>
+        <td class="text-center bg-white">{!! sprintf('%2d', $calendar->day) !!}</td>
+        <td class="text-center bg-white">{{ Weekdays::of($calendar->weekday)->ja }}</td>
+        <td class="text-end bg-white">{{ op($calendar->dining_hall_reserve_summary)->reserve_count ?? 0 }}&nbsp;人</td>
+        <td class="text-end bg-white">{{ op($calendar->dining_hall_reserve_summary)->cancel_reserve_count ?? 0 }}&nbsp;人</td>
+        <td class="text-end bg-white">{{ op($calendar->dining_hall_reserve_summary)->checkin_reserve_count ?? 0 }}&nbsp;人</td>
+        <td class="text-end bg-white">{{ (!$soccer_user_count ? 0 : floor($soccer_reserve_count * 100 / $soccer_user_count)) }}&nbsp;％</td>
+        <td class="text-end bg-white">{{ op($calendar->lunchbox_reserve_summary)->reserve_count ?? 0 }}&nbsp;個</td>
+        <td class="text-end bg-white">{{ op($calendar->lunchbox_reserve_summary)->cancel_reserve_count ?? 0 }}&nbsp;個</td>
+        <td class="text-end bg-white">{{ op($calendar->lunchbox_reserve_summary)->checkin_reserve_count ?? 0 }}&nbsp;個</td>
+        <td class="text-end bg-white">{{ (!$soccer_user_count ? 0 : floor($lunchbox_reserve_count * 100 / $soccer_user_count)) }}&nbsp;％</td>
+        <td class="text-center bg-white"><x-icon name="fa-solid fa-magnifying-glass" style="font-size:22px;margin:0!important;cursor:pointer;" data-action="daily" data-date="{!! $calendar->date->format('Y-m-d') !!}" /></td>
     </tr>
     @endforeach
 </tbody>

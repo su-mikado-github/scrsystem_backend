@@ -241,18 +241,18 @@ SCRSPage.startup(()=>new AdminStatusDailyPage());
         });
     @endphp
     <tr>
-        <td>{{ $row->last_name }} {{ $row->first_name }}</td>
-        <td>
+        <td class="bg-white">{{ $row->last_name }} {{ $row->first_name }}</td>
+        <td class="bg-white">
             <div class="d-flex flex-row">
                 <div class="col-6 text-start">{{ $row->affiliation->name }}</div>
                 <div class="col-6 text-start">{{ $row->affiliation_detail->name }}</div>
             </div>
         </td>
-        <td class="text-center">@if($row->affiliation->detail_type==AffiliationDetailTypes::INTERNAL){{ $row->school_year->name }}@else &nbsp; @endif</td>
-        <td class="text-center">{{ $visit['time'] ?? ' ' }}</td>
-        <td class="text-center">@isset($reserve){{ $visit['state'] ?? ' ' }}@else &nbsp; @endisset</td>
-        <td class="text-center">@isset($reserve){{ $lunchbox['time'] ?? ' ' }}@else &nbsp; @endisset</td>
-        <td class="text-center">@isset($reserve){{ $lunchbox['state'] ?? ' ' }}@else &nbsp; @endisset</td>
+        <td class="text-center bg-white">@if($row->affiliation->detail_type==AffiliationDetailTypes::INTERNAL){{ $row->school_year->name }}@else &nbsp; @endif</td>
+        <td class="text-center bg-white">{{ $visit['time'] ?? ' ' }}</td>
+        <td class="text-center bg-white">@isset($reserve){{ $visit['state'] ?? ' ' }}@else &nbsp; @endisset</td>
+        <td class="text-center bg-white">@isset($reserve){{ $lunchbox['time'] ?? ' ' }}@else &nbsp; @endisset</td>
+        <td class="text-center bg-white">@isset($reserve){{ $lunchbox['state'] ?? ' ' }}@else &nbsp; @endisset</td>
     </tr>
     @endforeach
 </tbody>
