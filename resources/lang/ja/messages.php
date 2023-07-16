@@ -65,6 +65,7 @@ return [
         ],
         'buy_ticket' => [
             'patch_payment' => '支払が完了しました。',
+            'delete' => '購入した食券を取り消しました。',
         ],
     ],
     'subject' => [

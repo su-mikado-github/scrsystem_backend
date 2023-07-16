@@ -46,6 +46,10 @@ class BuyTicket extends Model {
         return $query->whereYear('buy_tickets.buy_dt', $year)->whereMonth('buy_tickets.buy_dt', $month);
     }
 
+    public function scopeUnpaid($query) {
+        return $query->whereNull('buy_tickets.payment_dt');
+    }
+
     public function scopeJoinOn($query) {
         return $query
             ->join('users', 'users.id', '=', 'buy_tickets.user_id')

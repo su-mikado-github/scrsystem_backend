@@ -205,7 +205,7 @@ SCRSPage.startup(()=>new AdminUserPage());
                 </tr>
             </thead>
             <tbody class="bg-white">
-                @foreach($target_user->buy_tickets as $buy_ticket)
+                @foreach($target_user->buy_tickets()->enabled()->get() as $buy_ticket)
                 <tr>
                     <td>{{ $buy_ticket->buy_dt->format('Y/m/d') }}({{ Weekdays::fromDate($buy_ticket->buy_dt)->ja }})</td>
                     <td class="text-center">{{ $buy_ticket->buy_dt->format('H:i') }}</td>

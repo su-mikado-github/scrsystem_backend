@@ -57,12 +57,10 @@ class CheckinController extends Controller {
         }
         // logger()->debug(sprintf('%s(%s) => %s', __FILE__, __LINE__, print_r([ 'buy_ticket_ids.count'=>$buy_ticket_ids->count(), 'person_count'=>$person_count ], true)));
         if ($buy_ticket_ids->count() < $reserve_count) {
-            $reserve_route = ($reserve->type == ReserveTypes::LUNCHBOX ? 'reserve.lunchbox' : 'reserve.visit');
             return redirect()->route('buy_ticket')
                 ->withInput()
                 ->with([
-                    'warning' => __('messages.warning.ticket_by_short'),
-                    'backward' => route($reserve_route, compact('date')),
+                    'warning' => __('messages.warning.ticket_by_short')
                 ])
             ;
         }

@@ -33,15 +33,15 @@ class VisitController extends Controller {
         abort_if(!$start_date, 400, __('messages.not_found.calendar'));
         $end_date = $start_date->copy()->addDay(6);
 
-        // 回数券の残数確認
-        if ($user->last_ticket_count == 0) {
-            return redirect()->route('buy_ticket')
-                ->with([
-                    'warning' => __('messages.warning.ticket_by_short'),
-                    'backward' => route('reserve.visit', compact('date')),
-                ])
-            ;
-        }
+        // // 回数券の残数確認
+        // if ($user->last_ticket_count == 0) {
+        //     return redirect()->route('buy_ticket')
+        //         ->with([
+        //             'warning' => __('messages.warning.ticket_by_short'),
+        //             'backward' => route('reserve.visit', compact('date')),
+        //         ])
+        //     ;
+        // }
 
         $calendars = Calendar::with([ 'reserves' ])->enabled()->range($start_date, $end_date)->orderBy('date')->get();
         $day_calendar = Calendar::dateBy($today)->enabled()->first();

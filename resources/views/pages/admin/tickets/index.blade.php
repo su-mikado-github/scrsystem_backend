@@ -13,8 +13,10 @@ import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
 class AdminTicketsPage extends SCRSPage {
 
     #payments = null;
+    #removes = null;
 
     #paymentConfitmDialog = null;
+    #removeConfitmDialog = null;
 
     #oldSortOrders = @json($sort_orders->toArray())
 
@@ -44,8 +46,10 @@ class AdminTicketsPage extends SCRSPage {
         super();
 
         this.#payments = this.actions("payment", [ "click" ]);
+        this.#removes = this.actions("remove", [ "click" ]);
 
         this.#paymentConfitmDialog = new SCRSConfirmDialog(this, "payment", null, [ "ok" ]);
+        this.#removeConfitmDialog = new SCRSConfirmDialog(this, "remove", null, [ "ok" ]);
 
         this.#datetimeSort = this.field("datetimeSort");
         this.#fullNameSort = this.field("fullNameSort");
@@ -74,6 +78,16 @@ class AdminTicketsPage extends SCRSPage {
     payment_ok(e) {
         const params = e.detail;
         this.patch([ "/admin/tickets", params.buyTicketId, "payment" ]);
+    }
+
+    remove_click(e) {
+        const buyTicketId = e.target.dataset.id;
+        this.#removeConfitmDialog.open({ buyTicketId });
+    }
+
+    remove_ok(e) {
+        const params = e.detail;
+        this.delete([ "/admin/tickets", params.buyTicketId ]);
     }
 
     datetimeSortAsc_click(e) {
@@ -188,6 +202,7 @@ SCRSPage.startup(()=>new AdminTicketsPage());
         <col style="width:6em;"> {{-- 購入枚数 --}}
         <col style="width:10em;"> {{-- 支払日時 --}}
         <col style="width:4em;"> {{-- 支払 --}}
+        <col style="width:4em;"> {{-- 取消 --}}
     </colgroup>
     <thead class="scrs-bg-main">
         <tr>
@@ -237,6 +252,7 @@ SCRSPage.startup(()=>new AdminTicketsPage());
             <th>購入枚数</th>
             <th>支払日時</th>
             <th>支払</th>
+            <th>取消</th>
         </tr>
     </thead>
     <tbody>
@@ -255,6 +271,7 @@ SCRSPage.startup(()=>new AdminTicketsPage());
             <td class="text-end">{{ number_format($buy_ticket->ticket_count) }}枚</td>
             <td class="text-center">@isset($buy_ticket->payment_dt){{ $buy_ticket->payment_dt->format('Y/m/d H:i') }}@else 未払い @endif</td>
             <td class="text-center">@isset($buy_ticket->payment_dt) 済 @else<x-icon name="fa-solid fa-cash-register" class="text-body" style="font-size:22px;margin:0!important;cursor:pointer;" data-action="payment" data-id="{!! $buy_ticket->id !!}" />@endif</td>
+            <td class="text-center">@isset($buy_ticket->payment_dt) &nbsp; @else<x-icon name="fa-solid fa-trash-can" class="text-danger" style="font-size:22px;margin:0!important;cursor:pointer;" data-action="remove" data-id="{!! $buy_ticket->id !!}" />@endif</td>
         </tr>
         @endforeach
     </tbody>
@@ -264,11 +281,20 @@ SCRSPage.startup(()=>new AdminTicketsPage());
 </div>
 @endsection
 
-{{--  --}}
+{{-- 食券購入の支払確認 --}}
 <x-confirm-dialog id="payment" type="confirm">
     <x-slot name="title">確認</x-slot>
-    <h3 data-field="message" class="text-center mb-3">支払い完了でよろしいですか？</h3>
+    <h3 data-field="message" class="text-center mb-3">支払いを完了として、よろしいですか？</h3>
     <br>
     <x-slot name="ok_button">支払い完了</x-slot>
+    <x-slot name="cancel_button">いいえ</x-slot>
+</x-confirm-dialog>
+
+{{-- 食券購入の取消確認 --}}
+<x-confirm-dialog id="remove" type="confirm">
+    <x-slot name="title">確認</x-slot>
+    <h3 data-field="message" class="text-center mb-3">食券の購入を取り消しても、よろしいですか？</h3>
+    <br>
+    <x-slot name="ok_button">購入取消</x-slot>
     <x-slot name="cancel_button">いいえ</x-slot>
 </x-confirm-dialog>

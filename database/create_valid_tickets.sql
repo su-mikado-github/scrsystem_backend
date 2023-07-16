@@ -1,5 +1,5 @@
 -- Project Name : 学食予約システム
--- Date/Time    : 2023/06/13 22:07:05
+-- Date/Time    : 2023/07/17 0:13:36
 -- Author       : Shuji Ushiyama
 -- RDBMS Type   : MySQL
 -- Application  : A5:SQL Mk-2
@@ -41,6 +41,8 @@ FROM
     )
 WHERE
     T.is_delete = 0
+    AND T.payment_dt IS NOT NULL
+
 
 ;
 

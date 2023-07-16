@@ -25,6 +25,7 @@ Route::prefix('/line')->group(function() {
 
 Route::prefix('/dining_hall')->group(function() {
     Route::get('/{date?}', [ App\Http\Controllers\DiningHallController::class, 'index' ])->name('dining_hall')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
+    Route::patch('/{date}/buy_tickets/{buy_ticket_id}/payment', [ App\Http\Controllers\DiningHallController::class, 'patch_payment' ])->name('dining_hall.payment')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}')->where('buy_ticket_id', '^[0-9]+$');
 });
 
 Route::middleware([ 'attest' ])->group(function() {
@@ -98,8 +99,9 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
 
     Route::prefix('/tickets')->group(function() {
         Route::get('/', [ App\Http\Controllers\Admin\TicketsController::class, 'index' ])->name('admin.tickets');
-        Route::get('/years/{year?}/months/{month?}', [ App\Http\Controllers\Admin\TicketsController::class, 'index' ])->name('admin.tickets.year_month');
-        Route::patch('/{buy_ticket_id}/payment', [ App\Http\Controllers\Admin\TicketsController::class, 'patch_payment' ])->name('admin.tickets.payment');
+        Route::get('/years/{year?}/months/{month?}', [ App\Http\Controllers\Admin\TicketsController::class, 'index' ])->name('admin.tickets.year_month')->where('year', '^[0-9]{4}$')->where('month', '^(1|2|3|4|5|6|7|8|9|10|11|12)$');
+        Route::patch('/{buy_ticket_id}/payment', [ App\Http\Controllers\Admin\TicketsController::class, 'patch_payment' ])->name('admin.tickets.payment')->where('buy_ticket_id', '^[0-9]+$');
+        Route::delete('/{buy_ticket_id}', [ App\Http\Controllers\Admin\TicketsController::class, 'delete' ])->name('admin.tickets.remove')->where('buy_ticket_id', '^[0-9]+$');
         // Route::get('/download', [ App\Http\Controllers\Admin\UsersController::class, 'download' ])->name('admin.users.download');
         // Route::get('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'index' ])->name('admin.user')->where('user_id', '^[0-9]+$');
         // Route::delete('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'delete' ])->name('admin.user.delete')->where('user_id', '^[0-9]+$');

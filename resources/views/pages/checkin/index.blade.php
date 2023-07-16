@@ -31,7 +31,9 @@ class CheckinPage extends SCRSPage {
     qrCodeReader_read(e) {
         console.log(e.detail);
         this.#qrCodeReaderDialog.close();
-        this.post([ e.detail.code, @json($reserve->id) ]);
+        if (e.detail.code) {
+            this.post([ e.detail.code, @json($reserve->id) ]);
+        }
     }
     @endif
 }

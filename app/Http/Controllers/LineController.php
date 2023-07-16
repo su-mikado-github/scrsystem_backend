@@ -70,7 +70,7 @@ class LineController extends Controller {
         //
         $data = file_get_contents('php://input');
         $webhook_json = json_decode($data, true);
-//        logger()->debug($webhook_json);
+        logger()->debug($webhook_json);
 
         return DB::transaction(function() use($data, $webhook_json) {
             $line_webhook = new LineWebhook();
