@@ -39,14 +39,15 @@ class CreateMenus extends BaseMigration
             [ 'category'=>'left.side.menu', 'item_key'=>'dish_menu', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'メニュー編集', 'path'=>'/admin/dish_menus', 'display_order'=>3 ],
             [ 'category'=>'left.side.menu', 'item_key'=>'status', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'利用状況', 'path'=>'/admin/status', 'display_order'=>4 ],
             [ 'category'=>'left.side.menu', 'item_key'=>'users', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'登録者一覧', 'path'=>'/admin/users', 'display_order'=>5 ],
-            [ 'category'=>'left.side.menu', 'item_key'=>'separator2', 'item_type'=>strval(MenuItemTypes::SEPARATER), 'display_order'=>6 ],
-            [ 'category'=>'left.side.menu', 'item_key'=>'password_change', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'管理パスワード変更', 'path'=>'/admin/password_change', 'display_order'=>7 ],
-            [ 'category'=>'left.side.menu', 'item_key'=>'admin_users', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'管理者一覧', 'path'=>'/admin/admin_users', 'display_order'=>8 ],
+            [ 'category'=>'left.side.menu', 'item_key'=>'tickets', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'食券購入一覧', 'path'=>'/admin/tickets', 'display_order'=>6 ],
+            [ 'category'=>'left.side.menu', 'item_key'=>'separator2', 'item_type'=>strval(MenuItemTypes::SEPARATER), 'display_order'=>76 ],
+            [ 'category'=>'left.side.menu', 'item_key'=>'password_change', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'管理パスワード変更', 'path'=>'/admin/password_change', 'display_order'=>8 ],
+            [ 'category'=>'left.side.menu', 'item_key'=>'admin_users', 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>'管理者一覧', 'path'=>'/admin/admin_users', 'display_order'=>9 ],
         ];
 
         // メニュー編集タブ
         foreach (DishTypes::values() as $i => $dish_type) {
-            $rows[] = [ 'category'=>'dish_menus.tab', 'item_key'=>$dish_type->key, 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>$dish_type->ja, 'path'=>sprintf('/admin/dish_menus/%s', $dish_type->key), 'display_order'=>1 ];
+            $rows[] = [ 'category'=>'dish_menus.tab', 'item_key'=>$dish_type->key, 'item_type'=>strval(MenuItemTypes::INSIDE_LINK), 'name'=>$dish_type->ja, 'path'=>sprintf('/admin/dish_menus/%s', $dish_type->key), 'display_order'=>($i+1) ];
         }
 
         $this->insert_rows('menus', $rows);

@@ -8,6 +8,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\BuyTicket;
 use App\Models\Calendar;
 
 class MonthCalendar extends Model

@@ -1,13 +1,9 @@
 @use(App\Flags)
-@php
-list($hour, $minute, $second) = explode(':', $reserve->time);
-$reserve_time = sprintf('%02d:%02d', $hour, $minute)
-@endphp
 {{ $user->last_name }}様
 本日は下記の予定で予約されております。
 
 ■ご予約日時
-{{ $reserve->date->format('m月d日') }} {{ $reserve_time }}～
+{{ $reserve->date->format('m月d日') }} {{ time_to_hhmm($reserve_time) }}～
 @if((optional($user->affiliation_detail)->is_soccer ?? Flags::OFF) == Flags::OFF)
 
 ■ご予約人数

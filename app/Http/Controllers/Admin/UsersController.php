@@ -34,13 +34,13 @@ class UsersController extends Controller {
                     return $query->fullNameOrder($full_name_sort);
                 }
                 else if ($sort_order == 'affiliation') {
-                    return $query->AffiliationOrder($affiliation_sort);
+                    return $query->affiliationOrder($affiliation_sort);
                 }
                 else if ($sort_order == 'affiliation_detail') {
-                    return $query->AffiliationDetailOrder($affiliation_detail_sort);
+                    return $query->affiliationDetailOrder($affiliation_detail_sort);
                 }
                 else if ($sort_order == 'school_year') {
-                    return $query->SchoolYearOrder($school_year_sort);
+                    return $query->schoolYearOrder($school_year_sort);
                 }
                 return $query;
             }, $users_query);

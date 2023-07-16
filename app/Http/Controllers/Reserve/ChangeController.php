@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Reserve;
 use Carbon\Carbon;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 

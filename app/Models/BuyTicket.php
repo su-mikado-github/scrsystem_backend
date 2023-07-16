@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 use App\Flags;
+use App\SortTypes;
 
 use App\Models\User;
 use App\Models\Ticket;
@@ -18,6 +19,7 @@ class BuyTicket extends Model {
 
     protected $casts = [
         'buy_dt' => 'datetime',
+        'payment_dt' => 'datetime',
     ];
 
     public function user() {
@@ -37,7 +39,45 @@ class BuyTicket extends Model {
     }
 
     public function scopeEnabled($query) {
-        return $query->where('is_delete', Flags::OFF);
+        return $query->where('buy_tickets.is_delete', Flags::OFF);
+    }
+
+    public function scopeYearMonthBy($query, $year, $month) {
+        return $query->whereYear('buy_tickets.buy_dt', $year)->whereMonth('buy_tickets.buy_dt', $month);
+    }
+
+    public function scopeJoinOn($query) {
+        return $query
+            ->join('users', 'users.id', '=', 'buy_tickets.user_id')
+            ->join('affiliations', 'affiliations.id', '=', 'users.affiliation_id')
+            ->join('affiliation_details', 'affiliation_details.id', '=', 'users.affiliation_detail_id')
+            ->leftJoin('school_years', 'school_years.id', '=', 'users.school_year_id')
+        ;
+    }
+
+    public function scopeBuyDtOrder($query, $sort_type_id) {
+        $sort_type = SortTypes::of($sort_type_id, SortTypes::ASC());
+        return $query->orderBy('buy_tickets.buy_dt', $sort_type->sql_order_by);
+    }
+
+    public function scopeFullNameOrder($query, $sort_type_id) {
+        $sort_type = SortTypes::of($sort_type_id, SortTypes::ASC());
+        return $query->orderBy('users.last_name_kana', $sort_type->sql_order_by)->orderBy('users.first_name_kana', $sort_type->sql_order_by);
+    }
+
+    public function scopeAffiliationOrder($query, $sort_type_id) {
+        $sort_type = SortTypes::of($sort_type_id, SortTypes::ASC());
+        return $query->orderBy('affiliations.display_order', $sort_type->sql_order_by);
+    }
+
+    public function scopeAffiliationDetailOrder($query, $sort_type_id) {
+        $sort_type = SortTypes::of($sort_type_id, SortTypes::ASC());
+        return $query->orderBy('affiliation_details.display_order', $sort_type->sql_order_by);
+    }
+
+    public function scopeSchoolYearOrder($query, $sort_type_id) {
+        $sort_type = SortTypes::of($sort_type_id, SortTypes::ASC());
+        return $query->orderBy('school_years.display_order', $sort_type->sql_order_by);
     }
 
     public function getValidTicketCountAttribute() {

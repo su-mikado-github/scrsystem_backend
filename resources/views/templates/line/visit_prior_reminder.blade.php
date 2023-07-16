@@ -1,8 +1,4 @@
 @use(App\Flags)
-@php
-list($hour, $minute, $second) = explode(':', $reserve->time);
-$reserve_time = sprintf('%02d:%02d', $hour, $minute)
-@endphp
 {{ $user->last_name }}様
 {{ ($prior_mins >= 60 ? sprintf('%d時間%d分', floor($prior_mins, 60), ($prior_mins % 60)) : sprintf('%d分', $prior_mins)) }}後に、本日の予約時間となります。
 
@@ -10,7 +6,7 @@ $reserve_time = sprintf('%02d:%02d', $hour, $minute)
 食堂のご利用
 
 ■ご予約日時
-{{ $reserve->date->format('m月d日') }} {{ $reserve_time }}～
+{{ $reserve->date->format('m月d日') }} {{ time_to_hhmm($reserve_time) }}～
 @if((optional($user->affiliation_detail)->is_soccer ?? Flags::OFF) == Flags::OFF)
 
 ■ご予約人数

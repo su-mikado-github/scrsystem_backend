@@ -34,6 +34,39 @@ class CheckinController extends Controller {
                 ->with('error', __('messages.error.illegal_user'));
         }
 
+        // 購入回数券を引き当てる
+        $reserve_count = $reserve->reserve_count;
+        $valid_tickets = $user->valid_tickets()->validateBy()->orderBy('buy_dt')->get();
+        $buy_ticket_ids = collect();
+        $valid_ticket = null;
+        $valid_ticket_count = 0;
+        for ($i=0; $i<$reserve_count; $i++) {
+            if ($valid_ticket_count == 0) {
+                if ($valid_tickets->count() == 0) {
+                    break;
+                }
+
+                $valid_ticket = $valid_tickets->shift();
+                if (empty($valid_ticket)) {
+                    break;
+                }
+                $valid_ticket_count = op($valid_ticket)->valid_ticket_count ?? 0;
+            }
+            $buy_ticket_ids->push($valid_ticket->buy_ticket_id);
+            $valid_ticket_count --;
+        }
+        // logger()->debug(sprintf('%s(%s) => %s', __FILE__, __LINE__, print_r([ 'buy_ticket_ids.count'=>$buy_ticket_ids->count(), 'person_count'=>$person_count ], true)));
+        if ($buy_ticket_ids->count() < $reserve_count) {
+            $reserve_route = ($reserve->type == ReserveTypes::LUNCHBOX ? 'reserve.lunchbox' : 'reserve.visit');
+            return redirect()->route('buy_ticket')
+                ->withInput()
+                ->with([
+                    'warning' => __('messages.warning.ticket_by_short'),
+                    'backward' => route($reserve_route, compact('date')),
+                ])
+            ;
+        }
+
         return $this->trans(function() use($request, $user, $reserve) {
             $reserve->checkin_dt = now();
             $this->save($reserve, $user);

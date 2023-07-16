@@ -96,6 +96,15 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
         Route::delete('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'delete' ])->name('admin.user.delete')->where('user_id', '^[0-9]+$');
     });
 
+    Route::prefix('/tickets')->group(function() {
+        Route::get('/', [ App\Http\Controllers\Admin\TicketsController::class, 'index' ])->name('admin.tickets');
+        Route::get('/years/{year?}/months/{month?}', [ App\Http\Controllers\Admin\TicketsController::class, 'index' ])->name('admin.tickets.year_month');
+        Route::patch('/{buy_ticket_id}/payment', [ App\Http\Controllers\Admin\TicketsController::class, 'patch_payment' ])->name('admin.tickets.payment');
+        // Route::get('/download', [ App\Http\Controllers\Admin\UsersController::class, 'download' ])->name('admin.users.download');
+        // Route::get('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'index' ])->name('admin.user')->where('user_id', '^[0-9]+$');
+        // Route::delete('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'delete' ])->name('admin.user.delete')->where('user_id', '^[0-9]+$');
+    });
+
     Route::prefix('/staffs')->group(function() {
         Route::get('/', [ App\Http\Controllers\Admin\StaffsController::class, 'index' ])->name('admin.staffs');
         Route::post('/', [ App\Http\Controllers\Admin\StaffController::class, 'post' ]);
