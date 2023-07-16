@@ -3,7 +3,7 @@
 下記の内容で、食堂利用のご予約を承りました。
 
 ■ご予約日時
-{{ $reserve->date->format('m月d日') }} {{ time_to_hhmm($reserve_time) }}～
+{{ $reserve->date->format('m月d日') }} {{ time_to_hhmm($reserve->time) }}～
 @if((optional($user->affiliation_detail)->is_soccer ?? Flags::OFF) == Flags::OFF)
 
 ■ご予約人数

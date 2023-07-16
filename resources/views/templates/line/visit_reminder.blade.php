@@ -3,7 +3,7 @@
 本日は下記の予定で予約されております。
 
 ■ご予約日時
-{{ $reserve->date->format('m月d日') }} {{ time_to_hhmm($reserve_time) }}～
+{{ $reserve->date->format('m月d日') }} {{ time_to_hhmm($reserve->time) }}～
 @if((optional($user->affiliation_detail)->is_soccer ?? Flags::OFF) == Flags::OFF)
 
 ■ご予約人数

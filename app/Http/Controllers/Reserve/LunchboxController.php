@@ -60,7 +60,7 @@ class LunchboxController extends Controller {
 
         $reserve = $day_calendar->reserves()->enabled()->lunchboxBy()->unCanceled()->userBy($user)->first();
 
-        $time_schedule = TimeSchedule::lunchbox()->orderBy('time')->get();
+        $time_schedules = TimeSchedule::lunchbox()->orderBy('time')->get();
 
         return view('pages.reserve.lunchbox.index')
             ->with('day_calendar', $day_calendar)
@@ -69,7 +69,7 @@ class LunchboxController extends Controller {
             ->with('next_date', $next_date)
             ->with('month_calendar', $month_calendar)
             ->with('calendars', $calendars)
-            ->with('time_schedule', $time_schedule)
+            ->with('time_schedules', $time_schedules)
         ;
     }
 
