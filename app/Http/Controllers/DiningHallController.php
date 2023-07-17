@@ -40,6 +40,19 @@ class DiningHallController extends Controller {
             $buy_ticket->payment_dt = now();
             $this->save($buy_ticket, $user);
 
+            //未徴収の食券利用があれば使用済みにする
+            $use_tickets = $buy_ticket->user->use_tickets()->enabled()->whereNull('buy_ticket_id')->get();
+            $buy_ticket_count = $buy_ticket->ticket_count;
+            foreach ($use_tickets as $use_ticket) {
+                if ($buy_ticket_count == 0) {
+                    break;
+                }
+
+                $use_ticket->buy_ticket_id = $buy_ticket->id;
+                $this->save($use_ticket, $user);
+                $buy_ticket_count --;
+            }
+
             //支払い完了の旨をLINEで通知する
             $message = view('templates.line.buy_ticket_payment')->with('user', $user)->with('buy_ticket', $buy_ticket)->with('checkin_url', route('checkin'))->render();
             if ($this->line_api()->push_messages($buy_ticket->user->line_user->line_owner_id, [ $message ]) === false) {

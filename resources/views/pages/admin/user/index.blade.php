@@ -153,21 +153,31 @@ SCRSPage.startup(()=>new AdminUserPage());
         </div>
     </div>
     <div class="col-5">
-        <h5 class="d-flex"><div>利用履歴</div><div class="flex-grow-1 text-end">
+        <h5 class="d-flex">利用履歴</h5>
+        <small class="d-block text-end">
             <span class="text-nowrap fs-6">○<x-icon name="fa-solid fa-ellipsis" />予約あり</span>
             &nbsp;
-            <span class="text-nowrap fs-6">●<x-icon name="fa-solid fa-ellipsis" />チェックイン（受取）済</span>
+            <span class="text-nowrap fs-6">●<x-icon name="fa-solid fa-ellipsis" />チェックイン／受取</span>
             &nbsp;
-            <span class="text-nowrap fs-6">×<x-icon name="fa-solid fa-ellipsis" />キャンセル済</span>
-        </div></h5>
+            <span class="text-nowrap fs-6">×<x-icon name="fa-solid fa-ellipsis" />事前キャンセル</span>
+            &nbsp;
+            <span class="text-nowrap fs-6">－<x-icon name="fa-solid fa-ellipsis" />当日キャンセル</span>
+        </small>
         <table class="table table-bordered">
+        <colgroup>
+            <col style="width:10em;">
+            <col style="width:5em;">
+            <col style="width:8em;">
+            <col style="width:8em;">
+            <col>
+        </colgroup>
         <thead class="scrs-bg-main">
             <tr>
-                <th style="width:10em;">予約日</th>
-                <th style="width:6em;">時間</th>
+                <th>予約日</th>
+                <th>時間</th>
                 <th>食堂</th>
                 <th>弁当</th>
-                <th style="width:6em;">使用食券</th>
+                <th>食券</th>
             </tr>
         </thead>
         <tbody class="bg-white">
@@ -175,13 +185,47 @@ SCRSPage.startup(()=>new AdminUserPage());
             @php
                 $calendar = $reserve->calendar;
                 $date = sprintf('%s (%s)', $calendar->date->format('Y/m/d'), Weekdays::of($calendar->weekday)->ja);
-            @endphp
+                $visit_status = null;
+                $visit_count = null;
+                $lunchbox_status = null;
+                $lunchbox_count = null;
+                if ($reserve->type == ReserveTypes::LUNCHBOX) {
+                    $lunchbox_count = $reserve->reserve_count;
+                    if ($reserve->is_through == Flags::ON) {
+                        $lunchbox_status = '－';
+                    }
+                    else if (isset($reserve->cancel_dt)) {
+                        $lunchbox_status = '×';
+                    }
+                    else if (isset($reserve->checkin_dt)) {
+                        $lunchbox_status = '●';
+                    }
+                    else {
+                        $lunchbox_status = '○';
+                    }
+                }
+                else {
+                    $visit_count = $reserve->reserve_count;
+                    if ($reserve->is_through == Flags::ON) {
+                        $visit_status = '－';
+                    }
+                    else if (isset($reserve->cancel_dt)) {
+                        $visit_status = '×';
+                    }
+                    else if (isset($reserve->checkin_dt)) {
+                        $visit_status = '●';
+                    }
+                    else {
+                        $visit_status = '○';
+                    }
+                }
+                @endphp
             <tr>
                 <td class="text-center">{{ $date }}</td>
                 <td class="text-center">{{ time_to_hhmm($reserve->time) ?? ' ' }}</td>
-                <td class="text-center">@if(in_array($reserve->type, [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ]))<span>@if(isset($reserve->cancel_dt)) × @elseif(isset($reserve->checkin_dt)) ● @else ○ @endif</span>@else<span>&nbsp;</span>@endif</td>
-                <td class="text-center">@if(in_array($reserve->type, [ ReserveTypes::LUNCHBOX ]))<span>@if(isset($reserve->cancel_dt)) × @elseif(isset($reserve->checkin_dt)) ● @else ○ @endif</span>@else<span>&nbsp;</span>@endif</td>
-                <td class="text-end">{{ $reserve->reserve_count }}枚</td>
+                <td class="text-center">@isset($visit_status){{ $visit_status }}&nbsp;({{ $visit_count }}人)@else &nbsp; @endisset</td>
+                <td class="text-center">@isset($lunchbox_status){{ $lunchbox_status }}&nbsp;({{ $lunchbox_count }}個)@else &nbsp; @endisset</td>
+                <td class="text-end">@isset($reserve->cancel_dt) &nbsp; @else{{ $reserve->reserve_count }}枚 @endisset</td>
             </tr>
             @endforeach
         </tbody>

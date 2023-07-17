@@ -203,6 +203,7 @@ SCRSPage.startup(()=>new AdminTicketsPage());
         <col style="width:10em;"> {{-- 支払日時 --}}
         <col style="width:4em;"> {{-- 支払 --}}
         <col style="width:4em;"> {{-- 取消 --}}
+        <col style="width:4em;"> {{-- 使用 --}}
     </colgroup>
     <thead class="scrs-bg-main">
         <tr>
@@ -253,6 +254,7 @@ SCRSPage.startup(()=>new AdminTicketsPage());
             <th>支払日時</th>
             <th>支払</th>
             <th>取消</th>
+            <th>使用</th>
         </tr>
     </thead>
     <tbody>
@@ -270,8 +272,9 @@ SCRSPage.startup(()=>new AdminTicketsPage());
             <td>@if($user->affiliation->detail_type == AffiliationDetailTypes::INTERNAL)<span>{{ $user->school_year->name }}</span>@else &nbsp; @endif</td>
             <td class="text-end">{{ number_format($buy_ticket->ticket_count) }}枚</td>
             <td class="text-center">@isset($buy_ticket->payment_dt){{ $buy_ticket->payment_dt->format('Y/m/d H:i') }}@else 未払い @endif</td>
-            <td class="text-center">@isset($buy_ticket->payment_dt) 済 @else<x-icon name="fa-solid fa-cash-register" class="text-body" style="font-size:22px;margin:0!important;cursor:pointer;" data-action="payment" data-id="{!! $buy_ticket->id !!}" />@endif</td>
+            <td class="text-center">@isset($buy_ticket->payment_dt) 完了 @else<x-icon name="fa-solid fa-cash-register" class="text-body" style="font-size:22px;margin:0!important;cursor:pointer;" data-action="payment" data-id="{!! $buy_ticket->id !!}" />@endif</td>
             <td class="text-center">@isset($buy_ticket->payment_dt) &nbsp; @else<x-icon name="fa-solid fa-trash-can" class="text-danger" style="font-size:22px;margin:0!important;cursor:pointer;" data-action="remove" data-id="{!! $buy_ticket->id !!}" />@endif</td>
+            <td class="text-center">{{ ($buy_ticket->is_use ? '済' : ' ')  }}</td>
         </tr>
         @endforeach
     </tbody>

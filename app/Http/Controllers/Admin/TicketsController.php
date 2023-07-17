@@ -33,7 +33,7 @@ class TicketsController extends Controller {
         $school_year_sort = $request->input('school_year_sort', SortTypes::ASC);
         $sort_orders = collect(explode(',', $request->input('sort_orders', 'datetime,full_name,affiliation,affiliation_detail,school_year')));
 
-        $buy_tickets_query = BuyTicket::with([ 'user', 'user.affiliation', 'user.affiliation_detail', 'user.school_year' ])->enabled()->yearMonthBy($month_calendar->year, $month_calendar->month)->joinOn();
+        $buy_tickets_query = BuyTicket::with([ 'user', 'user.affiliation', 'user.affiliation_detail', 'user.school_year', 'use_tickets' ])->enabled()->yearMonthBy($month_calendar->year, $month_calendar->month)->joinOn();
 
         $buy_tickets_query = $sort_orders->reduce(function($query, $sort_order) use($datetime_sort, $full_name_sort, $affiliation_sort, $affiliation_detail_sort, $school_year_sort) {
             if ($sort_order == 'datetime') {
@@ -79,6 +79,19 @@ class TicketsController extends Controller {
         return $this->trans(function() use($request, $user, $buy_ticket) {
             $buy_ticket->payment_dt = now();
             $this->save($buy_ticket, $user);
+
+            //未徴収の食券利用があれば使用済みにする
+            $use_tickets = $buy_ticket->user->use_tickets()->enabled()->whereNull('buy_ticket_id')->get();
+            $buy_ticket_count = $buy_ticket->ticket_count;
+            foreach ($use_tickets as $use_ticket) {
+                if ($buy_ticket_count == 0) {
+                    break;
+                }
+
+                $use_ticket->buy_ticket_id = $buy_ticket->id;
+                $this->save($use_ticket, $user);
+                $buy_ticket_count --;
+            }
 
             //支払い完了の旨をLINEで通知する
             $message = view('templates.line.buy_ticket_payment')->with('user', $user)->with('buy_ticket', $buy_ticket)->with('checkin_url', route('checkin'))->render();

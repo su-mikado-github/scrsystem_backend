@@ -89,4 +89,8 @@ class BuyTicket extends Model {
         $buy_ticket_count = BuyTicket::enabled()->where('user_id', $this->user_id)->where('buy_dt', '<=', $this->buy_dt)->sum('ticket_count');
         return (($buy_ticket_count ?? 0) - $use_ticket_count);
     }
+
+    public function getIsUseAttribute() {
+        return ($this->use_tickets->count() > 0);
+    }
 }
