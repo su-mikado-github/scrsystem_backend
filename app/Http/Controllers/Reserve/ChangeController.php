@@ -35,15 +35,15 @@ class ChangeController extends Controller {
         $month_calendar = MonthCalendar::yearMonthBy($today->year, $today->month)->first();
         abort_if(!$month_calendar, 404, __('not_found.month_calender'));
 
-        // 回数券の残数確認
-        if ($user->last_ticket_count == 0) {
-            return redirect()->route('buy_ticket')
-                ->with([
-                    'warning' => __('messages.warning.ticket_by_short'),
-                    'backward' => route('reserve.lunchbox'),
-                ])
-            ;
-        }
+        // // 回数券の残数確認
+        // if ($user->last_ticket_count == 0) {
+        //     return redirect()->route('buy_ticket')
+        //         ->with([
+        //             'warning' => __('messages.warning.ticket_by_short'),
+        //             'backward' => route('reserve.lunchbox'),
+        //         ])
+        //     ;
+        // }
 
         $calendars = Calendar::periodBy($month_calendar->start_date, $month_calendar->end_date)->orderBy('date')->get();
 

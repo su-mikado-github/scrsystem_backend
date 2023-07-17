@@ -210,7 +210,10 @@ SCRSPage.startup(()=>new AdminStatusDailyPage());
         $visit = transform($reserve, function($reserve) {
             $result = [ 'state'=>null, 'time'=>null ];
             if (in_array($reserve->type, [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ])) {
-                if (isset($reserve->cancel_dt)) {
+                if ($reserve->is_through == Flags::ON) {
+                    $result['state'] = '来店なし';
+                }
+                else if (isset($reserve->cancel_dt)) {
                     $result['state'] = '取消';
                 }
                 else if (isset($reserve->checkin_dt)) {
@@ -226,7 +229,10 @@ SCRSPage.startup(()=>new AdminStatusDailyPage());
         $lunchbox = transform($reserve, function($reserve) {
             $result = [ 'state'=>null, 'time'=>null ];
             if (in_array($reserve->type, [ ReserveTypes::LUNCHBOX ])) {
-                if (isset($reserve->cancel_dt)) {
+                if ($reserve->is_through == Flags::ON) {
+                    $result['state'] = '来店なし';
+                }
+                else if (isset($reserve->cancel_dt)) {
                     $result['state'] = '取消';
                 }
                 else if (isset($reserve->checkin_dt)) {
@@ -244,11 +250,11 @@ SCRSPage.startup(()=>new AdminStatusDailyPage());
         <td class="bg-white">{{ $row->last_name }} {{ $row->first_name }}</td>
         <td class="bg-white">
             <div class="d-flex flex-row">
-                <div class="col-6 text-start">{{ $row->affiliation->name }}</div>
-                <div class="col-6 text-start">{{ $row->affiliation_detail->name }}</div>
+                <div class="col-6 text-start">{{ op($row->affiliation)->name }}</div>
+                <div class="col-6 text-start">{{ op($row->affiliation_detail)->name }}</div>
             </div>
         </td>
-        <td class="text-center bg-white">@if($row->affiliation->detail_type==AffiliationDetailTypes::INTERNAL){{ $row->school_year->name }}@else &nbsp; @endif</td>
+        <td class="text-center bg-white">@if(op($row->affiliation)->detail_type==AffiliationDetailTypes::INTERNAL){{ op($row->school_year)->name }}@else &nbsp; @endif</td>
         <td class="text-center bg-white">{{ $visit['time'] ?? ' ' }}</td>
         <td class="text-center bg-white">@isset($reserve){{ $visit['state'] ?? ' ' }}@else &nbsp; @endisset</td>
         <td class="text-center bg-white">@isset($reserve){{ $lunchbox['time'] ?? ' ' }}@else &nbsp; @endisset</td>
