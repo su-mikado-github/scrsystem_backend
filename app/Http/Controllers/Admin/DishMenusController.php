@@ -327,6 +327,11 @@ class DishMenusController extends Controller {
             ->get()
         ;
 
+        $output_dir = storage_path('app/download_files');
+        if (!file_exists($output_dir)) {
+            mkdir($output_dir, 0777, true);
+        }
+
         $filename = sprintf('dish_menus-%s.csv', uniqid());
         $path = storage_path(sprintf('app/download_files/%s', $filename));
 
