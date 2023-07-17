@@ -117,25 +117,34 @@ class UsersController extends Controller {
             $affiliation_detail_name = (isset($user->affiliation_id) ? $user->affiliation_detail->name : '');
             $school_year = (op($user->affiliation)->detail_type == AffiliationDetailTypes::INTERNAL ? op($user->school_year)->name : null) ?? '';
 
-            $record = collect([
-                $full_name,
-                $affiliation_name,
-                $affiliation_detail_name,
-                $school_year,
-                ($user->age ?? ''),
-                ($user->email ?? ''),
-                ($user->telephone_no ?? '')
-            ]);
             if ($user->reserves->count() == 0) {
-                $record->push('');
-                $record->push('');
-                $record->push('');
-                $record->push('');
-                $record->push('');
+                $record = collect([
+                    $full_name,
+                    $affiliation_name,
+                    $affiliation_detail_name,
+                    $school_year,
+                    ($user->age ?? ''),
+                    ($user->email ?? ''),
+                    ($user->telephone_no ?? ''),
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                ]);
                 $writer($record->toArray());
                 $index ++;
             }
             else {
+                $record = collect([
+                    $full_name,
+                    $affiliation_name,
+                    $affiliation_detail_name,
+                    $school_year,
+                    ($user->age ?? ''),
+                    ($user->email ?? ''),
+                    ($user->telephone_no ?? '')
+                ]);
                 foreach ($user->reserves as $reserve) {
                     $record->push($reserve->date->format('Y/m/d'));
                     $record->push(time_to_hhmm($reserve->time));
