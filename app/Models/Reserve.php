@@ -21,6 +21,9 @@ class Reserve extends Model {
 
     protected $casts = [
         'date' => 'date',
+        'remind_dt' => 'datetime',
+        'checkin_dt' => 'datetime',
+        'cancel_dt' => 'datetime'
     ];
 
     public function user() {
