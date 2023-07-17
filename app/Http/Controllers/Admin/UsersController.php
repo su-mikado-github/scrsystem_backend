@@ -118,7 +118,7 @@ class UsersController extends Controller {
             $school_year = (op($user->affiliation)->detail_type == AffiliationDetailTypes::INTERNAL ? op($user->school_year)->name : null) ?? '';
 
             if ($user->reserves->count() == 0) {
-                $record = collect([
+                $writer([
                     $full_name,
                     $affiliation_name,
                     $affiliation_detail_name,
@@ -132,41 +132,31 @@ class UsersController extends Controller {
                     '',
                     '',
                 ]);
-                $writer($record->toArray());
                 $index ++;
             }
             else {
-                $record = collect([
-                    $full_name,
-                    $affiliation_name,
-                    $affiliation_detail_name,
-                    $school_year,
-                    ($user->age ?? ''),
-                    ($user->email ?? ''),
-                    ($user->telephone_no ?? '')
-                ]);
                 foreach ($user->reserves as $reserve) {
-                    $record->push($reserve->date->format('Y/m/d'));
-                    $record->push(time_to_hhmm($reserve->time));
-                    if ($reserve->type == ReserveTypes::LUNCHBOX) {
-                        $record->push('');
-                        $record->push($reserve->reserve_count);
-                    }
-                    else {
-                        $record->push($reserve->reserve_count);
-                        $record->push('');
-                    }
+                    $status = '予約中';
                     if (isset($reserve->checkin_dt)) {
-                        $record->push($reserve->checkin_dt->format('Y/m/d H:i'));
+                        $status = 'チェックイン';
                     }
                     else if (isset($reserve->cancel_dt)) {
-                        $record->push($reserve->cancel_dt->format('Y/m/d H:i'));
+                        $status = 'キャンセル';
                     }
-                    else {
-                        $record->push('');
-                    }
-
-                    $writer($record->toArray());
+                    $writer([
+                        $full_name,
+                        $affiliation_name,
+                        $affiliation_detail_name,
+                        $school_year,
+                        ($user->age ?? ''),
+                        ($user->email ?? ''),
+                        ($user->telephone_no ?? ''),
+                        $reserve->date->format('Y/m/d'),
+                        time_to_hhmm($reserve->time),
+                        ($reserve->type != ReserveTypes::LUNCHBOX ? '' : $reserve->reserve_count),
+                        ($reserve->type == ReserveTypes::LUNCHBOX ? $reserve->reserve_count : ''),
+                        $status,
+                    ]);
                     $index ++;
                 }
             }
