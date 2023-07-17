@@ -315,7 +315,7 @@ class DishMenusController extends Controller {
         $month = $request->input('month', $today->month);
         $dish_type = DishTypes::key_of($dish_type_key);
 
-        logger()->debug(compact('year','month','dish_type'));
+        // logger()->debug(compact('year','month','dish_type'));
 
         $calendar_ids = Calendar::enabled()->yearMonthBy($year, $month)->pluck('id');
         $dish_menus = DishMenu::withCasts([ 'date'=>'date' ])->join('calendars', 'calendars.id', '=', 'dish_menus.calendar_id')
@@ -377,7 +377,7 @@ class DishMenusController extends Controller {
             return $record;
         });
 
-        return response()->download($path, sprintf('メニュー一覧_%s.csv', date('Ymd-Hms')), [
+        return response()->download($path, sprintf('メニュー一覧_%s.csv', date('Ymd-His')), [
             'Content-Type: text/csv'
         ]);
     }

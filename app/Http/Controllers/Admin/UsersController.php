@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\AffiliationDetailTypes;
 use App\Flags;
+use App\ReserveTypes;
 use App\SortTypes;
 
 use App\Traits\CsvBuilder;
@@ -65,7 +66,7 @@ class UsersController extends Controller {
         $affiliation_detail_sort = $request->input('affiliation_detail_sort', SortTypes::ASC);
         $school_year_sort = $request->input('school_year_sort', SortTypes::ASC);
         $sort_orders = collect(explode(',', $request->input('sort_orders', 'full_name,affiliation,affiliation_detail,school_year')));
-        $users_query = User::with([ 'affiliation', 'affiliation_detail', 'school_year' ])
+        $users_query = User::with([ 'affiliation', 'affiliation_detail', 'school_year', 'reserves'=>function($query) { return $query->where('is_delete', Flags::OFF); } ])
             ->where('users.is_delete', Flags::OFF)
             ->where('users.is_admin', Flags::OFF)
             ->orderBy('users.is_initial_setting', 'desc')
@@ -91,37 +92,81 @@ class UsersController extends Controller {
             ->distinct()
             ->get();
 
+        $output_dir = storage_path('app/download_files');
+        if (!file_exists($output_dir)) {
+            mkdir($output_dir, 0777, true);
+        }
+
         $filename = sprintf('admin_users-%s.csv', uniqid());
         $path = storage_path(sprintf('app/download_files/%s', $filename));
 
-        $this->write_csv($path, [ '氏名', '所属', '学年', '年齢', 'メールアドレス', '電話番号' ], function($index) use($users) {
-            if ($users->count() <= $index) {
+        $state = (object)[ 'users_index' => 0 ];
+        $this->stateful_write_csv($path, $state, [ '氏名', '所属１', '所属２', '学年', '年齢', 'メールアドレス', '電話番号', '予約日', '予約時間', '食堂（人数）', '弁当（個数）', '利用状況' ], function($state, $index, callable $writer) use($users) {
+            if ($users->count() <= $state->users_index) {
                 return false;
             }
 
-            $user = $users[$index];
+            $user = $users[$state->users_index];
 
             $full_name = collect()
                 ->when(isset($user->last_name), function($collection) use($user) { return $collection->push($user->last_name); })
                 ->when(isset($user->first_name), function($collection) use($user) { return $collection->push($user->first_name); })
                 ->join(' ')
             ;
-            $affiliation = collect()
-                ->when(isset($user->affiliation_id), function($collection) use($user) { return $collection->push($user->affiliation->name); })
-                ->when(isset($user->affiliation_detail_id), function($collection) use($user) { return $collection->push($user->affiliation_detail->name); })
-                ->join(' ')
-            ;
+            $affiliation_name = (isset($user->affiliation_id) ? $user->affiliation->name : '');
+            $affiliation_detail_name = (isset($user->affiliation_id) ? $user->affiliation_detail->name : '');
             $school_year = (op($user->affiliation)->detail_type == AffiliationDetailTypes::INTERNAL ? op($user->school_year)->name : null) ?? '';
-            return [
+
+            $record = collect([
                 $full_name,
-                $affiliation,
-                $school_year, ($user->age ?? ''),
+                $affiliation_name,
+                $affiliation_detail_name,
+                $school_year,
+                ($user->age ?? ''),
                 ($user->email ?? ''),
                 ($user->telephone_no ?? '')
-            ];
+            ]);
+            if ($user->reserves->count() == 0) {
+                $record->push('');
+                $record->push('');
+                $record->push('');
+                $record->push('');
+                $record->push('');
+                $writer($record->toArray());
+                $index ++;
+            }
+            else {
+                foreach ($user->reserves as $reserve) {
+                    $record->push($reserve->date->format('Y/m/d'));
+                    $record->push(time_to_hhmm($reserve->time));
+                    if ($reserve->type == ReserveTypes::LUNCHBOX) {
+                        $record->push('');
+                        $record->push($reserve->reserve_count);
+                    }
+                    else {
+                        $record->push($reserve->reserve_count);
+                        $record->push('');
+                    }
+                    if (isset($reserve->checkin_dt)) {
+                        $record->push($reserve->checkin_dt->format('Y/m/d H:i'));
+                    }
+                    else if (isset($reserve->cancel_dt)) {
+                        $record->push($reserve->cancel_dt->format('Y/m/d H:i'));
+                    }
+                    else {
+                        $record->push('');
+                    }
+
+                    $writer($record->toArray());
+                    $index ++;
+                }
+            }
+
+            $state->users_index ++;
+            return [ $state, $index ];
         });
 
-        return response()->download($path, sprintf('利用者一覧_%s.csv', date('Ymd-Hms')), [
+        return response()->download($path, sprintf('利用者一覧_%s.csv', date('Ymd-His')), [
             'Content-Type: text/csv'
         ]);
     }
