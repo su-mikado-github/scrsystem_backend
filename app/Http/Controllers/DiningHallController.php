@@ -54,7 +54,7 @@ class DiningHallController extends Controller {
             }
 
             //支払い完了の旨をLINEで通知する
-            $message = view('templates.line.buy_ticket_payment')->with('user', $user)->with('buy_ticket', $buy_ticket)->with('checkin_url', route('checkin'))->render();
+            $message = view('templates.line.buy_ticket_payment')->with('user', $buy_ticket->user)->with('buy_ticket', $buy_ticket)->with('checkin_url', route('checkin'))->render();
             if ($this->line_api()->push_messages($buy_ticket->user->line_user->line_owner_id, [ $message ]) === false) {
                 DB::rollback();
                 return redirect()->action([ self::class, 'index' ], [ 'date'=>$date ])

@@ -118,7 +118,7 @@ class TicketsController extends Controller {
             $this->remove($buy_ticket, $user);
 
             //支払い完了の旨をLINEで通知する
-            $message = view('templates.line.buy_ticket_remove')->with('user', $user)->with('buy_ticket', $buy_ticket)->render();
+            $message = view('templates.line.buy_ticket_remove')->with('user', $buy_ticket->user)->with('buy_ticket', $buy_ticket)->render();
             if ($this->line_api()->push_messages($buy_ticket->user->line_user->line_owner_id, [ $message ]) === false) {
                 DB::rollback();
                 return redirect()->action([ self::class, 'index' ], [ 'date'=>$date ])
