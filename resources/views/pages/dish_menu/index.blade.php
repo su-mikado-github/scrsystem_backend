@@ -3,6 +3,7 @@
 @use(Carbon\Carbon)
 @use(App\Weekdays)
 @use(App\DishTypes)
+@use(App\ReserveTypes)
 
 <x-script>
 import { SCRSPage } from "/scrs-pages.js";
@@ -56,17 +57,36 @@ SCRSPage.startup(()=>new DishMenuPage());
 <br>
 
 <div class="px-5 py-4 scrs-sheet-normal">
-    <h3 class="text-center mb-4">次回のメニュー</h3>
+    <h3 class="text-center mb-4">次回のご予約</h3>
+    @isset($reserve)
+        @if($reserve->type == ReserveTypes::LUNCHBOX)
+        <dl class="scrs-item-group mb-0">
+            <dt class="label">日付／受取時間</dt>
+            <dd class="item"><span class="text-nowrap">{{ $reserve->date->format('m月d日') }}</span>&nbsp;<span class="text-nowrap">{{ time_to_hhmm($reserve->time) ?? ' ' }}</span></dd>
+            <dt class="label">個数</dt>
+            <dd class="item"><span>{{ $reserve->reserve_count }}</span>個</dd>
+        </dl>
+        @else
+        <dl class="scrs-item-group mb-0">
+            <dt class="label">日時</dt>
+            <dd class="item"><span>{{ $reserve->date->format('m月d日') }}</span>@isset($reserve->time)<span class="px-2"></span><span>{{ time_to_hhmm($reserve->time) }}～</span>@endisset</dd>
+            <dt class="label">人数</dt>
+            <dd class="item"><span>{{ $reserve->reserve_count }}</span>人</dd>
+        </dl>
+        @endif
+    @else
+    <p>※ご予約はありません。</p>
+    @endisset
 </div>
 
 <br>
 
 {{-- カレンダーコントロール --}}
 <div class="row g-0 my-3">
-    <div class="col-2 text-center fs-3"><a href="{!! url('/dish_menu') !!}?year_month={!! Carbon::parse($month_calendar->previous_date)->format('Y-m') !!}" data-action="previousMonth"><i class="fa-solid fa-angles-left text-body"></i></a></div>
-    <div class="col-5 text-center fs-3">{!! Carbon::parse($month_calendar->start_date)->format('n/j') !!}～{!! Carbon::parse($month_calendar->end_date)->format('n/j') !!}</div>
-    <div class="col-3 text-center fs-3"><a class="text-body" href="{!! url('/dish_menu') !!}?date={!! today()->format('Y-m-d') !!}"><u>本日</u></a></div>
-    <div class="col-2 text-center fs-3"><a href="{!! url('/dish_menu') !!}?year_month={!! Carbon::parse($month_calendar->next_date)->format('Y-m') !!}" data-action="nextMonth"><i class="fa-solid fa-angles-right text-body"></i></a></div>
+    <div class="col-2 text-center fs-3"><a href="{!! route('dish_menu.date', [ 'date'=>$month_calendar->date->copy()->subDays()->format('Y-m-d'), 'today'=>$today ]) !!}" data-action="previousMonth"><i class="fa-solid fa-angles-left text-body"></i></a></div>
+    <div class="col-5 text-center fs-3">{!! $month_calendar->start_date->format('n/j') !!}～{!! Carbon::parse($month_calendar->end_date)->format('n/j') !!}</div>
+    <div class="col-3 text-center fs-3"><a class="text-body" href="{!! route('dish_menu', [ 'today'=>$today ]) !!}"><u>本日</u></a></div>
+    <div class="col-2 text-center fs-3"><a href="{!! route('dish_menu.date', [ 'date'=>$month_calendar->last_date->copy()->addDays()->format('Y-m-d'), 'today'=>$today ]) !!}" data-action="nextMonth"><i class="fa-solid fa-angles-right text-body"></i></a></div>
 </div>
 
 {{-- 曜日 --}}
@@ -109,7 +129,7 @@ SCRSPage.startup(()=>new DishMenuPage());
             @foreach($week as $calendar)
                 @php
                     $is_past = ($calendar->date < today());
-                    $is_today = ($calendar->date == optional($day_calendar)->date);
+                    $is_today = ($calendar->date == op($day_calendar)->date);
                     $is_sunday = ($calendar->weekday == Weekdays::SUNDAY);
                     $is_saturday = ($calendar->weekday == Weekdays::SATURDAY);
                     $is_dish_menu = ($calendar->dish_menus()->count() > 0);
@@ -120,19 +140,19 @@ SCRSPage.startup(()=>new DishMenuPage());
                 </td>
                 @elseif($is_past)
                 <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-secondary') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">
-                    <a class="text-body {!! ($is_dish_menu ? 'fw-bold' : '') !!}" href="{!! url('/dish_menu') !!}?year_month={!! $month_calendar->date->format('Y-m') !!}&date={!! $calendar->date->format('Y-m-d') !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="text-body {!! ($is_dish_menu ? 'fw-bold' : '') !!}" href="{!! route('dish_menu.date', [ 'date'=>$calendar->date->format('Y-m-d'), 'today'=>$today ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
                 </td>
                 @elseif($month_calendar->contains($calendar))
                 <td class="text-center align-middle py-1 {!! ($is_today ? 'scrs-bg-today' : 'bg-white') !!} {!! ($is_sunday ? 'text-danger' : '') !!} {!! ($is_saturday ? 'text-primary' : '') !!}">
-                    <a class="text-body {!! ($is_dish_menu ? 'fw-bold' : '') !!}" href="{!! url('/dish_menu') !!}?year_month={!! $month_calendar->date->format('Y-m') !!}&date={!! $calendar->date->format('Y-m-d') !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="text-body {!! ($is_dish_menu ? 'fw-bold' : '') !!}" href="{!! route('dish_menu.date', [ 'date'=>$calendar->date->format('Y-m-d'), 'today'=>$today ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
                 </td>
                 @elseif($month_calendar->isUnder($calendar))
                 <td class="text-center align-middle py-1 scrs-bg-lightgray text-secondary">
-                    <a class="text-body {!! ($is_dish_menu ? 'fw-bold' : '') !!}" href="{!! url('/dish_menu') !!}?year_month={!! $month_calendar->previous_date->format('Y-m') !!}&date={!! $calendar->date->format('Y-m-d') !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="text-body {!! ($is_dish_menu ? 'fw-bold' : '') !!}" href="{!! route('dish_menu.date', [ 'date'=>$calendar->date->format('Y-m-d'), 'today'=>$today ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
                 </td>
                 @else
                 <td class="text-center align-middle py-1 scrs-bg-lightgray text-secondary">
-                    <a class="text-body {!! ($is_dish_menu ? 'fw-bold' : '') !!}" href="{!! url('/dish_menu') !!}?year_month={!! $month_calendar->next_date->format('Y-m') !!}&date={!! $calendar->date->format('Y-m-d') !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
+                    <a class="text-body {!! ($is_dish_menu ? 'fw-bold' : '') !!}" href="{!! route('dish_menu.date', [ 'date'=>$calendar->date->format('Y-m-d'), 'today'=>$today ]) !!}">{!! Carbon::parse($calendar->date)->format('n/j') !!}</a>
                 </td>
                 @endif
             @endforeach
@@ -181,7 +201,8 @@ SCRSPage.startup(()=>new DishMenuPage());
 
         </div>
         <div class="card-footer bg-transparent p-1">
-            @eval($daily_dish_menu = $day_calendar->daily_dish_menus()->dishTypeBy(DishTypes::DINING_HALL)->first())
+            @eval($daily_dish_menu = $day_calendar->daily_dish_menus()->dishTypeBy($dish_type->id)->first())
+            @isset($daily_dish_menu)
             <h6 class="mb-0">total</h6>
             <div class="scrs-sheet-normal ps-4 pe-2 py-2 d-flex justify-content-center mb-2">
                 <table class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
@@ -207,7 +228,7 @@ SCRSPage.startup(()=>new DishMenuPage());
                 </tbody>
                 </table>
             </div>
-
+            @endisset
         </div>
     </div>
     @endif
