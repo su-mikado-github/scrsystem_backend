@@ -33,7 +33,6 @@ Route::middleware([ 'attest' ])->group(function() {
     Route::prefix('/checkin')->group(function() {
         Route::get('/{date?}', [ App\Http\Controllers\CheckinController::class, 'index' ])->name('checkin')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
         Route::post('/{reserve_id}', [ App\Http\Controllers\CheckinController::class, 'post' ])->where('reserve_id', '^[0-9]+$');
-        // Route::get('/token', [ App\Http\Controllers\CheckinController::class, 'get_token' ])->name('checkin.token');
     });
 
     Route::prefix('/reserve')->group(function() {
@@ -64,6 +63,7 @@ Route::middleware([ 'attest' ])->group(function() {
 
     Route::prefix('/dish_menu')->group(function() {
         Route::get('/', [ App\Http\Controllers\DishMenuController::class, 'index' ])->name('dish_menu');
+        Route::get('/dates/{date}', [ App\Http\Controllers\DishMenuController::class, 'date_at' ])->name('dish_menu.date')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
     });
 
     Route::prefix('/buy_ticket')->group(function() {
@@ -99,12 +99,9 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
 
     Route::prefix('/tickets')->group(function() {
         Route::get('/', [ App\Http\Controllers\Admin\TicketsController::class, 'index' ])->name('admin.tickets');
-        Route::get('/years/{year?}/months/{month?}', [ App\Http\Controllers\Admin\TicketsController::class, 'index' ])->name('admin.tickets.year_month')->where('year', '^[0-9]{4}$')->where('month', '^(1|2|3|4|5|6|7|8|9|10|11|12)$');
+        Route::get('/years/{year?}/months/{month?}', [ App\Http\Controllers\Admin\TicketsController::class, 'index' ])->name('admin.tickets.year_month')->where('year', '^[0-9]{4}$')->where('month', '^(0?1|0?2|0?3|0?4|0?5|0?6|0?7|0?8|0?9|10|11|12)$');
         Route::patch('/{buy_ticket_id}/payment', [ App\Http\Controllers\Admin\TicketsController::class, 'patch_payment' ])->name('admin.tickets.payment')->where('buy_ticket_id', '^[0-9]+$');
         Route::delete('/{buy_ticket_id}', [ App\Http\Controllers\Admin\TicketsController::class, 'delete' ])->name('admin.tickets.remove')->where('buy_ticket_id', '^[0-9]+$');
-        // Route::get('/download', [ App\Http\Controllers\Admin\UsersController::class, 'download' ])->name('admin.users.download');
-        // Route::get('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'index' ])->name('admin.user')->where('user_id', '^[0-9]+$');
-        // Route::delete('/{user_id}', [ App\Http\Controllers\Admin\UserController::class, 'delete' ])->name('admin.user.delete')->where('user_id', '^[0-9]+$');
     });
 
     Route::prefix('/staffs')->group(function() {
@@ -117,7 +114,6 @@ Route::prefix('/admin')->middleware('auth')->middleware('can:is_admin')->group(f
     Route::prefix('/account')->group(function() {
         Route::get('/', [ App\Http\Controllers\Admin\AccountController::class, 'index' ])->name('admin.account');
         Route::put('/', [ App\Http\Controllers\Admin\AccountController::class, 'put' ]);
-        // Route::post('/{dish_type_key?}/upload', [ App\Http\Controllers\Admin\DishMenusController::class, 'post_upload' ])->where('dish_type_key', sprintf('^(%s)$', implode('|', array_map(function($dish_type) { return $dish_type->key; }, DishTypes::values()))));
     });
 
     Route::get('/{date?}', [ App\Http\Controllers\AdminController::class, 'index' ])->name('admin')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
@@ -141,10 +137,6 @@ Route::prefix('/new_password')->group(function() {
 });
 
 Route::get('/logout', [ App\Http\Controllers\LoginController::class, 'logout' ])->name('logout');
-
-// Route::prefix('/file')->group(function() {
-//     Route::post('/upload', [ App\Http\Controllers\FileController::class, 'upload' ])->name("file_upload");
-// });
 
 //セッション維持（暫定）
 Route::get('/ping', function() { return view('pages.ping'); });

@@ -8,28 +8,43 @@ use Illuminate\Http\Request;
 
 use App\Models\Calendar;
 use App\Models\MonthCalendar;
+use App\Models\User;
 
 class DishMenuController extends Controller {
-    //
-    public function index(Request $request) {
-        $year_month = $request->input('year_month', today()->format('Y-m'));
-        abort_if(!preg_match('/^[0-9]{4}[\-][0-9]{2}/i', $year_month), 412, __('invalidate.fomrat.year_month'));
-
-        list($year, $month) = explode('-', $year_month);
-
-        $month_calendar = MonthCalendar::yearMonthBy($year, $month)->first();
-        abort_if(!preg_match('/^[0-9]{4}[\-][0-9]{2}/i', $year_month), 404, __('not_found.month_calender'));
-
+    protected function month_by(User $user, MonthCalendar $month_calendar, $date, $today) {
         $calendars = Calendar::periodBy($month_calendar->start_date, $month_calendar->end_date)->orderBy('date')->get();
 
-        $date = $request->input('date', $month_calendar->date);
+        $day_calendar = $calendars->where('date', $date)->first();
 
-        $day_calendar = $calendars->where('date', Carbon::parse($date))->first();
+        $reserve = $user->reserves()->enabled()->unCanceled()->where('date', '>=', $today ?? today())->orderBy('date')->first();
 
         return view('pages.dish_menu.index')
             ->with('day_calendar', $day_calendar)
             ->with('month_calendar', $month_calendar)
             ->with('calendars', $calendars)
+            ->with('today', op($today)->format('Y-m-d'))
+            ->with('reserve', $reserve)
         ;
+    }
+
+    //
+    public function index(Request $request) {
+        $user = $this->user();
+
+        $date = today();
+
+        $month_calendar = MonthCalendar::dateBy($date)->first();
+        abort_if(!$month_calendar, 404, __('not_found.month_calender'));
+
+        return $this->month_by($user, $month_calendar, $date, today());
+    }
+
+    public function date_at(Request $request, $date) {
+        $user = $this->user();
+
+        $month_calendar = MonthCalendar::dateBy($date)->first();
+        abort_if(!$month_calendar, 404, __('not_found.month_calender'));
+
+        return $this->month_by($user, $month_calendar, Carbon::parse($date), today());
     }
 }
