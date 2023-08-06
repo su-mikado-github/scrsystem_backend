@@ -5,13 +5,18 @@ export class SCRSUploadFileDialog extends SCRSDialog {
     #input_file = null;
     #form = null;
 
+    #filename = null;
+    #error = null;
+
     constructor(owner, id, initializer=null, eventNames=null) {
         super(owner, id, initializer, eventNames);
 
         this.#target_file = this.field("target_file")?.handle("click")?.handle("dragover")?.handle("drop");
-        this.#input_file = this.field("input_file")?.handle("change");
+        this.#input_file = this.field("input_file");
         this.#form = this.field("upload_form");
 
+        this.#filename = this.field("filename");
+        this.#error = this.field("error");
         this.action("ok")?.handle("click");
     }
 
@@ -26,40 +31,31 @@ export class SCRSUploadFileDialog extends SCRSDialog {
 
     target_file_drop(e) {
         e.preventDefault();
-        this.#input_file.files = e.dataTransfer.files;
-        for (let file of this.#input_file.files) {
-            console.log(file.name);
+        if (e.dataTransfer.files.length > 1) {
+            this.#error.innerText = '一度にアップロードできるファイルは、１ファイルのみです。';
+            this.#error.removeClass("d-none");
         }
-        this.#target_file.style.backgroundColor = "transparent";
-    }
+        else if (e.dataTransfer.files.length == 1) {
+            this.#error.addClass("d-none");
+            this.#input_file.files = e.dataTransfer.files;
+            this.#target_file.style.backgroundColor = "transparent";
 
-    input_file_change(e) {
-        for (let file of e.target.files) {
-            console.log(file.name);
+            const filenames = [];
+            for (let file of this.#input_file.files) {
+                filenames.push(file.name);
+            }
+            this.#filename.innerHTML = filenames.join("");
+            this.#filename.removeClass("d-none");
+        }
+        else {
+            this.#filename.innerHTML = "";
+            this.#filename.addClass("d-none");
         }
     }
 
     ok_click(e) {
         const form_data = new FormData(this.#form._target);
-        // const xhr = new XMLHttpRequest();
-        // // xhr.upload.addEventListener("load", (e)=>console.log(xhr.responseText));
-        // // xhr.upload.addEventListener("error", (e)=>console.log(xhr.responseText));
-        // xhr.open("POST", this.#form.action, true);
-        // xhr.upload.addEventListener("progress", (e)=>{
-        //     console.log(e.total);
-        // });
-        // xhr.addEventListener("readystatechange", ()=>{
-        //     if (xhr.readyState === XMLHttpRequest.DONE) {
-        //         const status = xhr.status;
-        //         if (status === 0 || (status >= 200 && status < 400)) {
-        //             console.log("OK");
-        //         }
-        //         else {
-        //             console.log("ERROR: "+status);
-        //         }
-        //     }
-        // });
-        // xhr.send(form_data);
+
         axios.post(this.#form.action, form_data)
             .then((response)=>{
                 this.raise("ok", response);
@@ -67,8 +63,5 @@ export class SCRSUploadFileDialog extends SCRSDialog {
             .catch((error)=>{
                 this.raise("error", {})
             });
-
-//        this.raise("ok", { files: this.#input_file.files });
-//        this.close();
     }
 }

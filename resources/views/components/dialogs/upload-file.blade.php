@@ -8,9 +8,11 @@
     <div data-field="target_file" class="position-absolute w-100 h-100 top-0 start-0">
     </div>
 </div>
+<h6 id="{!! $id !!}_filename" data-field="filename" class="d-none"></h6>
 <form id="{!! $id !!}_form" data-field="upload_form" target="{!! $id !!}_response" method="POST" action="{!! route('api.file_upload') !!}" enctype="multipart/form-data">
     <input type="file" data-field="input_file" name="input_file" class="d-none" accept=".csv,text/csv">
 </form>
+<p id="{!! $id !!}_error" data-field="error" class="text-danger d-none"></p>
 @endsection
 
 @section($id . 'dialog-footer')

@@ -16,10 +16,30 @@ class CheckinController extends Controller {
         $user = $this->user();
 
         $today = (isset($date) ? Carbon::parse($date) : today());
-        $reserve = $user->reserves()->enabled()->dateBy($today)->unCanceled()->first();
+        $reserves = $user->reserves()->enabled()->dateBy($today)->unCanceled()->dateOrdered()->timeOrdered()->typeOrdered()->get();
+        $reserve = $reserves->first();
+        $other_reserve = ($reserves->count() > 1 ? $reserves->where('id', '!=', $reserve->id)->first() : null);
 
         return view('pages.checkin.index')
             ->with('reserve', $reserve)
+            ->with('other_reserve', $other_reserve)
+        ;
+    }
+
+    public function reserve(Request $request, $reserve_id) {
+        $user = $this->user();
+
+        $reserve = Reserve::userBy($user)->find($reserve_id);
+        abort_if(!$reserve, 404, __('messages.not_found.reserve'));
+
+        $today = $reserve->date;
+
+        $reserves = $user->reserves()->enabled()->dateBy($today)->unCanceled()->dateOrdered()->timeOrdered()->get();
+        $other_reserve = ($reserves->count() > 1 ? $reserves->where('id', '!=', $reserve->id)->first() : null);
+
+        return view('pages.checkin.index')
+            ->with('reserve', $reserve)
+            ->with('other_reserve', $other_reserve)
         ;
     }
 

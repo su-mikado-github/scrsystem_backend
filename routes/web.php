@@ -31,6 +31,7 @@ Route::prefix('/dining_hall')->group(function() {
 Route::middleware([ 'attest' ])->group(function() {
 
     Route::prefix('/checkin')->group(function() {
+        Route::get('/reserves/{reserve_id}', [ App\Http\Controllers\CheckinController::class, 'reserve' ])->name('checkin.reserve')->where('reserve_id', '^[0-9]+$');
         Route::get('/{date?}', [ App\Http\Controllers\CheckinController::class, 'index' ])->name('checkin')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
         Route::post('/{reserve_id}', [ App\Http\Controllers\CheckinController::class, 'post' ])->where('reserve_id', '^[0-9]+$');
     });
@@ -50,6 +51,7 @@ Route::middleware([ 'attest' ])->group(function() {
 
         Route::prefix('/change')->group(function() {
             Route::get('/{date?}', [ App\Http\Controllers\Reserve\ChangeController::class, 'index' ])->name('reserve.change')->where('date', '^[0-9]{4}-[0-9]{2}-[0-9]{2}');
+            Route::get('/{reserve_id}/reserve', [ App\Http\Controllers\Reserve\ChangeController::class, 'reserve' ])->name('reserve.change.reserve')->where('reserve_id', '^[0-9]+$');
             Route::post('/{reserve_id}/visit', [ App\Http\Controllers\Reserve\ChangeController::class, 'post_visit' ])->where('reserve_id', '^[0-9]+$');
             Route::post('/{reserve_id}/lunchbox', [ App\Http\Controllers\Reserve\ChangeController::class, 'post_lunchbox' ])->where('reserve_id', '^[0-9]+$');
             Route::delete('/{reserve_id}', [ App\Http\Controllers\Reserve\ChangeController::class, 'delete' ])->where('reserve_id', '^[0-9]+$');

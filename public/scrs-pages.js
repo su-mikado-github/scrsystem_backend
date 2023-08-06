@@ -110,23 +110,6 @@ export class SCRSPage extends SCRSComponent {
 
     delete(url=null, query=null) {
         return this.submit("DELETE", url, query);
-        // const form = document.querySelector("body > main > form");
-        // let _method = form.querySelector("input[type='hidden'][name='_method']");
-        // if (!_method) {
-        //     _method = document.createElement("input");
-        //     _method.type = "hidden";
-        //     _method.name = "_method";
-        //     form.appendChild(_method);
-        // }
-        // _method.value = "DELETE";
-
-        // if (url) {
-        //     const action = this.url(url, query);
-        //     if (action) {
-        //         form.action = action;
-        //     }
-        // }
-        // form.submit();
     }
 
     waitScreen(flag) {

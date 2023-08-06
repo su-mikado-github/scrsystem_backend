@@ -43,13 +43,21 @@ export class SCRSQrCodeReaderDialog extends SCRSDialog {
     cameraStart() {
         if (!this.#video) {
             this.#video = document.createElement('video');
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } }).then((stream)=>{
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" }, width: { min:720 }, height: { min: 720 } } }).then((stream)=>{
                 this.#video.srcObject = stream;
                 this.#video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
                 this.#video.play();
                 requestAnimationFrame(()=>this.tick());
             }).catch((e)=>{
-                alert(e.name + ": " + e.message);
+                console.log(e.name + ": " + e.message);
+                navigator.mediaDevices.getUserMedia({ video:true }).then((stream)=>{
+                    this.#video.srcObject = stream;
+                    this.#video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                    this.#video.play();
+                    requestAnimationFrame(()=>this.tick());
+                }).catch((e)=>{
+                    console.log(e.name + ": " + e.message);
+                });
             });
         }
     }
