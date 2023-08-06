@@ -61,6 +61,12 @@ SCRSPage.startup(()=>new CheckinPage());
 @if(isset($reserve))
 @eval(list($label, $unit, $action) = ($reserve->type == ReserveTypes::LUNCHBOX ? [ '個数', '個', '受け取る' ] : [ '人数', '人', 'チェックインする' ]))
 <br>
+@isset($other_reserve)
+@eval($other_label = ($other_reserve->type == ReserveTypes::LUNCHBOX ? 'お弁当のご予約' : '食堂のご予約'))
+<div class="text-end">
+    <a class="btn btn-link scrs-text-main" href="{!! route('checkin.reserve', [ 'reserve_id'=>$other_reserve->id ]) !!}">{{ $other_label }}&nbsp;≫</a>
+</div>
+@endisset
 <div class="px-5 py-4 scrs-sheet-normal">
     <h3 class="text-center mb-4">ご予約内容</h3>
     <dl class="scrs-item-group mb-0">
@@ -69,16 +75,17 @@ SCRSPage.startup(()=>new CheckinPage());
         <dt class="label">{{ $label }}</dt>
         <dd class="item"><span>{{ $reserve->reserve_count }}</span>{{ $unit }}</dd>
     </dl>
+
+    <br>
+    <div class="d-flex justify-content-center">
+        @isset($reserve->checkin_dt)
+        <span class="btn btn-lg btn-secondary col-10 py-2">完了</span>
+        @else
+        <button type="button" data-action="checkin" class="btn btn-lg scrs-main-button col-10 py-2">{{ $action }}</button>
+        @endisset
+    </div>
 </div>
 
-<br>
-<div class="d-flex justify-content-center">
-    @isset($reserve->checkin_dt)
-    <span class="btn btn-lg btn-secondary col-10 py-2">完了</span>
-    @else
-    <button type="button" data-action="checkin" class="btn btn-lg scrs-main-button col-10 py-2">{{ $action }}</button>
-    @endisset
-</div>
 @else
 <div class="px-5 py-4 scrs-sheet-normal">
     <h3 class="text-center mb-4">ご予約内容</h3>

@@ -37,6 +37,9 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
+        $message = sprintf('IP:%s USER-AGENT:%s PATH:%s', request()->server('HTTP_X_REAL_IP') ?? '??????', request()->header('User-Agent'), request()->server('REQUEST_URI'));
+        logger()->debug($message);
+
         $this->routes(function () {
             Route::prefix('api')
                 ->middleware('api')

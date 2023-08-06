@@ -25,6 +25,9 @@
 <dd><h5>■運営</h5></dd>
 <dd><a href="{{ route('login') }}" class="text-dark">管理ツール</a></dd>
 </dl>
+<hr>
+<h5>■デバッグ／調査</h5>
+<a href="/camera.php">カメラテスト</a>
 {{-- <hr>
 <dl>
 @foreach(Route::getRoutes()->getRoutesByName() as $route)

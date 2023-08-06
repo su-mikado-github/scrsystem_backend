@@ -55,35 +55,47 @@ class Reserve extends Model {
     }
 
     public function scopeDateTimeBy($query, $date, $schedule_time_id) {
-        return $query->where('date', $date)->where('schedule_time_id', $schedule_time_id);
+        return $query->where('reserves.date', $date)->where('reserves.schedule_time_id', $schedule_time_id);
     }
 
     public function scopeTypesBy($query, array $types) {
-        return $query->whereIn('type', $types);
+        return $query->whereIn('reserves.type', $types);
     }
 
     public function scopeLunchboxBy($query) {
-        return $query->whereIn('type', [ ReserveTypes::LUNCHBOX ]);
+        return $query->whereIn('reserves.type', [ ReserveTypes::LUNCHBOX ]);
     }
 
     public function scopeDiningHallBy($query) {
-        return $query->whereIn('type', [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ]);
+        return $query->whereIn('reserves.type', [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ]);
     }
 
     public function scopeNoCheckin($query) {
-        return $query->whereNull('checkin_dt');
+        return $query->whereNull('reserves.checkin_dt');
     }
 
     public function scopeUnCanceled($query) {
-        return $query->whereNull('cancel_dt');
+        return $query->whereNull('reserves.cancel_dt');
     }
 
     public function scopeCalendarScheduleTimeBy($query, Calendar $calendar, ScheduleTime $schedule_time) {
-        return $query->where('date', $calendar->date)->where('schedule_time_id', $schedule_time->id);
+        return $query->where('reserves.date', $calendar->date)->where('reserves.schedule_time_id', $schedule_time->id);
     }
 
     public function scopeEnabled($query) {
-        return $query->where('is_delete', Flags::OFF);
+        return $query->where('reserves.is_delete', Flags::OFF);
+    }
+
+    public function scopeTypeOrdered($query) {
+        return $query->orderBy('reserves.type');
+    }
+
+    public function scopeDateOrdered($query) {
+        return $query->orderBy('reserves.date');
+    }
+
+    public function scopeTimeOrdered($query) {
+        return $query->orderBy('reserves.time');
     }
 
     public function rebuild_empty_states() {

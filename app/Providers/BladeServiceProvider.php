@@ -63,6 +63,10 @@ class BladeServiceProvider extends ServiceProvider
         Blade::directive('debug', function($expression) {
             return "<?php logger()->debug({$expression}) ?>";
         });
+        Blade::directive('trace', function($expression=null) {
+            $message = $expression ?? '';
+            return "<?php logger()->debug(sprintf('%s(%d) %s', __FILE__, __LINE__, '{$message}')); ?>";
+        });
         Blade::directive('url', function($expression) {
             return "<?=url({$expression}) ?>";
         });

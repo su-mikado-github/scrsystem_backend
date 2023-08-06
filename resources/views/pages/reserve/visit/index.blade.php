@@ -232,9 +232,8 @@ td:has(.scrs-selected) {
 </thead>
 <tbody>
 @foreach($time_schedules as $time_schedule)
-@eval(list($hour, $minute, $second) = explode(':', $time_schedule->time))
 <tr>
-    <td class="bg-white text-center align-middle py-1">{{ sprintf('%02d:%02d', $hour, $minute) }}</td>
+    <td class="bg-white text-center align-middle py-1">{{ time_to_hhmm($time_schedule->time) }}</td>
     @foreach($calendars as $calendar)
         @php
             $is_past = ($calendar->date < today()->copy()->addDays(2));
