@@ -181,7 +181,7 @@ SCRSPage.startup(()=>new AdminUserPage());
             </tr>
         </thead>
         <tbody class="bg-white">
-            @foreach($target_user->reserves as $reserve)
+            @foreach($target_user->reserves()->dateOrdered()->timeOrdered()->typeOrdered()->get() as $reserve)
             @php
                 $calendar = $reserve->calendar;
                 $date = sprintf('%s (%s)', $calendar->date->format('Y/m/d'), Weekdays::of($calendar->weekday)->ja);
