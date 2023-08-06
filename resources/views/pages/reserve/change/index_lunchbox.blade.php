@@ -68,6 +68,13 @@ SCRSPage.startup(()=>new ChangeLunchboxPage());
 @if(isset($reserve))
 @eval(list($label, $unit, $action) = ($reserve->type == ReserveTypes::LUNCHBOX ? [ '個数', '個', '受け取る' ] : [ '人数', '人', 'チェックインする' ]))
 <br>
+@isset($other_reserve)
+@eval($other_label = ($other_reserve->type == ReserveTypes::LUNCHBOX ? 'お弁当のご予約' : '食堂のご予約'))
+<div class="text-end">
+    <a class="btn btn-link scrs-text-main" href="{!! route('reserve.change.reserve', [ 'reserve_id'=>$other_reserve->id ]) !!}">{{ $other_label }}&nbsp;≫</a>
+</div>
+@endisset
+
 <div class="px-5 py-4 scrs-sheet-normal">
     <h3 class="text-center mb-4">ご予約内容（{{ ReserveTypes::of($reserve->type)->title }}）</h3>
     <dl class="scrs-item-group mb-0">
