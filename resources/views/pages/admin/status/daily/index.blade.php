@@ -206,8 +206,9 @@ SCRSPage.startup(()=>new AdminStatusDailyPage());
     @endphp
     @foreach($users as $row)
     @php
-        $reserve = $row->reserves()->dateBy($calendar->date)->first();
-        $visit = transform($reserve, function($reserve) {
+        $visit_reserve = $row->reserves()->dateBy($calendar->date)->diningHallBy()->first();
+        $lunchbox_reserve = $row->reserves()->dateBy($calendar->date)->lunchboxBy()->first();
+        $visit = transform($visit_reserve, function($reserve) {
             $result = [ 'state'=>null, 'time'=>null ];
             if (in_array($reserve->type, [ ReserveTypes::VISIT_SOCCER, ReserveTypes::VISIT_NO_SOCCER ])) {
                 if ($reserve->is_through == Flags::ON) {
@@ -226,7 +227,7 @@ SCRSPage.startup(()=>new AdminStatusDailyPage());
             }
             return $result;
         });
-        $lunchbox = transform($reserve, function($reserve) {
+        $lunchbox = transform($lunchbox_reserve, function($reserve) {
             $result = [ 'state'=>null, 'time'=>null ];
             if (in_array($reserve->type, [ ReserveTypes::LUNCHBOX ])) {
                 if ($reserve->is_through == Flags::ON) {
@@ -255,10 +256,10 @@ SCRSPage.startup(()=>new AdminStatusDailyPage());
             </div>
         </td>
         <td class="text-center bg-white">@if(op($row->affiliation)->detail_type==AffiliationDetailTypes::INTERNAL){{ op($row->school_year)->name }}@else &nbsp; @endif</td>
-        <td class="text-center bg-white">{{ $visit['time'] ?? ' ' }}</td>
-        <td class="text-center bg-white">@isset($reserve){{ $visit['state'] ?? ' ' }}@else &nbsp; @endisset</td>
-        <td class="text-center bg-white">@isset($reserve){{ $lunchbox['time'] ?? ' ' }}@else &nbsp; @endisset</td>
-        <td class="text-center bg-white">@isset($reserve){{ $lunchbox['state'] ?? ' ' }}@else &nbsp; @endisset</td>
+        <td class="text-center bg-white">@isset($visit_reserve){{ $visit['time'] ?? ' ' }}@else &nbsp; @endisset</td>
+        <td class="text-center bg-white">@isset($visit_reserve){{ $visit['state'] ?? ' ' }}@else &nbsp; @endisset</td>
+        <td class="text-center bg-white">@isset($lunchbox_reserve){{ $lunchbox['time'] ?? ' ' }}@else &nbsp; @endisset</td>
+        <td class="text-center bg-white">@isset($lunchbox_reserve){{ $lunchbox['state'] ?? ' ' }}@else &nbsp; @endisset</td>
     </tr>
     @endforeach
 </tbody>
