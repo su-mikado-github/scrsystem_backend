@@ -3,7 +3,6 @@ namespace App\Traits;
 
 trait CsvBuilder {
     public function write_csv_record($fp, $record) {
-        mb_convert_variables('SJIS', 'UTF-8', $record);
         fputcsv($fp, $record);
     }
 
@@ -14,9 +13,7 @@ trait CsvBuilder {
         try {
             // CSV列ヘッダーの出力
             if (count($header) > 0) {
-                $csv_header = $header;
-                mb_convert_variables('SJIS', 'UTF-8', $csv_header);
-                fputcsv($fp, $csv_header);
+                $this->write_csv_record($fp, $header);
             }
 
             // CSV列データの出力
@@ -43,9 +40,7 @@ trait CsvBuilder {
         try {
             // CSV列ヘッダーの出力
             if (count($header) > 0) {
-                $csv_header = $header;
-                mb_convert_variables('SJIS', 'UTF-8', $csv_header);
-                fputcsv($fp, $csv_header);
+                $this->write_csv_record($fp, $header);
             }
 
             $record_writer = function($record) use($fp) {

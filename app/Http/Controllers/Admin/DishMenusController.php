@@ -238,8 +238,6 @@ class DishMenusController extends Controller {
 
                 $record = fgetcsv($fp);
                 if ($record) {
-                    mb_convert_variables('UTF-8', 'SJIS-win', $record);
-
                     if ($i == 0) {
                         $this->check_header($record, $record_error);
                     }
