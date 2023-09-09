@@ -54,8 +54,8 @@ class Reserve extends Model {
         return $query->where('date', $date);
     }
 
-    public function scopeDateTimeBy($query, $date, $schedule_time_id) {
-        return $query->where('reserves.date', $date)->where('reserves.schedule_time_id', $schedule_time_id);
+    public function scopeDateTimeBy($query, $date, $time) {
+        return $query->where('reserves.date', $date)->where('reserves.time', $time);
     }
 
     public function scopeTypesBy($query, array $types) {

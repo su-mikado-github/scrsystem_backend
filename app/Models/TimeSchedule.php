@@ -16,22 +16,26 @@ class TimeSchedule extends Model {
     }
 
     public function scopeTimePeriodBy($query, $start_time, $end_time) {
-        return $query->whereBetween('time', [ $start_time, $end_time ]);
+        return $query->whereBetween('time_schedules.time', [ $start_time, $end_time ]);
     }
 
     public function scopeSoccer($query) {
-        return $query->where('type', ReserveTypes::VISIT_SOCCER)->where('is_delete', Flags::OFF);
+        return $query->where('time_schedules.type', ReserveTypes::VISIT_SOCCER)->where('is_delete', Flags::OFF);
     }
 
     public function scopeNoSoccer($query) {
-        return $query->where('type', ReserveTypes::VISIT_NO_SOCCER)->where('is_delete', Flags::OFF);
+        return $query->where('time_schedules.type', ReserveTypes::VISIT_NO_SOCCER)->where('is_delete', Flags::OFF);
     }
 
     public function scopeLunchbox($query) {
-        return $query->where('type', ReserveTypes::LUNCHBOX)->where('is_delete', Flags::OFF);
+        return $query->where('time_schedules.type', ReserveTypes::LUNCHBOX)->where('is_delete', Flags::OFF);
     }
 
     public function scopeEnabled($query) {
         return $query->where('time_schedules.is_delete', Flags::OFF);
+    }
+
+    public function scopeTimeBy($query, $time) {
+        return $query->where('time_schedules.time', '=', $time);
     }
 }

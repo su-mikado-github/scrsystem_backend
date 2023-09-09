@@ -9,6 +9,7 @@ return [
         'user' => '指定された利用者は、登録されていないか既に退会しています。',
         'staff' => '指定された管理者は、存在しません。',
         'buy_ticket' => '指定された食券の購入はありません。',
+        'time_schedule' => 'タイムスケジュールが存在しません。',
     ],
     'io_error' => [
         'dish_menu_csv_read' => 'メニューCSVファイルの読み込みに失敗しました。',
@@ -44,6 +45,7 @@ return [
         'reserve_exists' => '既に予約されています。',
         'same_date' => '同じ日付は指定できません。',
         'same_time' => '同じ時刻は指定できません。',
+        'same_reserve_datetime' => '同じ日時の予定に変更することはできません。',
     ],
     'success' => [
         'mypage' => [

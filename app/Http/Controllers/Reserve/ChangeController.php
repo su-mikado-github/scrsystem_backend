@@ -279,20 +279,15 @@ class ChangeController extends Controller {
         $calendar = Calendar::dateBy($new_date)->first();
         abort_if(!$calendar, 404, __('messages.not_found.calendar'));
 
-        // 同一日チェック
-        if ($new_date == $reserve->date) {
-            return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
-                ->withInput()
-                ->with('error', __('messages.error.same_date'));
-        }
+        $new_time = $request->input('new_time');
 
-        // 予約の重複チェック
+        // 変更先が異なる日時になっているかチェック
         $reserve_types = [ ReserveTypes::LUNCHBOX ];
-        $is_reserve_exists = Reserve::dateBy($new_date)->userBy($user)->typesBy($reserve_types)->enabled()->unCanceled()->exists();
+        $is_reserve_exists = Reserve::dateTimeBy($new_date, $new_time)->userBy($user)->typesBy($reserve_types)->enabled()->unCanceled()->exists();
         if ($is_reserve_exists) {
             return redirect()->action([ self::class, 'index' ], [ 'date'=>$reserve->date->format('Y-m-d') ])
                 ->withInput()
-                ->with('error', __('messages.error.reserve_exists'));
+                ->with('error', __('messages.error.same_reserve_datetime'));
         }
 
         // 料理メニューの設定有無のチェック
