@@ -85,11 +85,19 @@ class CheckinController extends Controller {
             ;
         }
 
-        return $this->trans(function() use($request, $user, $reserve) {
+        return $this->trans(function() use($request, $user, $reserve, $buy_ticket_ids) {
             $reserve->checkin_dt = now();
             $this->save($reserve, $user);
 
             $reserve = $reserve->fresh();
+
+            $buy_ticket_id_list = $buy_ticket_ids->toArray();
+            foreach ($reserve->use_tickets as $use_ticket) {
+                $valid_ticket = $user->valid_tickets()->validateBy()->first();
+                abort_if(!$valid_ticket, 400, __('messages.warning.ticket_by_short'));
+                $use_ticket->buy_ticket_id = $valid_ticket->buy_ticket_id;
+                $this->save($use_ticket, $user);
+            }
 
             //　LINE通知
             $view = ($reserve->type == ReserveTypes::LUNCHBOX ? 'templates.line.lunchbox_checkin' : 'templates.line.visit_checkin');
