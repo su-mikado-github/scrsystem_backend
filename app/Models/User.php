@@ -109,7 +109,16 @@ class User extends Authenticatable {
     }
 
     public function getLastTicketCountAttribute() {
-        $valid_ticket = $this->valid_tickets()->where('valid_ticket_count', '>', 0)
+        $valid_ticket = $this->valid_tickets()
+            ->selectRaw('user_id, SUM(valid_ticket_count) as valid_ticket_count')
+            ->groupBy('user_id')
+            ->first();
+        return (op($valid_ticket)->valid_ticket_count ?? 0);
+    }
+
+    public function getUnpaidTicketCountAttribute() {
+        $valid_ticket = $this->valid_tickets()
+            ->whereNull('payment_dt')
             ->selectRaw('user_id, SUM(valid_ticket_count) as valid_ticket_count')
             ->groupBy('user_id')
             ->first();
