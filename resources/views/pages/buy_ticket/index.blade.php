@@ -84,6 +84,13 @@ SCRSPage.startup(()=>new BuyTicketPage());
             <span class="px-2" style="font-size:200%;">{{ $last_ticket_count ?? 0 }}</span>
             <span class="font-weight-normal">回</span>
         </span>
+        @if($unpaid_ticket_count > 0)
+        <span class="text-nowrap">
+            <span class="font-weight-normal" style="font-size:80%;">（内未清算</span>
+            <span class="px-1" style="font-size:80%;">{{ $unpaid_ticket_count ?? 0 }}</span>
+            <span class="font-weight-normal" style="font-size:80%;">回）</span>
+        </span>
+        @endif
     </div>
 </div>
 

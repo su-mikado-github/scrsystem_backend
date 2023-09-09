@@ -33,7 +33,7 @@ class ChangeController extends Controller {
             $today = $reserve->date;
         }
 
-        $other_reserve = $reserves->where('date', '=', $today)->where('id', '!=', $reserve->id)->first();
+        $other_reserve = $reserves->where('date', '=', $today)->where('id', '!=', op($reserve)->id)->first();
 
         $month_calendar = MonthCalendar::yearMonthBy($today->year, $today->month)->first();
         abort_if(!$month_calendar, 404, __('not_found.month_calender'));

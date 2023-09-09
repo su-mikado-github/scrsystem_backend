@@ -19,6 +19,7 @@ class BuyTicketController extends Controller {
             ->with('user', $user)
             ->with('tickets', $tickets)
             ->with('last_ticket_count', $user->last_ticket_count)
+            ->with('unpaid_ticket_count', $user->unpaid_ticket_count)
         ;
     }
 
