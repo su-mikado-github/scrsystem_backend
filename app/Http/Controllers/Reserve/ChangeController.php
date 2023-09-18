@@ -27,7 +27,7 @@ class ChangeController extends Controller {
 
         $today = (isset($date) ? Carbon::parse($date) : today()->copy()->addDays());
 
-        $reserves = $user->reserves()->enabled()->unCanceled()->where('date', '>=', $today)->dateOrdered()->timeOrdered()->typeOrdered()->get();
+        $reserves = $user->reserves()->enabled()->noCheckin()->unCanceled()->where('date', '>=', $today)->dateOrdered()->timeOrdered()->typeOrdered()->get();
         $reserve = $reserves->first();
         if (isset($reserve)) {
             $today = $reserve->date;
@@ -108,9 +108,9 @@ class ChangeController extends Controller {
 
         $day_calendar = $calendars->where('date', $today)->first();
 
-        $reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->diningHallBy()->dateOrdered()->timeOrdered()->first();
+        $reserve = $user->reserves()->enabled()->noCheckin()->unCanceled()->dateBy($date)->diningHallBy()->dateOrdered()->timeOrdered()->first();
         if (!$reserve) {
-            $reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->lunchboxBy()->dateOrdered()->timeOrdered()->first();
+            $reserve = $user->reserves()->enabled()->noCheckin()->unCanceled()->dateBy($date)->lunchboxBy()->dateOrdered()->timeOrdered()->first();
             if (!$reserve) {
                 return view('pages.reserve.change.index')
                     ->with('day_calendar', $day_calendar)
@@ -136,7 +136,7 @@ class ChangeController extends Controller {
             }
         }
         else {
-            $other_reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->lunchboxBy()->dateOrdered()->timeOrdered()->first();
+            $other_reserve = $user->reserves()->enabled()->noCheckin()->unCanceled()->dateBy($date)->lunchboxBy()->dateOrdered()->timeOrdered()->first();
 
             $time_schedules = ($user->affiliation_detail->is_soccer==Flags::ON ? TimeSchedule::soccer() : TimeSchedule::noSoccer())->enabled()->orderBy('time')->get();
             $start_time = $time_schedules->min('time');
@@ -177,9 +177,9 @@ class ChangeController extends Controller {
 
         $day_calendar = $calendars->where('date', $today)->first();
 
-        $reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->lunchboxBy()->dateOrdered()->timeOrdered()->first();
+        $reserve = $user->reserves()->enabled()->noCheckin()->unCanceled()->dateBy($date)->lunchboxBy()->dateOrdered()->timeOrdered()->first();
         if (!$reserve) {
-            $reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->diningHallBy()->dateOrdered()->timeOrdered()->first();
+            $reserve = $user->reserves()->enabled()->noCheckin()->unCanceled()->dateBy($date)->diningHallBy()->dateOrdered()->timeOrdered()->first();
             if (!$reserve) {
                 return view('pages.reserve.change.index')
                     ->with('day_calendar', $day_calendar)
@@ -214,7 +214,7 @@ class ChangeController extends Controller {
             }
         }
         else {
-            $other_reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->diningHallBy()->dateOrdered()->timeOrdered()->first();
+            $other_reserve = $user->reserves()->enabled()->noCheckin()->unCanceled()->dateBy($date)->diningHallBy()->dateOrdered()->timeOrdered()->first();
 
             $time_schedules = TimeSchedule::lunchbox()->enabled()->orderBy('time')->get();
 
@@ -486,6 +486,10 @@ class ChangeController extends Controller {
         return $this->trans(function() use($request, $user, $reserve) {
             $reserve->cancel_dt = now();
             $this->save($reserve, $user);
+
+            foreach ($reserve->use_tickets as $use_ticket) {
+                $this->remove($use_ticket, $user);
+            }
 
             //　LINE通知
             $canceled_view = ($reserve->type==ReserveTypes::LUNCHBOX ? 'templates.line.lunchbox_canceled' : 'templates.line.visit_canceled');

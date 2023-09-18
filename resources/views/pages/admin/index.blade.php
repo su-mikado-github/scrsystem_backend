@@ -4,51 +4,51 @@
 @use(App\AffiliationDetailTypes)
 
 <x-script>
-    import { SCRSPage } from "/scrs-pages.js";
+import { SCRSPage } from "/scrs-pages.js";
 
-    class AdminPage extends SCRSPage {
-        #autoReload = null;
+class AdminPage extends SCRSPage {
+    #autoReload = null;
 
-        #intervalId = null;
-        #reloadTimer = 0;
+    #intervalId = null;
+    #reloadTimer = 0;
 
-        #reload() {
-            const checked = this.#autoReload.checked;
-            if (checked) {
-                if (this.#reloadTimer >= 60) {
-                    @isset($date)
-                    this.forward([ "/admin", @json($date) ]);
-                    @else
-                    this.forward([ "/admin" ]);
-                    @endisset
-                    clearInterval(this.#intervalId);
-                    this.#intervalId = null;
-                }
-                else {
-                    this.#reloadTimer ++;
-                    console.log("タイマー: "+this.#reloadTimer);
-                }
+    #reload() {
+        const checked = this.#autoReload.checked;
+        if (checked) {
+            if (this.#reloadTimer >= 60) {
+                @isset($date)
+                this.forward([ "/admin", @json($date) ]);
+                @else
+                this.forward([ "/admin" ]);
+                @endisset
+                clearInterval(this.#intervalId);
+                this.#intervalId = null;
             }
-        }
-
-        constructor() {
-            super();
-            //
-            this.#autoReload = this.action("autoReload", [ "click" ]);
-            this.#autoReload.checked = (JSON.parse(window.localStorage.autoReload||null) == true);
-
-            this.#intervalId = setInterval(()=>this.#reload(), 1000);
-        }
-
-        autoReload_click(e) {
-            this.#reloadTimer = 0;
-            const checked = this.#autoReload.checked;
-            window.localStorage.autoReload = checked;
+            else {
+                this.#reloadTimer ++;
+                console.log("タイマー: "+this.#reloadTimer);
+            }
         }
     }
 
-    SCRSPage.startup(()=>new AdminPage());
-    </x-script>
+    constructor() {
+        super();
+        //
+        this.#autoReload = this.action("autoReload", [ "click" ]);
+        this.#autoReload.checked = (JSON.parse(window.localStorage.autoReload||null) == true);
+
+        this.#intervalId = setInterval(()=>this.#reload(), 1000);
+    }
+
+    autoReload_click(e) {
+        this.#reloadTimer = 0;
+        const checked = this.#autoReload.checked;
+        window.localStorage.autoReload = checked;
+    }
+}
+
+SCRSPage.startup(()=>new AdminPage());
+</x-script>
 
 @section('page.title')
 <span>管理画面<span>
