@@ -93,6 +93,144 @@ class ChangeController extends Controller {
         }
     }
 
+    public function visit(Request $request, $date) {
+        $user = $this->user();
+
+        $today = Carbon::parse($date);
+
+        $month_calendar = MonthCalendar::yearMonthBy($today->year, $today->month)->first();
+        abort_if(!$month_calendar, 404, __('not_found.month_calender'));
+
+        $calendars = Calendar::periodBy($month_calendar->start_date, $month_calendar->end_date)->orderBy('date')->get();
+
+        $previous_date = $today->copy()->subMonth();
+        $next_date = $today->copy()->addMonth();
+
+        $day_calendar = $calendars->where('date', $today)->first();
+
+        $reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->diningHallBy()->dateOrdered()->timeOrdered()->first();
+        if (!$reserve) {
+            $reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->lunchboxBy()->dateOrdered()->timeOrdered()->first();
+            if (!$reserve) {
+                return view('pages.reserve.change.index')
+                    ->with('day_calendar', $day_calendar)
+                    ->with('previous_date', $previous_date)
+                    ->with('next_date', $next_date)
+                    ->with('month_calendar', $month_calendar)
+                    ->with('calendars', $calendars)
+                ;
+            }
+            else {
+                $time_schedules = TimeSchedule::lunchbox()->enabled()->orderBy('time')->get();
+
+                return view('pages.reserve.change.index_lunchbox')
+                    ->with('reserve', $reserve)
+                    ->with('other_reserve', $other_reserve)
+                    ->with('day_calendar', $day_calendar)
+                    ->with('previous_date', $previous_date)
+                    ->with('next_date', $next_date)
+                    ->with('month_calendar', $month_calendar)
+                    ->with('calendars', $calendars)
+                    ->with('time_schedules', $time_schedules)
+                ;
+            }
+        }
+        else {
+            $other_reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->lunchboxBy()->dateOrdered()->timeOrdered()->first();
+
+            $time_schedules = ($user->affiliation_detail->is_soccer==Flags::ON ? TimeSchedule::soccer() : TimeSchedule::noSoccer())->enabled()->orderBy('time')->get();
+            $start_time = $time_schedules->min('time');
+            $end_time = $time_schedules->max('time');
+
+            $empty_states = EmptyState::dateBy($today)->timeRangeBy($start_time, $end_time)
+                ->selectRaw('time, FLOOR(SUM(empty_seat_count) * 100 / SUM(seat_count)) as empty_seat_rate')
+                ->groupBy('time')
+                ->orderBy('time')
+                ->get();
+
+            return view('pages.reserve.change.index_visit')
+                ->with('reserve', $reserve)
+                ->with('other_reserve', $other_reserve)
+                ->with('day_calendar', $day_calendar)
+                ->with('previous_date', $previous_date)
+                ->with('next_date', $next_date)
+                ->with('month_calendar', $month_calendar)
+                ->with('calendars', $calendars)
+                ->with('time_schedules', $time_schedules)
+                ->with('empty_states', $empty_states)
+            ;
+        }
+    }
+
+    public function lunchbox(Request $request, $date=null) {
+        $user = $this->user();
+
+        $today = Carbon::parse($date);
+
+        $month_calendar = MonthCalendar::yearMonthBy($today->year, $today->month)->first();
+        abort_if(!$month_calendar, 404, __('not_found.month_calender'));
+
+        $calendars = Calendar::periodBy($month_calendar->start_date, $month_calendar->end_date)->orderBy('date')->get();
+
+        $previous_date = $today->copy()->subMonth();
+        $next_date = $today->copy()->addMonth();
+
+        $day_calendar = $calendars->where('date', $today)->first();
+
+        $reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->lunchboxBy()->dateOrdered()->timeOrdered()->first();
+        if (!$reserve) {
+            $reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->diningHallBy()->dateOrdered()->timeOrdered()->first();
+            if (!$reserve) {
+                return view('pages.reserve.change.index')
+                    ->with('day_calendar', $day_calendar)
+                    ->with('previous_date', $previous_date)
+                    ->with('next_date', $next_date)
+                    ->with('month_calendar', $month_calendar)
+                    ->with('calendars', $calendars)
+                ;
+            }
+            else {
+                $time_schedules = ($user->affiliation_detail->is_soccer==Flags::ON ? TimeSchedule::soccer() : TimeSchedule::noSoccer())->enabled()->orderBy('time')->get();
+                $start_time = $time_schedules->min('time');
+                $end_time = $time_schedules->max('time');
+
+                $empty_states = EmptyState::dateBy($today)->timeRangeBy($start_time, $end_time)
+                    ->selectRaw('time, FLOOR(SUM(empty_seat_count) * 100 / SUM(seat_count)) as empty_seat_rate')
+                    ->groupBy('time')
+                    ->orderBy('time')
+                    ->get();
+
+                return view('pages.reserve.change.index_visit')
+                    ->with('reserve', $reserve)
+                    ->with('other_reserve', $other_reserve)
+                    ->with('day_calendar', $day_calendar)
+                    ->with('previous_date', $previous_date)
+                    ->with('next_date', $next_date)
+                    ->with('month_calendar', $month_calendar)
+                    ->with('calendars', $calendars)
+                    ->with('time_schedules', $time_schedules)
+                    ->with('empty_states', $empty_states)
+                ;
+            }
+        }
+        else {
+            $other_reserve = $user->reserves()->enabled()->unCanceled()->dateBy($date)->diningHallBy()->dateOrdered()->timeOrdered()->first();
+
+            $time_schedules = TimeSchedule::lunchbox()->enabled()->orderBy('time')->get();
+
+            return view('pages.reserve.change.index_lunchbox')
+                ->with('reserve', $reserve)
+                ->with('other_reserve', $other_reserve)
+                ->with('day_calendar', $day_calendar)
+                ->with('previous_date', $previous_date)
+                ->with('next_date', $next_date)
+                ->with('month_calendar', $month_calendar)
+                ->with('calendars', $calendars)
+                ->with('time_schedules', $time_schedules)
+            ;
+        }
+    }
+
     public function reserve(Request $request, $reserve_id) {
         $user = $this->user();
 

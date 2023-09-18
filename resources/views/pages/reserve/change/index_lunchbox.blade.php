@@ -232,15 +232,15 @@ SCRSPage.startup(()=>new ChangeLunchboxPage());
                 </td>
                 @elseif($is_reserved)
                 <td class="text-center align-middle py-1 {!! $bg_color !!}">
-                    <a class="{!! $text_color !!} fw-bold" href="{!! route('reserve.change', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! $calendar->date->format('n/j') !!}</a>
+                    <a class="{!! $text_color !!} fw-bold" href="{!! route('reserve.change.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! $calendar->date->format('n/j') !!}</a>
                 </td>
                 @elseif($is_current_month)
                 <td class="text-center align-middle py-1 {!! $bg_color !!}">
-                    <a class="{!! $text_color !!} text-decoration-underline" href="{!! route('reserve.change', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! $calendar->date->format('n/j') !!}</a>
+                    <a class="{!! $text_color !!} text-decoration-underline" href="{!! route('reserve.change.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! $calendar->date->format('n/j') !!}</a>
                 </td>
                 @else
                 <td class="text-center align-middle py-1 {!! $bg_color !!}">
-                    <a class="{!! $text_color !!} text-decoration-underline" href="{!! route('reserve.change', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! $calendar->date->format('n/j') !!}</a>
+                    <a class="{!! $text_color !!} text-decoration-underline" href="{!! route('reserve.change.lunchbox', [ 'date'=>$calendar->date->format('Y-m-d') ]) !!}">{!! $calendar->date->format('n/j') !!}</a>
                 </td>
                 @endif
             @endforeach
