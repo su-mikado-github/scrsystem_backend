@@ -3,7 +3,7 @@
 @use(App\Weekdays)
 @extends('layouts.default')
 
-@eval($from_time = transform($reserve->time, function($v) { list($h, $m, $s) = explode(":", $v); return sprintf('%02d:%02d', $h, $m); }));
+@eval($from_time = transform($reserve->time, function($v) { list($h, $m, $s) = explode(":", $v); return sprintf('%02d:%02d', $h, $m); }))
 
 <x-script>
 import { SCRSPage } from "/scrs-pages.js";
