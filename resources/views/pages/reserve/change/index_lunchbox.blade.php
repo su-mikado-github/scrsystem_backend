@@ -3,22 +3,45 @@
 @use(App\Weekdays)
 @extends('layouts.default')
 
+@eval($from_time = transform($reserve->time, function($v) { list($h, $m, $s) = explode(":", $v); return sprintf('%02d:%02d', $h, $m); }));
+
 <x-script>
 import { SCRSPage } from "/scrs-pages.js";
 import { SCRSConfirmDialog } from "/dialogs/confirm-dialog.js";
 
 class ChangeLunchboxPage extends SCRSPage {
     #newDate = null;
+    #newTime = null;
     #change = null;
     #cancel = null;
 
     #changeConfirmDialog = null;
     #cancelConfirmDialog = null;
 
+    #buildMessage(fromDate, fromTime, toDate, toTime) {
+        if (fromDate == toDate) {
+            return `<div class="text-center mb-1">
+        <span class="text-nowrap">${fromTime}<span class="px-1">→</span>${toTime}</span>
+    </div>
+<div class="text-center mt-2">変更してもよろしいですか？</div>`;
+        }
+        else {
+            return `<div class="text-center mb-1">
+    <span>
+        <div class="d-inline-block">${dayjs(fromDate).format("MM月DD日")}<br>${fromTime}</div>
+        <div class="d-inline-block px-1">→</div>
+        <div class="d-inline-block">${dayjs(toDate).format("MM月DD日")}<br>${toTime}</div>
+    </span>
+</div>
+<div class="text-center mt-2">変更してもよろしいですか？</div>`;
+        }
+    }
+
     constructor() {
         super();
         //
         this.#newDate = this.field("newDate");
+        this.#newTime = this.field("newTime");
         this.#change = this.action("change", [ "click" ]);
         this.#cancel = this.action("cancel", [ "click" ]);
 
@@ -28,7 +51,11 @@ class ChangeLunchboxPage extends SCRSPage {
 
     change_click(e) {
         const newDate = this.#newDate.value;
-        this.#changeConfirmDialog.field("message").html(`{!! $reserve->date->format('m月d日') !!} → ${dayjs(newDate).format("MM月DD日")}<br>変更してもよろしいですか？`);
+        const newTime = this.#newTime.value;
+
+        const [ hour, minute, sec ] = newTime.split(":");
+        const message = this.#buildMessage(@json($reserve->date->format('Y-m-d')), @json($from_time), newDate, `${hour}:${minute}`);
+        this.#changeConfirmDialog.field("message").html(message);
         this.#changeConfirmDialog.open();
     }
 
@@ -235,7 +262,7 @@ SCRSPage.startup(()=>new ChangeLunchboxPage());
 <div class="row">
     <label for="newTime" class="col-4 col-form-label">変更先の受取時間</label>
     <div class="col-8">
-        <select class="form-control" id="newTime" name="new_time" data-field="new_time">
+        <select class="form-control" id="newTime" name="new_time" data-field="newTime">
             <option value="">選択してください</option>
             @foreach($time_schedules as $time_schedule)
             <option value="{!! $time_schedule->time !!}" {!! (old('new_time', op($reserve)->time)==$time_schedule->time ? 'selected' : '') !!}>{!! time_to_hhmm($time_schedule->time) !!}</option>

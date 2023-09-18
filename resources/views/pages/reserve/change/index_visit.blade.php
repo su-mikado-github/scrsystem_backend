@@ -36,7 +36,7 @@ class ChangeVisitPage extends SCRSPage {
 
         const fromTime = @json($from_time);
         const [ hour, minute, sec ] = time.split(":");
-        const message = `${fromTime} → ${hour}:${minute}<br>変更してもよろしいですか？`;
+        const message = `<div class="text-center mb-1">${fromTime} → ${hour}:${minute}</div><div class="text-center">変更してもよろしいですか？</div>`;
         this.#changeConfirmDialog.field("message").html(message);
         this.#changeConfirmDialog.open();
     }
