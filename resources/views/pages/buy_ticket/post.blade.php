@@ -36,7 +36,7 @@ SCRSPage.startup(()=>new BuyTicketPage());
     <div class="h2 text-center">
         <span class="text-nowrap">
             <span class="font-weight-normal">残り</span>
-            <span class="px-2" style="font-size:200%;">{{ $user->last_ticket_count ?? 0 }}</span>
+            <span class="px-2" style="font-size:200%;">{{ ($user->last_ticket_count ?? 0) - ($user->unpaid_ticket_count ?? 0) }}</span>
             <span class="font-weight-normal">回</span>
         </span>
     </div>
