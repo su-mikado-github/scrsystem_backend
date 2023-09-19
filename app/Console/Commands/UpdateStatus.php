@@ -101,6 +101,17 @@ class UpdateStatus extends Command
                     }
                 }
                 else {
+                    $buy_ticket_id_list = $buy_ticket_ids->toArray();
+                    foreach ($reserve->use_tickets as $use_ticket) {
+                        $valid_ticket = $reserve->user->valid_tickets()->validateBy()->first();
+                        abort_if(!$valid_ticket, 400, __('messages.warning.ticket_by_short'));
+                        $use_ticket->buy_ticket_id = $valid_ticket->buy_ticket_id;
+                        $use_ticket->updated_at = now();
+                        $use_ticket->updated_id = 0;
+                        $use_ticket->data_version ++;
+                        $use_ticket->save();
+                    }
+
                     $message = view('templates.line.update_status')->with('user', $reserve->user)->with('reserve', $reserve)->render();
                     if (!$this->line_api->push_messages($reserve->user->line_user->line_owner_id, [ $message ])) {
                         DB::rollBack();
