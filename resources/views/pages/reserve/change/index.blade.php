@@ -34,34 +34,8 @@ SCRSPage.startup(()=>new ChangePage());
     様
 </h2>
 
-<div class="px-5 py-4 scrs-sheet-normal">
-    <h3 class="text-center mb-4">ご予約内容</h3>
-    <p>※ご予約はされていません。</p>
-</div>
-
 <br>
-<div class="row">
-<div class="col-6 text-center">
-    <dl class="d-inline-block mb-0" style="font-size:80%;">
-    <dt class="text-start">背景色</dt>
-    <dd class="text-start mb-0"><span class="scrs-bg-today">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />予約対象日</dd>
-    <dd class="text-start mb-0"><span class="bg-secondary">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />予約不可日</dd>
-    <dd class="text-start mb-0"><span class="scrs-bg-lightgray">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />前後の月</dd>
-    </dl>
-</div>
-<div class="col-6 text-center">
-    <dl class="d-inline-block mb-0" style="font-size:80%;">
-    <dt class="text-start">日付</dt>
-    <dd class="text-start mb-0"><span class="text-decoration-underline">下線</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />メニュー有り</dd>
-    <dd class="text-start mb-0"><span class="fw-bold">太字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />食堂・弁当の予約済</dd>
-    <dd class="text-start mb-0"><span class="text-primary">赤字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />日曜日</dd>
-    <dd class="text-start mb-0"><span class="text-danger">青字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />土曜日</dd>
-    </dl>
-</div>
-</div>
-
-<br>
-<p class="m-0">ご予約日（リンク）は、タップして変更できます。</p>
+{{-- <p class="m-0">ご予約日（リンク）は、タップして変更できます。</p> --}}
 
 {{-- カレンダーコントロール --}}
 <div class="row g-0 my-3">
@@ -162,4 +136,33 @@ SCRSPage.startup(()=>new ChangePage());
         @endforeach
     </tbody>
 </table>
+
+<br>
+<div class="row">
+    <div class="col-6 text-center">
+        <dl class="d-inline-block mb-0" style="font-size:80%;">
+        <dt class="text-start">背景色</dt>
+        <dd class="text-start mb-0"><span class="scrs-bg-today">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />予約対象日</dd>
+        <dd class="text-start mb-0"><span class="bg-secondary">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />予約不可日</dd>
+        <dd class="text-start mb-0"><span class="scrs-bg-lightgray">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />前後の月</dd>
+        </dl>
+    </div>
+    <div class="col-6 text-center">
+        <dl class="d-inline-block mb-0" style="font-size:80%;">
+        <dt class="text-start">日付</dt>
+        <dd class="text-start mb-0"><span class="text-decoration-underline">下線</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />メニュー有り</dd>
+        <dd class="text-start mb-0"><span class="fw-bold">太字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />食堂・弁当の予約済</dd>
+        <dd class="text-start mb-0"><span class="text-primary">赤字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />日曜日</dd>
+        <dd class="text-start mb-0"><span class="text-danger">青字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />土曜日</dd>
+        </dl>
+    </div>
+</div>
+
+<br>
+<div class="px-5 py-4 scrs-sheet-normal">
+    <h3 class="text-center mb-4">ご予約内容</h3>
+    <p>※ご予約はされていません。</p>
+</div>
+
+
 @endsection

@@ -80,7 +80,7 @@ SCRSPage.startup(()=>new ChangeLunchboxPage());
 @endsection
 
 @section('main')
-<h2>
+<h2 class="my-0">
     <ruby>
         <rb>{{ $user->last_name }}</rb>
         <rt>{{ $user->last_name_kana }}</rt>
@@ -102,52 +102,7 @@ SCRSPage.startup(()=>new ChangeLunchboxPage());
 </div>
 @endisset
 
-<div class="px-5 py-4 scrs-sheet-normal">
-    <h3 class="text-center mb-4">ご予約内容（{{ ReserveTypes::of($reserve->type)->title }}）</h3>
-    <dl class="scrs-item-group mb-0">
-        <dt class="label">日付／受取時間</dt>
-        <dd class="item"><span class="text-nowrap">{{ $reserve->date->format('m月d日') }}</span>&nbsp;<span class="text-nowrap">{{ time_to_hhmm($reserve->time) ?? ' ' }}</span></dd>
-        <dt class="label">{{ $label }}</dt>
-        <dd class="item"><span>{{ $reserve->reserve_count }}</span>{{ $unit }}</dd>
-    </dl>
-</div>
-
-<br>
-<div class="d-flex justify-content-center">
-    @isset($reserve->checkin_dt)
-    <span class="btn btn-lg btn-secondary col-10 py-2">完了</span>
-    @endisset
-</div>
-@else
-<div class="px-5 py-4 scrs-sheet-normal">
-    <h3 class="text-center mb-4">ご予約内容</h3>
-    <p>※本日のご予約はありません。</p>
-</div>
-@endif
-
-<br>
-<div class="row">
-<div class="col-6 text-center">
-    <dl class="d-inline-block mb-0" style="font-size:80%;">
-    <dt class="text-start">背景色</dt>
-    <dd class="text-start mb-0"><span class="scrs-bg-today">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />予約対象日</dd>
-    <dd class="text-start mb-0"><span class="bg-secondary">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />予約不可日</dd>
-    <dd class="text-start mb-0"><span class="scrs-bg-lightgray">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />前後の月</dd>
-    </dl>
-</div>
-<div class="col-6 text-center">
-    <dl class="d-inline-block mb-0" style="font-size:80%;">
-    <dt class="text-start">日付</dt>
-    <dd class="text-start mb-0"><span class="text-decoration-underline">下線</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />メニュー有り</dd>
-    <dd class="text-start mb-0"><span class="fw-bold">太字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />食堂・弁当の予約済</dd>
-    <dd class="text-start mb-0"><span class="text-primary">赤字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />日曜日</dd>
-    <dd class="text-start mb-0"><span class="text-danger">青字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />土曜日</dd>
-    </dl>
-</div>
-</div>
-
-<br>
-<p class="m-0">ご予約日（リンク）は、タップして変更できます。</p>
+{{-- <p class="m-0">ご予約日（リンク）は、タップして変更できます。</p> --}}
 
 {{-- カレンダーコントロール --}}
 <div class="row g-0 my-3">
@@ -249,6 +204,49 @@ SCRSPage.startup(()=>new ChangeLunchboxPage());
     </tbody>
 </table>
 
+<div class="row">
+    <div class="col-6 text-center">
+        <dl class="d-inline-block mb-0" style="font-size:80%;">
+        <dt class="text-start">背景色</dt>
+        <dd class="text-start mb-0"><span class="scrs-bg-today">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />予約対象日</dd>
+        <dd class="text-start mb-0"><span class="bg-secondary">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />予約不可日</dd>
+        <dd class="text-start mb-0"><span class="scrs-bg-lightgray">　　</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />前後の月</dd>
+        </dl>
+    </div>
+    <div class="col-6 text-center">
+        <dl class="d-inline-block mb-0" style="font-size:80%;">
+        <dt class="text-start">日付</dt>
+        <dd class="text-start mb-0"><span class="text-decoration-underline">下線</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />メニュー有り</dd>
+        <dd class="text-start mb-0"><span class="fw-bold">太字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />食堂・弁当の予約済</dd>
+        <dd class="text-start mb-0"><span class="text-primary">赤字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />日曜日</dd>
+        <dd class="text-start mb-0"><span class="text-danger">青字</span><x-icon name="fa-solid fa-ellipsis" class="mx-1" />土曜日</dd>
+        </dl>
+    </div>
+</div>
+
+<br>
+<div class="px-5 py-4 scrs-sheet-normal">
+    <h3 class="text-center mb-4">ご予約内容（{{ ReserveTypes::of($reserve->type)->title }}）</h3>
+    <dl class="scrs-item-group mb-0">
+        <dt class="label">日付／受取時間</dt>
+        <dd class="item"><span class="text-nowrap">{{ $reserve->date->format('m月d日') }}</span>&nbsp;<span class="text-nowrap">{{ time_to_hhmm($reserve->time) ?? ' ' }}</span></dd>
+        <dt class="label">{{ $label }}</dt>
+        <dd class="item"><span>{{ $reserve->reserve_count }}</span>{{ $unit }}</dd>
+    </dl>
+</div>
+
+<br>
+<div class="d-flex justify-content-center">
+    @isset($reserve->checkin_dt)
+    <span class="btn btn-lg btn-secondary col-10 py-2">完了</span>
+    @endisset
+</div>
+@else
+<div class="px-5 py-4 scrs-sheet-normal">
+    <h3 class="text-center mb-4">ご予約内容</h3>
+    <p>※本日のご予約はありません。</p>
+</div>
+@endif
 <br>
 <div class="row">
     <label for="newDate" class="col-4 col-form-label">変更先の日付</label>
