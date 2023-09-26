@@ -62,7 +62,7 @@ SCRSPage.startup(()=>new ChangeVisitPage());
 @endsection
 
 @section('main')
-<h2>
+<h2 class="my-0">
     <ruby>
         <rb>{{ $user->last_name }}</rb>
         <rt>{{ $user->last_name_kana }}</rt>

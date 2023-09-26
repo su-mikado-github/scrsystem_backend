@@ -76,7 +76,7 @@ SCRSPage.startup(()=>new ChangeLunchboxPage());
 </x-script>
 
 @section('page.title')
-ご予約日の変更／キャンセル
+ご予約日時の変更／キャンセル
 @endsection
 
 @section('main')
